@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 280 280" role="img" aria-label="诺崇科技 Material 风格单色图形标志">
+  <path d="M140 12 C148 12 155 14 163 19 L244 66 C254 72 260 82 260 94 V186 C260 198 254 208 244 214 L163 261 C155 266 148 268 140 268 C132 268 125 266 117 261 L36 214 C26 208 20 198 20 186 V94 C20 82 26 72 36 66 L117 19 C125 14 132 12 140 12 Z" fill="#1F1F1F"/>
+  <path d="M68 194 V84 L139 194 V84" fill="none" stroke="#FFFFFF" stroke-width="23" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M226 101 C198 76 160 92 160 140 C160 189 199 204 226 178" fill="none" stroke="#FFFFFF" stroke-width="23" stroke-linecap="round"/>
+</svg>
