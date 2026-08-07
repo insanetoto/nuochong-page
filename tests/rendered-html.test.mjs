@@ -14,29 +14,33 @@ async function render() {
   );
 }
 
-test("server-renders the Nuochong company homepage", async () => {
+test("server-renders the English homepage by default", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /诺崇科技/);
-  assert.match(html, /企业知识与智能培训平台/);
-  assert.match(html, /申请使用/);
-  assert.match(html, /企业知识库/);
-  assert.match(html, /云南诺崇科技有限公司/);
+  assert.match(html, /Nuochong Technology/);
+  assert.match(html, /Enterprise Knowledge &amp; Intelligent Training Platform/);
+  assert.match(html, /Request Access/);
+  assert.match(html, /Enterprise Knowledge Base/);
+  assert.match(html, /Yunnan Nuochong Technology Co\., Ltd\./);
   assert.doesNotMatch(html, /codex-preview|SkeletonPreview|react-loading-skeleton/);
 });
 
-test("uses the current Material brand assets", async () => {
-  const [page, layout, packageJson] = await Promise.all([
+test("supports English and Chinese with the current Material brand assets", async () => {
+  const [page, homePage, layout, packageJson] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/HomePage.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
   ]);
 
-  assert.match(page, /\/logo-mark\.svg/);
-  assert.match(layout, /lang="zh-CN"/);
-  assert.match(layout, /企业知识与智能培训平台/);
+  assert.match(homePage, /\/logo-mark\.svg/);
+  assert.match(homePage, /nuochong-language/);
+  assert.match(homePage, /企业知识与智能培训平台/);
+  assert.match(homePage, /Enterprise Knowledge & Intelligent Training Platform/);
+  assert.match(page, /Enterprise Knowledge & Intelligent Training Platform/);
+  assert.match(layout, /lang="en"/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
 });

@@ -14,12 +14,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "诺崇科技｜企业知识与智能培训平台",
-    template: "%s｜诺崇科技",
+    default: "Nuochong Technology | Enterprise Knowledge & Intelligent Training Platform",
+    template: "%s | Nuochong Technology",
   },
   description:
-    "云南诺崇科技有限公司专注企业 AI 应用，通过企业知识库、智能培训、考试测评与 AI 助手，推动人员培养和组织能力持续提升。",
-  keywords: ["企业知识库", "企业培训平台", "在线考试", "AI知识库", "诺崇科技"],
+    "Nuochong Technology builds AI-powered enterprise knowledge, training, assessment, and learning solutions for continuous organizational growth.",
+  keywords: ["enterprise knowledge base", "AI knowledge management", "employee training platform", "online assessment", "Nuochong Technology", "企业知识库", "企业培训平台"],
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
@@ -32,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
+    <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
