@@ -1,0 +1,49 @@
+name: Deploy to production
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    name: Build & deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build static site
+        run: npm run build:static
+
+      - name: Install SSH key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+      - name: Deploy with rsync
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+          rsync -rlptDz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes" \
+            dist-static/ deploy@"$DEPLOY_HOST":/var/www/nuochong/

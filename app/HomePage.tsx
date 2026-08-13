@@ -119,11 +119,9 @@ const copy = {
       kicker: "Build your enterprise knowledge and talent growth system",
       title: "Request access to the platform",
       text: "Talk to us about how the platform can support your organization’s goals and business scenarios.",
-      qr: "Scan to contact us on WeCom",
       qrAlt: "WeCom QR code to contact Nuochong Technology",
-      wecom: "WeCom",
+      phone: "Contact phone",
       email: "Business email",
-      placeholder: "Placeholder",
       subject: "Request access to the Enterprise Knowledge & Intelligent Training Platform",
     },
     footer: {
@@ -136,7 +134,6 @@ const copy = {
       wecom: "WeCom",
       email: "Business Email",
       copyright: "© 2026 Yunnan Nuochong Technology Co., Ltd.",
-      filing: "Regulatory information to be updated",
     },
   },
   zh: {
@@ -191,10 +188,10 @@ const copy = {
       paragraphs: ["云南诺崇科技有限公司是一家专注于企业智能化应用的 AI 科技公司。我们从企业真实的人才培养和知识管理需求出发，打造易用、可信、可持续演进的数字化产品。", "我们相信，技术的价值不只是提高效率，更是帮助企业激活知识、成就员工，并将个体经验转化为组织长期发展的能力。"],
     },
     contact: {
-      kicker: "开始构建企业知识与人才成长体系", title: "申请使用企业知识与智能培训平台", text: "联系我们，了解平台如何结合贵公司的业务场景落地。", qr: "扫码添加企业微信联系我们", qrAlt: "诺崇科技企业微信二维码", wecom: "企业微信", email: "商务邮箱", placeholder: "占位信息", subject: "申请使用企业知识与智能培训平台",
+      kicker: "开始构建企业知识与人才成长体系", title: "申请使用企业知识与智能培训平台", text: "联系我们，了解平台如何结合贵公司的业务场景落地。", qrAlt: "诺崇科技企业微信二维码", phone: "联系电话", email: "商务邮箱", subject: "申请使用企业知识与智能培训平台",
     },
     footer: {
-      tagline: "让企业知识成为成长的力量", product: "产品", productLinks: ["企业知识库", "培训与考试", "企业 AI 助手"], company: "公司", companyLinks: ["关于我们", "应用场景", "联系我们"], request: "申请使用", wecom: "企业微信", email: "商务邮箱", copyright: "© 2026 云南诺崇科技有限公司", filing: "滇ICP备XXXXXXXX号（占位）",
+      tagline: "让企业知识成为成长的力量", product: "产品", productLinks: ["企业知识库", "培训与考试", "企业 AI 助手"], company: "公司", companyLinks: ["关于我们", "应用场景", "联系我们"], request: "申请使用", wecom: "企业微信", email: "商务邮箱", copyright: "© 2026 云南诺崇科技有限公司",
     },
   },
 } as const;
@@ -218,16 +215,11 @@ export function HomePage() {
       return;
     }
 
-    // No preference set — detect from IP geolocation
-    fetch("/api/country")
-      .then((res) => res.json())
-      .then(({ country }: { country: string }) => {
-        if (country === "CN") {
-          setLanguageState("zh");
-          document.documentElement.lang = "zh-CN";
-        }
-      })
-      .catch(() => {}); // fallback to default en
+    // No preference set — detect from browser language
+    if (navigator.language?.toLowerCase().startsWith("zh")) {
+      setLanguageState("zh");
+      document.documentElement.lang = "zh-CN";
+    }
   }, []);
 
   function setLanguage(next: Language) {
@@ -301,9 +293,9 @@ export function HomePage() {
 
       <section className="section about-section" id="about"><div className="container about-grid"><div><span className="section-kicker">{t.about.kicker}</span><h2>{t.about.title1}<br />{t.about.title2}</h2></div><div>{t.about.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div></div></section>
 
-      <section className="apply-section" id="apply"><div className="container apply-card"><div className="apply-copy"><span>{t.contact.kicker}</span><h2>{t.contact.title}</h2><p>{t.contact.text}</p></div><div className="contact-options"><div className="wechat-placeholder"><img className="qr-image" src="/contact_me_qr.png" alt={t.contact.qrAlt} width="76" height="76" /><span>{t.contact.qr}</span></div><div className="contact-detail"><span>{t.contact.wecom}</span><b>Nuochong-AI</b><small>({t.contact.placeholder})</small><span>{t.contact.email}</span><a href={`mailto:business@nuochong.ai?subject=${encodeURIComponent(t.contact.subject)}`}>business@nuochong.ai</a><small>({t.contact.placeholder})</small></div></div></div></section>
+      <section className="apply-section" id="apply"><div className="container apply-card"><div className="apply-copy"><span>{t.contact.kicker}</span><h2>{t.contact.title}</h2><p>{t.contact.text}</p></div><div className="contact-options"><div className="wechat-placeholder"><img className="qr-image" src="/contact_me_qr.png" alt={t.contact.qrAlt} width="76" height="76" /></div><div className="contact-detail"><span>{t.contact.phone}</span><b>0871-67200971</b><span>{t.contact.email}</span><a href={`mailto:business@nuochong.net?subject=${encodeURIComponent(t.contact.subject)}`}>business@nuochong.net</a></div></div></div></section>
 
-      <footer><div className="container footer-main"><div className="footer-brand"><a className="brand" href="#top"><img src="/logo-mark.svg" alt=""/><span>{t.brand}</span></a><p>{t.footer.tagline}</p></div><div><b>{t.footer.product}</b>{t.footer.productLinks.map(link => <a href="#product" key={link}>{link}</a>)}</div><div><b>{t.footer.company}</b><a href="#about">{t.footer.companyLinks[0]}</a><a href="#scenes">{t.footer.companyLinks[1]}</a><a href="#apply">{t.footer.companyLinks[2]}</a></div><div><b>{t.footer.request}</b><a href="#apply">{t.footer.wecom}</a><a href="mailto:business@nuochong.ai">{t.footer.email}</a></div></div><div className="container copyright"><span>{t.footer.copyright}</span><span>{t.footer.filing}</span></div></footer>
+      <footer><div className="container footer-main"><div className="footer-brand"><a className="brand" href="#top"><img src="/logo-mark.svg" alt=""/><span>{t.brand}</span></a><p>{t.footer.tagline}</p></div><div><b>{t.footer.product}</b>{t.footer.productLinks.map(link => <a href="#product" key={link}>{link}</a>)}</div><div><b>{t.footer.company}</b><a href="#about">{t.footer.companyLinks[0]}</a><a href="#scenes">{t.footer.companyLinks[1]}</a><a href="#apply">{t.footer.companyLinks[2]}</a></div><div><b>{t.footer.request}</b><a href="#apply">{t.footer.wecom}</a><a href="mailto:business@nuochong.net">{t.footer.email}</a></div></div><div className="container copyright"><span>{t.footer.copyright}</span></div></footer>
     </main>
   );
 }
