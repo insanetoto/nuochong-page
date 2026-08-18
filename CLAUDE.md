@@ -39,7 +39,7 @@
 
 - 测试：GitHub Actions `push test` → `npm run build`（产出 Worker）→ `wrangler deploy`
   - Worker 名：`nuochong-company-homepage-test`
-  - 访问地址：`https://nuochong-company-homepage-test.<账号子域>.workers.dev`
+  - 访问地址：`https://nuochong-company-homepage-test.76gzwtk9sb.workers.dev/`
 - 生产：GitHub Actions `push main` → `npm run build:static` → rsync 到 `deploy@$DEPLOY_HOST:/var/www/nuochong/`
 - 服务器：腾讯云 Ubuntu（Nginx 托管），SSL 用 Let's Encrypt（覆盖 `nuochong.net` + `www.nuochong.net`）
 - 域名：`nuochong.net` / `www.nuochong.net`
