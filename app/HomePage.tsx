@@ -198,9 +198,12 @@ const copy = {
 
 export function HomePage() {
   const [language, setLanguageState] = useState<Language>("en");
+  const [isTestEnv, setIsTestEnv] = useState(false);
   const t = copy[language];
 
   useEffect(() => {
+    setIsTestEnv(window.location.hostname.endsWith(".workers.dev"));
+
     const query = new URLSearchParams(window.location.search).get("lang");
     const saved = window.localStorage.getItem("nuochong-language");
 
@@ -234,6 +237,12 @@ export function HomePage() {
 
   return (
     <main data-language={language}>
+      {isTestEnv && (
+        <div className="test-env-badge" role="status" aria-label="测试环境">
+          <span className="test-env-dot" aria-hidden="true" />
+          测试环境
+        </div>
+      )}
       <header className="site-header">
         <div className="container nav-wrap">
           <a className="brand" href="#top" aria-label={t.brand}>
