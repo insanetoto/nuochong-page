@@ -1,0 +1,38 @@
+name: Deploy to Cloudflare (test)
+
+on:
+  push:
+    branches:
+      - test
+
+concurrency:
+  group: test-cloudflare
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build vinext Worker
+        run: npm run build
+
+      - name: Set test worker name
+        run: |
+          node --input-type=module -e \
+            "import fs from 'node:fs'; const p='dist/server/wrangler.json'; const c=JSON.parse(fs.readFileSync(p,'utf8')); c.name='nuochong-company-homepage-test'; fs.writeFileSync(p, JSON.stringify(c, null, 2));"
+
+      - name: Deploy to Cloudflare Workers
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy --config dist/server/wrangler.json
