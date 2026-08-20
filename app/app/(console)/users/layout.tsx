@@ -14,9 +14,8 @@ export default function UsersLayout({ children }: { children: ReactNode }) {
   ];
 
   return (
-    <div className="bs-service">
-      <SubNav items={items} />
-      <div className="bs-service-body">{children}</div>
-    </div>
+    <SubNav items={items} title={t.employees.title}>
+      {children}
+    </SubNav>
   );
 }

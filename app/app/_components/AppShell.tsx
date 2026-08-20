@@ -4,8 +4,6 @@ import { useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import {
   Bell,
-  ChevronLeft,
-  ChevronRight,
   CircleHelp,
   ClipboardList,
   GraduationCap,
@@ -15,14 +13,15 @@ import {
 } from "lucide-react";
 import { logout, useAuth } from "../_lib/auth";
 import { useI18n } from "../_lib/i18n";
+import { getNotificationCounts } from "../_lib/notifications";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { user } = useAuth();
   const { t } = useI18n();
-  const [collapsed, setCollapsed] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const counts = getNotificationCounts();
 
   const navItems = [
     { href: "/app/dashboard", label: t.nav.dashboard, icon: LayoutDashboard },
@@ -39,7 +38,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className={`bs-shell${collapsed ? " bs-shell-collapsed" : ""}`}>
+    <div className="bs-shell">
       <header className="bs-topbar">
         <div className="bs-topbar-brand">
           <span className="bs-brand-mark">诺</span>
@@ -47,6 +46,19 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
 
         <div className="bs-topbar-right">
+          <a
+            className="bs-topbar-bell"
+            href="/app/notifications"
+            aria-label={t.nav.notifications}
+          >
+            <Bell size={18} aria-hidden="true" />
+            {counts.unread > 0 ? (
+              <span className="bs-notice-chip" aria-hidden="true">
+                {counts.unread}
+              </span>
+            ) : null}
+          </a>
+
           <LanguageSwitcher />
 
           <button
@@ -74,40 +86,29 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <aside className="bs-sidebar">
-        <nav className="bs-sidebar-nav" aria-label={t.nav.navLabel}>
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active =
-              pathname === item.href || pathname.startsWith(`${item.href}/`);
-            return (
-              <a
-                key={item.href}
-                href={item.href}
-                className={`bs-sidebar-link${active ? " active" : ""}`}
-              >
-                <Icon size={18} strokeWidth={2} aria-hidden="true" />
-                <span>{item.label}</span>
-              </a>
-            );
-          })}
-        </nav>
+      <div className="bs-shell-body">
+        <aside className="bs-sidebar">
+          <nav className="bs-sidebar-nav" aria-label={t.nav.navLabel}>
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active =
+                pathname === item.href || pathname.startsWith(`${item.href}/`);
+              return (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className={`bs-sidebar-link${active ? " active" : ""}`}
+                >
+                  <Icon size={18} strokeWidth={2} aria-hidden="true" />
+                  <span>{item.label}</span>
+                </a>
+              );
+            })}
+          </nav>
+        </aside>
 
-        <button
-          type="button"
-          className="bs-sidebar-toggle"
-          onClick={() => setCollapsed((value) => !value)}
-          aria-label={collapsed ? t.nav.expand : t.nav.collapse}
-        >
-          {collapsed ? (
-            <ChevronRight size={16} aria-hidden="true" />
-          ) : (
-            <ChevronLeft size={16} aria-hidden="true" />
-          )}
-        </button>
-      </aside>
-
-      <main className="bs-console">{children}</main>
+        <main className="bs-console">{children}</main>
+      </div>
     </div>
   );
 }

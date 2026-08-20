@@ -28,9 +28,8 @@ export default function NotificationsLayout({
   ];
 
   return (
-    <div className="bs-service">
-      <SubNav items={items} />
-      <div className="bs-service-body">{children}</div>
-    </div>
+    <SubNav items={items} title={t.notifications.title}>
+      {children}
+    </SubNav>
   );
 }
