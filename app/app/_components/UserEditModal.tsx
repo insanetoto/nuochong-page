@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import type { Employee, EmployeeFormValues } from "../_lib/employees";
+import { useI18n } from "../_lib/i18n";
 
 export function UserEditModal({
   employee,
@@ -12,6 +13,7 @@ export function UserEditModal({
   onSave: (values: EmployeeFormValues) => void;
   onCancel: () => void;
 }) {
+  const { t } = useI18n();
   const [form, setForm] = useState<EmployeeFormValues>(() => ({
     name: employee?.name ?? "",
     email: employee?.email ?? "",
@@ -42,12 +44,14 @@ export function UserEditModal({
         aria-labelledby="bs-user-edit-title"
       >
         <div className="bs-modal-header">
-          <h2 id="bs-user-edit-title">{employee ? "编辑员工" : "新增员工"}</h2>
+          <h2 id="bs-user-edit-title">
+            {employee ? t.employees.edit : t.employees.add}
+          </h2>
           <button
             type="button"
             className="bs-modal-close"
             onClick={onCancel}
-            aria-label="关闭"
+            aria-label={t.common.close}
           >
             ×
           </button>
@@ -55,7 +59,7 @@ export function UserEditModal({
 
         <form className="bs-form" onSubmit={handleSubmit}>
           <label className="bs-field">
-            <span>姓名</span>
+            <span>{t.employees.name}</span>
             <input
               type="text"
               value={form.name}
@@ -65,7 +69,7 @@ export function UserEditModal({
           </label>
 
           <label className="bs-field">
-            <span>邮箱</span>
+            <span>{t.employees.email}</span>
             <input
               type="email"
               value={form.email}
@@ -75,7 +79,7 @@ export function UserEditModal({
           </label>
 
           <label className="bs-field">
-            <span>部门</span>
+            <span>{t.employees.department}</span>
             <input
               type="text"
               value={form.department}
@@ -85,7 +89,7 @@ export function UserEditModal({
           </label>
 
           <label className="bs-field">
-            <span>角色</span>
+            <span>{t.employees.role}</span>
             <input
               type="text"
               value={form.role}
@@ -95,7 +99,7 @@ export function UserEditModal({
           </label>
 
           <label className="bs-field">
-            <span>电话</span>
+            <span>{t.employees.phone}</span>
             <input
               type="tel"
               value={form.phone}
@@ -105,24 +109,24 @@ export function UserEditModal({
           </label>
 
           <label className="bs-field">
-            <span>状态</span>
+            <span>{t.employees.status}</span>
             <select
               value={form.status}
               onChange={(event) =>
                 update("status", event.target.value as Employee["status"])
               }
             >
-              <option value="active">在职</option>
-              <option value="inactive">离职</option>
+              <option value="active">{t.employees.active}</option>
+              <option value="inactive">{t.employees.inactive}</option>
             </select>
           </label>
 
           <div className="bs-modal-actions">
             <button type="button" className="bs-btn bs-btn-ghost" onClick={onCancel}>
-              取消
+              {t.common.cancel}
             </button>
             <button type="submit" className="bs-btn bs-btn-primary">
-              保存
+              {t.common.save}
             </button>
           </div>
         </form>

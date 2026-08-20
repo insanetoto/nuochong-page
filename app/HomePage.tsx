@@ -202,6 +202,8 @@ export function HomePage() {
   const t = copy[language];
 
   useEffect(() => {
+    // Deferred to client to avoid SSR hydration mismatch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsTestEnv(window.location.hostname.endsWith(".workers.dev"));
 
     const query = new URLSearchParams(window.location.search).get("lang");

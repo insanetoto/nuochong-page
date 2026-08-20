@@ -4,14 +4,17 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { LayoutGrid } from "lucide-react";
 import { hydrateAuth } from "../_lib/auth";
+import { hydrateLanguage, useI18n } from "../_lib/i18n";
 import { LoginForm } from "./LoginForm";
 
 export function AppEntry() {
   const pathname = usePathname();
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     hydrateAuth();
+    hydrateLanguage();
   }, []);
 
   if (pathname.startsWith("/app")) {
@@ -25,10 +28,10 @@ export function AppEntry() {
         className="bs-entry-fab"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
-        aria-label="进入业务系统"
+        aria-label={t.nav.enterBusinessSystem}
       >
         <LayoutGrid size={18} strokeWidth={2.2} aria-hidden="true" />
-        <span>业务系统</span>
+        <span>{t.nav.businessSystem}</span>
       </button>
 
       {open ? (
@@ -43,7 +46,7 @@ export function AppEntry() {
               type="button"
               className="bs-modal-close"
               onClick={() => setOpen(false)}
-              aria-label="关闭登录框"
+              aria-label={t.common.close}
             >
               ×
             </button>

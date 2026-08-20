@@ -33,7 +33,7 @@ test("business entry login flow", async ({ page }) => {
     page.locator(".bs-stat-card").filter({ hasText: "员工总数" }),
   ).toBeVisible();
 
-  await page.getByRole("link", { name: "员工账号" }).click();
+  await page.getByRole("link", { name: "用户与员工" }).click();
   await page.waitForURL("**/app/users");
 
   const table = page.locator(".bs-table");

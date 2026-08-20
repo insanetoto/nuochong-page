@@ -3,9 +3,11 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { login } from "../_lib/auth";
+import { useI18n } from "../_lib/i18n";
 
 export function LoginForm() {
   const router = useRouter();
+  const { t } = useI18n();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -20,7 +22,11 @@ export function LoginForm() {
     if (result.ok) {
       router.push("/app/dashboard");
     } else {
-      setError(result.error);
+      setError(
+        result.error === "invalid-credentials"
+          ? t.login.invalidCredentials
+          : result.error,
+      );
       setLoading(false);
     }
   }
@@ -28,12 +34,12 @@ export function LoginForm() {
   return (
     <form className="bs-login-form" onSubmit={handleSubmit}>
       <h2 id="bs-login-title" className="bs-login-title">
-        业务系统登录
+        {t.login.title}
       </h2>
-      <p className="bs-login-subtitle">使用内部账号登录（admin / ng-alain.com）</p>
+      <p className="bs-login-subtitle">{t.login.subtitle}</p>
 
       <label className="bs-field">
-        <span>用户名</span>
+        <span>{t.login.username}</span>
         <input
           type="text"
           value={username}
@@ -44,7 +50,7 @@ export function LoginForm() {
       </label>
 
       <label className="bs-field">
-        <span>密码</span>
+        <span>{t.login.password}</span>
         <input
           type="password"
           value={password}
@@ -61,15 +67,15 @@ export function LoginForm() {
       ) : null}
 
       <button type="submit" className="bs-btn bs-btn-primary" disabled={loading}>
-        {loading ? "登录中…" : "登录"}
+        {loading ? t.login.submitting : t.login.submit}
       </button>
 
       <div className="bs-login-links">
         <button type="button" className="bs-login-link">
-          忘记密码
+          {t.login.forgot}
         </button>
         <button type="button" className="bs-login-link">
-          注册账号
+          {t.login.register}
         </button>
       </div>
     </form>

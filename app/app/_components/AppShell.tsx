@@ -4,25 +4,36 @@ import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Bell,
   ChevronLeft,
   ChevronRight,
+  CircleHelp,
+  ClipboardList,
+  GraduationCap,
   LayoutDashboard,
   LogOut,
   Users,
 } from "lucide-react";
 import { logout, useAuth } from "../_lib/auth";
-
-const navItems = [
-  { href: "/app/dashboard", label: "控制台", icon: LayoutDashboard },
-  { href: "/app/users", label: "员工账号", icon: Users },
-] as const;
+import { useI18n } from "../_lib/i18n";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useAuth();
+  const { t } = useI18n();
   const [collapsed, setCollapsed] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const navItems = [
+    { href: "/app/dashboard", label: t.nav.dashboard, icon: LayoutDashboard },
+    { href: "/app/users", label: t.nav.users, icon: Users },
+    { href: "/app/notifications", label: t.nav.notifications, icon: Bell },
+    { href: "/app/help", label: t.nav.help, icon: CircleHelp },
+    { href: "/app/training", label: t.nav.training, icon: GraduationCap },
+    { href: "/app/workorders", label: t.nav.workorders, icon: ClipboardList },
+  ];
 
   function handleLogout() {
     logout();
@@ -34,10 +45,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="bs-topbar">
         <div className="bs-topbar-brand">
           <span className="bs-brand-mark">诺</span>
-          <span className="bs-brand-text">诺崇业务系统</span>
+          <span className="bs-brand-text">{t.nav.brand}</span>
         </div>
 
         <div className="bs-topbar-right">
+          <LanguageSwitcher />
+
           <button
             type="button"
             className="bs-user-menu-btn"
@@ -56,7 +69,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="bs-user-menu" role="menu">
               <button type="button" role="menuitem" onClick={handleLogout}>
                 <LogOut size={16} aria-hidden="true" />
-                退出登录
+                {t.nav.logout}
               </button>
             </div>
           ) : null}
@@ -64,7 +77,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </header>
 
       <aside className="bs-sidebar">
-        <nav className="bs-sidebar-nav" aria-label="业务系统导航">
+        <nav className="bs-sidebar-nav" aria-label={t.nav.navLabel}>
           {navItems.map((item) => {
             const Icon = item.icon;
             const active =
@@ -86,7 +99,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           type="button"
           className="bs-sidebar-toggle"
           onClick={() => setCollapsed((value) => !value)}
-          aria-label={collapsed ? "展开侧栏" : "收起侧栏"}
+          aria-label={collapsed ? t.nav.expand : t.nav.collapse}
         >
           {collapsed ? (
             <ChevronRight size={16} aria-hidden="true" />

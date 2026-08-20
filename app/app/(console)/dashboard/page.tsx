@@ -1,23 +1,28 @@
+"use client";
+
 import {
   ClipboardList,
   GraduationCap,
   UserCheck,
   Users,
 } from "lucide-react";
+import { useI18n } from "../../_lib/i18n";
 import { PageHeader } from "../../_components/PageHeader";
 import { Panel } from "../../_components/Panel";
 
-const stats = [
-  { label: "员工总数", value: "128", icon: Users },
-  { label: "活跃账号", value: "112", icon: UserCheck },
-  { label: "本月培训", value: "24", icon: GraduationCap },
-  { label: "待办事项", value: "9", icon: ClipboardList },
-];
-
 export default function DashboardPage() {
+  const { t } = useI18n();
+
+  const stats = [
+    { label: t.dashboard.totalEmployees, value: "128", icon: Users },
+    { label: t.dashboard.activeAccounts, value: "112", icon: UserCheck },
+    { label: t.dashboard.monthlyTraining, value: "24", icon: GraduationCap },
+    { label: t.dashboard.todos, value: "9", icon: ClipboardList },
+  ];
+
   return (
     <>
-      <PageHeader title="控制台" subtitle="业务系统概览" />
+      <PageHeader title={t.dashboard.title} subtitle={t.dashboard.subtitle} />
 
       <div className="bs-stat-grid">
         {stats.map((stat) => {

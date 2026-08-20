@@ -100,7 +100,7 @@ export function login(
 
   return {
     ok: false,
-    error: "用户名或密码错误（admin / ng-alain.com）",
+    error: "invalid-credentials",
   };
 }
 

@@ -1,17 +1,20 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Pencil, Plus, Search } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 import {
   mockEmployees,
   type Employee,
   type EmployeeFormValues,
 } from "../_lib/employees";
+import { useI18n } from "../_lib/i18n";
 import { PageHeader } from "./PageHeader";
+import { SearchBar } from "./SearchBar";
 import { StatusBadge } from "./StatusBadge";
 import { UserEditModal } from "./UserEditModal";
 
 export function UsersManager() {
+  const { t } = useI18n();
   const [users, setUsers] = useState<Employee[]>(() =>
     mockEmployees.map((employee) => ({ ...employee })),
   );
@@ -56,8 +59,8 @@ export function UsersManager() {
   return (
     <>
       <PageHeader
-        title="员工账号"
-        subtitle="管理内部员工与账号状态"
+        title={t.employees.title}
+        subtitle={t.employees.subtitle}
         extra={
           <button
             type="button"
@@ -65,33 +68,29 @@ export function UsersManager() {
             onClick={() => setCreating(true)}
           >
             <Plus size={16} aria-hidden="true" />
-            新增员工
+            {t.employees.add}
           </button>
         }
       />
 
       <div className="bs-toolbar">
-        <label className="bs-search">
-          <Search size={16} aria-hidden="true" />
-          <input
-            type="search"
-            placeholder="按姓名、邮箱或部门搜索"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-        </label>
+        <SearchBar
+          value={query}
+          onChange={setQuery}
+          placeholder={t.employees.searchPlaceholder}
+        />
       </div>
 
       <div className="bs-table-wrap">
         <table className="bs-table">
           <thead>
             <tr>
-              <th>姓名</th>
-              <th>邮箱</th>
-              <th>部门</th>
-              <th>角色</th>
-              <th>状态</th>
-              <th>操作</th>
+              <th>{t.employees.name}</th>
+              <th>{t.employees.email}</th>
+              <th>{t.employees.department}</th>
+              <th>{t.employees.role}</th>
+              <th>{t.employees.status}</th>
+              <th>{t.common.actions}</th>
             </tr>
           </thead>
           <tbody>
@@ -102,7 +101,14 @@ export function UsersManager() {
                 <td>{employee.department}</td>
                 <td>{employee.role}</td>
                 <td>
-                  <StatusBadge status={employee.status} />
+                  <StatusBadge
+                    tone={employee.status === "active" ? "success" : "error"}
+                    label={
+                      employee.status === "active"
+                        ? t.employees.active
+                        : t.employees.inactive
+                    }
+                  />
                 </td>
                 <td>
                   <button
@@ -111,7 +117,7 @@ export function UsersManager() {
                     onClick={() => setEditing({ ...employee })}
                   >
                     <Pencil size={14} aria-hidden="true" />
-                    编辑
+                    {t.common.edit}
                   </button>
                 </td>
               </tr>
@@ -119,7 +125,7 @@ export function UsersManager() {
           </tbody>
         </table>
         {filtered.length === 0 ? (
-          <div className="bs-empty">未找到匹配的员工</div>
+          <div className="bs-empty">{t.employees.empty}</div>
         ) : null}
       </div>
 
