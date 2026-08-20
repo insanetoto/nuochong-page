@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import {
   mockWorkOrders,
@@ -163,12 +162,12 @@ export function WorkOrderList() {
             {paginated.map((workOrder) => (
               <tr key={workOrder.id}>
                 <td>
-                  <Link
+                  <a
                     href={`/app/workorders/${workOrder.id}`}
                     className="bs-table-link"
                   >
                     {workOrder.id}
-                  </Link>
+                  </a>
                 </td>
                 <td>{workOrder.title}</td>
                 <td>{workOrder.applicant}</td>

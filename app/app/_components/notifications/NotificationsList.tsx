@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { CheckCheck, Trash2 } from "lucide-react";
 import {
   mockNotifications,
@@ -174,12 +173,12 @@ export function NotificationsList({
                   />
                 </td>
                 <td>
-                  <Link
+                  <a
                     href={`/app/notifications/detail/${notification.id}`}
                     className="bs-table-link"
                   >
                     {notification.title}
-                  </Link>
+                  </a>
                 </td>
                 <td>
                   <StatusBadge

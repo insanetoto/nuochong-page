@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import {
   getNotificationById,
@@ -37,10 +36,11 @@ export function NotificationDetail({ id }: { id: string }) {
       <PageHeader
         title={t.notifications.detailTitle}
         extra={
-          <Link href="/app/notifications/inner/all" className="bs-btn bs-btn-ghost">
+          /* eslint-disable-next-line @next/next/no-html-link-for-pages -- full page nav; next/link client nav is broken in production */
+          <a href="/app/notifications/inner/all" className="bs-btn bs-btn-ghost">
             <ArrowLeft size={16} aria-hidden="true" />
             {t.notifications.backToList}
-          </Link>
+          </a>
         }
       />
 

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import {
   getWorkOrderById,
@@ -45,10 +44,11 @@ export function WorkOrderDetail({ id }: { id: string }) {
       <PageHeader
         title={t.workorders.detail}
         extra={
-          <Link href="/app/workorders" className="bs-btn bs-btn-ghost">
+          /* eslint-disable-next-line @next/next/no-html-link-for-pages -- full page nav; next/link client nav is broken in production */
+          <a href="/app/workorders" className="bs-btn bs-btn-ghost">
             <ArrowLeft size={16} aria-hidden="true" />
             {t.workorders.backToList}
-          </Link>
+          </a>
         }
       />
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { Pencil, Plus } from "lucide-react";
 import {
   getTrainingCategories,
@@ -128,12 +127,12 @@ export function TrainingList() {
             {paginated.map((course) => (
               <tr key={course.id}>
                 <td>
-                  <Link
+                  <a
                     href={`/app/training/${course.id}`}
                     className="bs-table-link"
                   >
                     {course.title}
-                  </Link>
+                  </a>
                 </td>
                 <td>{course.category}</td>
                 <td>

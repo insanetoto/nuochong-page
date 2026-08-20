@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export type SubNavItem =
@@ -25,7 +24,7 @@ export function SubNav({ items }: { items: SubNavItem[] }) {
           pathname === item.href || pathname.startsWith(`${item.href}/`);
 
         return (
-          <Link
+          <a
             key={item.href}
             href={item.href}
             className={`bs-subnav-link${active ? " active" : ""}`}
@@ -34,7 +33,7 @@ export function SubNav({ items }: { items: SubNavItem[] }) {
             {item.badge != null && item.badge > 0 ? (
               <span className="bs-subnav-badge">{item.badge}</span>
             ) : null}
-          </Link>
+          </a>
         );
       })}
     </nav>

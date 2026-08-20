@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getHelpCategories, mockHelpArticles } from "../../_lib/help";
 import { useI18n } from "../../_lib/i18n";
@@ -26,7 +25,7 @@ export function HelpSidebar({
           <div key={category.id} className="bs-help-tree-group">
             <div className="bs-help-tree-label">{category.name}</div>
             {articles.map((article) => (
-              <Link
+              <a
                 key={article.id}
                 href={`/app/help/${article.id}`}
                 className={`bs-help-tree-link${
@@ -37,7 +36,7 @@ export function HelpSidebar({
                 }`}
               >
                 {article.title}
-              </Link>
+              </a>
             ))}
           </div>
         );

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import {
   BookOpen,
   ClipboardList,
@@ -59,14 +58,14 @@ export function HelpHome() {
             <EmptyState title={t.help.noResults} />
           ) : (
             results.map((article) => (
-              <Link
+              <a
                 key={article.id}
                 href={`/app/help/${article.id}`}
                 className="bs-help-result-link"
               >
                 <b>{article.title}</b>
                 <span>{article.summary}</span>
-              </Link>
+              </a>
             ))
           )}
         </div>
@@ -96,9 +95,9 @@ export function HelpHome() {
                 <ul className="bs-category-articles">
                   {visible.map((article) => (
                     <li key={article.id}>
-                      <Link href={`/app/help/${article.id}`}>
+                      <a href={`/app/help/${article.id}`}>
                         {article.title}
-                      </Link>
+                      </a>
                     </li>
                   ))}
                 </ul>

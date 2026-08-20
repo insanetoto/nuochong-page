@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import {
   getHelpArticleById,
@@ -51,10 +50,11 @@ export function HelpDetail({ id }: { id: string }) {
       <HelpSidebar activeArticleId={id} />
 
       <div className="bs-help-body">
-        <Link href="/app/help" className="bs-help-back">
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- full page nav; next/link client nav is broken in production */}
+        <a href="/app/help" className="bs-help-back">
           <ArrowLeft size={16} aria-hidden="true" />
           {t.help.backToHelp}
-        </Link>
+        </a>
 
         <article className="bs-help-article">
           <div className="bs-help-article-head">
@@ -75,21 +75,21 @@ export function HelpDetail({ id }: { id: string }) {
 
           <div className="bs-help-pager">
             {previous ? (
-              <Link href={`/app/help/${previous.id}`} className="bs-help-pager-link">
+              <a href={`/app/help/${previous.id}`} className="bs-help-pager-link">
                 <small>{t.common.previous}</small>
                 <span>{previous.title}</span>
-              </Link>
+              </a>
             ) : (
               <span />
             )}
             {next ? (
-              <Link
+              <a
                 href={`/app/help/${next.id}`}
                 className="bs-help-pager-link bs-help-pager-next"
               >
                 <small>{t.common.next}</small>
                 <span>{next.title}</span>
-              </Link>
+              </a>
             ) : (
               <span />
             )}
@@ -100,9 +100,9 @@ export function HelpDetail({ id }: { id: string }) {
           <section className="bs-help-recommend">
             <h2>{t.help.relatedArticles}</h2>
             {related.map((item) => (
-              <Link key={item.id} href={`/app/help/${item.id}`}>
+              <a key={item.id} href={`/app/help/${item.id}`}>
                 {item.title}
-              </Link>
+              </a>
             ))}
           </section>
         ) : null}

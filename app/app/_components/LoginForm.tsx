@@ -1,12 +1,10 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
 import { login } from "../_lib/auth";
 import { useI18n } from "../_lib/i18n";
 
 export function LoginForm() {
-  const router = useRouter();
   const { t } = useI18n();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +18,7 @@ export function LoginForm() {
 
     const result = login(username.trim(), password);
     if (result.ok) {
-      router.push("/app/dashboard");
+      window.location.href = "/app/dashboard";
     } else {
       setError(
         result.error === "invalid-credentials"

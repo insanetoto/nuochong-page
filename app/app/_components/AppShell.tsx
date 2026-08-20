@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   Bell,
   ChevronLeft,
@@ -20,7 +19,6 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
   const { user } = useAuth();
   const { t } = useI18n();
   const [collapsed, setCollapsed] = useState(false);
@@ -37,7 +35,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   function handleLogout() {
     logout();
-    router.replace("/app/login");
+    window.location.replace("/app/login");
   }
 
   return (
@@ -83,14 +81,14 @@ export function AppShell({ children }: { children: ReactNode }) {
             const active =
               pathname === item.href || pathname.startsWith(`${item.href}/`);
             return (
-              <Link
+              <a
                 key={item.href}
                 href={item.href}
                 className={`bs-sidebar-link${active ? " active" : ""}`}
               >
                 <Icon size={18} strokeWidth={2} aria-hidden="true" />
                 <span>{item.label}</span>
-              </Link>
+              </a>
             );
           })}
         </nav>

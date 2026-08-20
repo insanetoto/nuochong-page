@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ArrowLeft, Play } from "lucide-react";
 import {
   getTrainingCourseById,
@@ -43,10 +42,11 @@ export function TrainingDetail({ id }: { id: string }) {
       <PageHeader
         title={t.training.detail}
         extra={
-          <Link href="/app/training" className="bs-btn bs-btn-ghost">
+          /* eslint-disable-next-line @next/next/no-html-link-for-pages -- full page nav; next/link client nav is broken in production */
+          <a href="/app/training" className="bs-btn bs-btn-ghost">
             <ArrowLeft size={16} aria-hidden="true" />
             {t.training.backToList}
-          </Link>
+          </a>
         }
       />
 
