@@ -736,7 +736,7 @@
 }
 .bs-service-nav {
   flex: 0 0 auto;
-  width: 180px;
+  width: 120px;
   position: relative;
   background: var(--surface-2);
   border-radius: 10px;
