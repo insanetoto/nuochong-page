@@ -134,6 +134,7 @@ const copy = {
       wecom: "WeCom",
       email: "Business Email",
       copyright: "© 2026 Yunnan Nuochong Technology Co., Ltd.",
+      icp: "滇ICP备2026017420号",
     },
   },
   zh: {
@@ -191,7 +192,7 @@ const copy = {
       kicker: "开始构建企业知识与人才成长体系", title: "申请使用企业知识与智能培训平台", text: "联系我们，了解平台如何结合贵公司的业务场景落地。", qrAlt: "诺崇科技企业微信二维码", phone: "联系电话", email: "商务邮箱", subject: "申请使用企业知识与智能培训平台",
     },
     footer: {
-      tagline: "让企业知识成为成长的力量", product: "产品", productLinks: ["企业知识库", "培训与考试", "企业 AI 助手"], company: "公司", companyLinks: ["关于我们", "应用场景", "联系我们"], request: "申请使用", wecom: "企业微信", email: "商务邮箱", copyright: "© 2026 云南诺崇科技有限公司",
+      tagline: "让企业知识成为成长的力量", product: "产品", productLinks: ["企业知识库", "培训与考试", "企业 AI 助手"], company: "公司", companyLinks: ["关于我们", "应用场景", "联系我们"], request: "申请使用", wecom: "企业微信", email: "商务邮箱", copyright: "© 2026 云南诺崇科技有限公司", icp: "滇ICP备2026017420号",
     },
   },
 } as const;
@@ -306,7 +307,7 @@ export function HomePage() {
 
       <section className="apply-section" id="apply"><div className="container apply-card"><div className="apply-copy"><span>{t.contact.kicker}</span><h2>{t.contact.title}</h2><p>{t.contact.text}</p></div><div className="contact-options"><div className="wechat-placeholder"><img className="qr-image" src="/contact_me_qr.png" alt={t.contact.qrAlt} width="76" height="76" /></div><div className="contact-detail"><span>{t.contact.phone}</span><b>0871-67200971</b><span>{t.contact.email}</span><a href={`mailto:marketing@nuochong.work?subject=${encodeURIComponent(t.contact.subject)}`}>marketing@nuochong.work</a></div></div></div></section>
 
-      <footer><div className="container footer-main"><div className="footer-brand"><a className="brand" href="#top"><img src="/logo-mark.svg" alt=""/><span>{t.brand}</span></a><p>{t.footer.tagline}</p></div><div><b>{t.footer.product}</b>{t.footer.productLinks.map(link => <a href="#product" key={link}>{link}</a>)}</div><div><b>{t.footer.company}</b><a href="#about">{t.footer.companyLinks[0]}</a><a href="#scenes">{t.footer.companyLinks[1]}</a><a href="#apply">{t.footer.companyLinks[2]}</a></div><div><b>{t.footer.request}</b><a href="#apply">{t.footer.wecom}</a><a href="mailto:marketing@nuochong.work">{t.footer.email}</a></div></div><div className="container copyright"><span>{t.footer.copyright}</span></div></footer>
+      <footer><div className="container footer-main"><div className="footer-brand"><a className="brand" href="#top"><img src="/logo-mark.svg" alt=""/><span>{t.brand}</span></a><p>{t.footer.tagline}</p></div><div><b>{t.footer.product}</b>{t.footer.productLinks.map(link => <a href="#product" key={link}>{link}</a>)}</div><div><b>{t.footer.company}</b><a href="#about">{t.footer.companyLinks[0]}</a><a href="#scenes">{t.footer.companyLinks[1]}</a><a href="#apply">{t.footer.companyLinks[2]}</a></div><div><b>{t.footer.request}</b><a href="#apply">{t.footer.wecom}</a><a href="mailto:marketing@nuochong.work">{t.footer.email}</a></div></div><div className="container copyright"><span>{t.footer.copyright}</span><a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">{t.footer.icp}</a></div></footer>
     </main>
   );
 }
