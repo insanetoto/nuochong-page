@@ -267,6 +267,8 @@ footer { padding: 72px 0 26px; color: #b7c3d2; background: #101b2e; }
 .footer-main > div:not(.footer-brand) { display: flex; flex-direction: column; gap: 13px; }
 .footer-main b { margin-bottom: 7px; color: white; font-size: 13px; }.footer-main a { color: #8495aa; font-size: 12px; }.footer-main a:hover { color: white; }
 .copyright { margin-top: 55px; padding-top: 23px; display: flex; justify-content: space-between; border-top: 1px solid #253248; color: #687b92; font-size: 11px; }
+.copyright a { color: #687b92; }
+.copyright a:hover { color: white; }
 
 @media (max-width: 1080px) {
   .hero-grid { grid-template-columns: 1fr; gap: 45px; }
