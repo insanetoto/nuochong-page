@@ -2,7 +2,7 @@
 
 日期：2026-10-28。状态：待团队评审；所有 A—E 阶段均纳入本次规划，尚未授权执行产品重构或发布。
 
-本规划只交付文档，已推送至远程 `docs/refactor-collaboration-plan` 分支，尚未合入 main。没有创建 GitHub Issues、Project 或仓库保护规则；下列任务编号是规划编号，不是 GitHub Issue 编号。
+本规划只交付文档，已推送至远程 `docs/refactor-collaboration-plan` 分支，尚未合入 main。A 阶段已创建 10 个任务 Issues 和总览 #11；尚未创建 GitHub Project 或仓库保护规则。规划编号与 Issue 编号的映射见执行路线图。
 
 ## 阅读顺序
 
@@ -11,6 +11,8 @@
 3. [任务清单](tasks.md)：可转为 GitHub Issues 的任务、范围、验收及依赖。
 4. [Codex 与 GitHub 开发协作说明](collaboration.md)：领取任务、开发、审查、集成和发布。
 5. [开发人员上手指南](developer-onboarding.md)：个人环境配置、GitHub 领取任务、Codex 开发、提交、测试和验收的逐步操作。
+
+6. [A 阶段执行路线图](phase-a-tracking.md)：GitHub Issue 映射、并行波次、负责人入口与状态维护。
 
 ## 约定
 

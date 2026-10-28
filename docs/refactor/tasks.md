@@ -1,6 +1,6 @@
 # 实施任务清单
 
-状态：全部 Backlog，尚未创建 GitHub Issues 或分派成员。编号在规划内稳定；迁入 GitHub 后维护“规划 ID→Issue URL”，依赖以本 ID 表达。每项默认一个负责人和一个主 PR，验收证据附在对应 Issue/PR。
+状态：A 阶段已创建 Issues #1—#10，总览为 #11，具体映射见 [A 阶段执行路线图](phase-a-tracking.md)。A-01 为 Ready，其余 A 任务为 Backlog；均未分派成员。B—E 仍为 Backlog，尚未创建对应 Issues。编号在规划内稳定；迁入 GitHub 后维护“规划 ID→Issue URL”，依赖以本 ID 表达。每项默认一个负责人和一个主 PR，验收证据附在对应 Issue/PR。
 
 ## 执行规则与依赖
 
@@ -45,7 +45,7 @@ flowchart LR
 
 ### A-03 协作与仓库治理初始化
 - 负责人：平台；依赖：A-01。
-- 范围：落实 collaboration.md，创建经批准的 Issues/里程碑、任务映射、Issue/PR 模板、CODEOWNERS 和简洁 AGENTS.md；组织审查分工。
+- 范围：落实 collaboration.md，复用已创建的 A 阶段 Issues，补齐经批准的里程碑、后续 Issues 和任务映射、Issue/PR 模板、CODEOWNERS 和简洁 AGENTS.md；组织审查分工。
 - 交付：模板及规则 PR、GitHub 设置清单和实际启用证据；不擅自更改仓库权限。
 - 验收：用一条文档任务试走领取→Codex实现→PR→人工审查；记录 required checks 的真实名称；管理员确认规则生效，缺少仓库权限须标记阻断。
 
@@ -251,6 +251,6 @@ flowchart LR
 
 ## Issue 创建与估算
 
-按 A→E 顺序建立 35 个任务 Issue，编号映射与依赖写入 GitHub Project。初始只将无依赖的 A-01 标为 Ready，其余 Backlog。A-10 后依据实测估算 B—E 工作量；如某任务跨多个负责人或超过可独立审查的范围，拆子 Issue 并继承父任务验收，不删除依赖与阶段门禁。
+全阶段共 35 个执行任务；A 阶段 10 个 Issue 已建立，另有总览 #11。后续按 B→E 顺序补建余下 25 个任务 Issue，编号映射与依赖写入 GitHub Project。初始只将无依赖的 A-01 标为 Ready，其余 Backlog。A-10 后依据实测估算 B—E 工作量；如某任务跨多个负责人或超过可独立审查的范围，拆子 Issue 并继承父任务验收，不删除依赖与阶段门禁。
 
 任务中的产物路径是拟创建位置。文件不存在不是任务完成；所有角色、依赖状态、指标与证据必须在实际 Issue 中落实。
