@@ -11,7 +11,7 @@
 
 ## 当前状态
 
-2026-10-29：A-01与A-02已验收并关闭，3/10完成。A-03已完成，PR #23通过双构建/E2E后合入refactor/integration，Issue #3关闭。按用户要求必需批准人数为0，其余保护已回读验证。A-04已领取并开始官方发布包验证，其余等待各自前置。Ready/Backlog 等为本项目执行状态，记录在 Issue 正文/总览中；不是已经配置的 GitHub Project 字段。Project、标签、里程碑及原生依赖仍由 A-03 落实。
+2026-10-29：A-01与A-02已验收并关闭，4/10完成。A-03已完成，PR #23通过双构建/E2E后合入refactor/integration，Issue #3关闭。按用户要求必需批准人数为0，其余保护已回读验证。A-04已验收关闭，PR #24已合入；A-05基线002fece已获用户明确确认，指标冻结v1；待冻结记录CI后集成，其余等待各自前置。Ready/Backlog 等为本项目执行状态，记录在 Issue 正文/总览中；不是已经配置的 GitHub Project 字段。Project、标签、里程碑及原生依赖仍由 A-03 落实。
 
 ## 路线与可并行波次
 
@@ -51,8 +51,8 @@ flowchart LR
 | [A-01 / #1](https://github.com/insanetoto/nuochong-page/issues/1) | 仓库与功能资产盘点 | 架构 | insanetoto | Done | 无 |
 | [A-02 / #2](https://github.com/insanetoto/nuochong-page/issues/2) | 官网保护基线 | 前端＋测试 | insanetoto | Done | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
 | [A-03 / #3](https://github.com/insanetoto/nuochong-page/issues/3) | 协作与仓库治理初始化 | 平台 | insanetoto | Done | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
-| [A-04 / #4](https://github.com/insanetoto/nuochong-page/issues/4) | Harness 与运行版本验证 | AI | insanetoto | In progress（运行版本验证） | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
-| [A-05 / #5](https://github.com/insanetoto/nuochong-page/issues/5) | 架构决策、契约与指标冻结 | 架构＋产品 | 待分配 | Backlog | [A-04](https://github.com/insanetoto/nuochong-page/issues/4) |
+| [A-04 / #4](https://github.com/insanetoto/nuochong-page/issues/4) | Harness 与运行版本验证 | AI | insanetoto | Done | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
+| [A-05 / #5](https://github.com/insanetoto/nuochong-page/issues/5) | 架构决策、契约与指标冻结 | 架构＋产品 | insanetoto | In review（用户已确认，待冻结记录集成） | [A-04](https://github.com/insanetoto/nuochong-page/issues/4) |
 | [A-06 / #6](https://github.com/insanetoto/nuochong-page/issues/6) | Harness 执行与流式原型 | AI | 待分配 | Backlog | [A-05](https://github.com/insanetoto/nuochong-page/issues/5) |
 | [A-07 / #7](https://github.com/insanetoto/nuochong-page/issues/7) | 持久任务与恢复原型 | 后端 | 待分配 | Backlog | [A-05](https://github.com/insanetoto/nuochong-page/issues/5) |
 | [A-08 / #8](https://github.com/insanetoto/nuochong-page/issues/8) | 企业与工具权限原型 | 后端＋测试 | 待分配 | Backlog | [A-05](https://github.com/insanetoto/nuochong-page/issues/5) |
