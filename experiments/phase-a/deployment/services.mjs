@@ -62,7 +62,8 @@ let workerDone;
 process.on('SIGTERM', () => { stop().catch(() => process.exit(1)); });
 if (role === 'worker') { workerDone = runWorker(); await workerDone; }
 else {
-  app = Fastify({ logger: false, genReqId: () => crypto.randomUUID(), bodyLimit: 10 * 1024 * 1024 + 1024 });
+  app = Fastify({ logger: false, genReqId: () => crypto.randomUUID(), bodyLimit: 10 * 1024 * 1024 + 1024,
+    ajv: { customOptions: { removeAdditional: false, coerceTypes: false, useDefaults: false } } });
   app.setErrorHandler((error, request, reply) => {
     log('request-error', { requestId: request.id });
     reply.code(error.statusCode && error.statusCode < 500 ? error.statusCode : 500)

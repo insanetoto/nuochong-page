@@ -46,7 +46,7 @@ async function stop(role) {
 async function launch(role, image, command, env = {}, options = []) {
   const args = ['run', '--detach', '--name', name(role), '--network', network,
     '--network-alias', role, '--read-only', '--cap-drop=ALL', '--security-opt=no-new-privileges',
-    '--tmpfs', '/tmp:rw,size=64m,mode=1777', '--tmpfs', '/state:rw,size=128m,mode=1777',
+    '--tmpfs', '/tmp:rw,noexec,nosuid,nodev,size=64m,mode=1777', '--tmpfs', '/state:rw,noexec,nosuid,nodev,size=128m,mode=1777',
     '--memory=512m', '--memory-swap=512m', '--cpus=1', '--pids-limit=128', ...options];
   const launchEnv = { ...env };
   if (role === 'host') {
@@ -213,6 +213,8 @@ try {
     const state = await inspect('host');
     assert.equal(state.HostConfig.Memory, 512*1024*1024); assert.equal(state.HostConfig.NanoCpus, 1e9);
     assert.equal(state.HostConfig.PidsLimit, 128); assert.equal(state.HostConfig.ReadonlyRootfs, true);
+    assert.match(state.HostConfig.Tmpfs['/tmp'], /noexec/);assert.match(state.HostConfig.Tmpfs['/state'], /noexec/);
+    assert.match(state.HostConfig.Tmpfs['/native-cache'], /mode=700/);
     const cgroup = JSON.parse(await docker('exec', name('host'), 'node', '-e',
       "const fs=require('fs');console.log(JSON.stringify({memory:fs.readFileSync('/sys/fs/cgroup/memory.max','utf8').trim(),cpu:fs.readFileSync('/sys/fs/cgroup/cpu.max','utf8').trim()}))"));
     assert.equal(cgroup.memory, String(512*1024*1024)); return cgroup;
@@ -233,9 +235,11 @@ try {
   });
   await check('API rejects unauthenticated identity, forged tenant and sixth pending job', async () => {
     assert.equal((await fetch(`${apiURL}/api/probe/stream`)).status, 401);
-    const forged = await fetch(`${apiURL}/api/ai/runs`, { method: 'POST', headers: auth,
-      body: JSON.stringify({ prompt: 'fixture', idempotencyKey: 'forged', tenantId: 'tenant-b' }) });
-    assert.equal(forged.status, 400);
+    for(const field of ['tenantId','userId','roles']){
+      const forged = await fetch(`${apiURL}/api/ai/runs`, { method: 'POST', headers: auth,
+        body: JSON.stringify({ prompt: 'fixture', idempotencyKey: 'forged', [field]: 'attacker' }) });
+      assert.equal(forged.status, 400);
+    }
     for (let i=0;i<5;i++) await submit();
     const sixth = await fetch(`${apiURL}/api/ai/runs`, { method: 'POST', headers: auth,
       body: JSON.stringify({ prompt: 'fixture', idempotencyKey: 'sixth' }) });
