@@ -1,0 +1,12 @@
+{
+  "time": "2026-10-29T04:17:21.045Z",
+  "platform": "darwin-arm64",
+  "node": "v24.21.0",
+  "scope": "Real loopback HTTP/SSE with in-memory synthetic events; no proxy, persistence, auth or model",
+  "results": [
+    {
+      "name": "real HTTP disconnect, Last-Event-ID replay, dedup and foreign cursor rejection",
+      "passed": true
+    }
+  ]
+}

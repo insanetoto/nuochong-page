@@ -1,0 +1,24 @@
+{
+  "time": "2026-10-29T04:20:03.954Z",
+  "node": "v24.21.0",
+  "platform": "darwin-arm64",
+  "scope": "Real SDK subprocess and provider adapter against synthetic loopback HTTP faults; no real model or API credential",
+  "results": [
+    {
+      "mode": "rate_limit",
+      "attempts": 3,
+      "status": "failed",
+      "errorCode": "ModelRequestFailed",
+      "totalMs": 327.091875,
+      "passed": true
+    },
+    {
+      "mode": "stall",
+      "attempts": 1,
+      "status": "timed_out",
+      "errorCode": "TransportClosedError",
+      "totalMs": 1529.218,
+      "passed": true
+    }
+  ]
+}

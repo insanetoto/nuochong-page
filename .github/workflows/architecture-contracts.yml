@@ -1,0 +1,27 @@
+name: Architecture contracts
+
+on:
+  pull_request:
+    branches: [refactor/integration]
+    paths:
+      - 'experiments/phase-a/contracts/**'
+      - 'docs/adr/**'
+      - '.github/workflows/architecture-contracts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    name: Prototype contract fixtures
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: node experiments/phase-a/contracts/verify-contracts.mjs

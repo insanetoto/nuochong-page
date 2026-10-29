@@ -1,0 +1,57 @@
+{
+  "time": "2026-10-29T04:23:45.392Z",
+  "concurrency": 1,
+  "sampleCount": 0,
+  "ttftP95Ms": null,
+  "totalP95Ms": null,
+  "costStatus": "unknown; usage recorded, no verified billing amount",
+  "results": [
+    {
+      "id": "dac54b42-65a0-4b59-aa13-1b3c52b9c168-disconnect",
+      "mode": "disconnect",
+      "time": "2026-10-29T04:23:45.391Z",
+      "node": "v24.21.0",
+      "platform": "darwin-arm64",
+      "route": {
+        "provider": "deepseek-official",
+        "model": "deepseek-v4-flash"
+      },
+      "status": "failed",
+      "totalMs": 5028.702791999999,
+      "responseMatches": false,
+      "notificationMethods": [
+        "session.event",
+        "session.status",
+        "nuochong.assistant.stream"
+      ],
+      "eventTypes": [
+        "agent/inbox/spliced",
+        "turn/start",
+        "step/start",
+        "system/message",
+        "user/message",
+        "request/header",
+        "request/context",
+        "session/title",
+        "session-log-deepseek/delivery-accepted"
+      ],
+      "errorCode": "TransportClosedError",
+      "bridge": true,
+      "chunks": 713,
+      "ttftMs": 4986.0615,
+      "fixtureCalls": 0,
+      "postCancelCalls": 0,
+      "cancelAckMs": null,
+      "cancelClosedMs": null,
+      "usage": [],
+      "auditedCalls": 0,
+      "auditAtCancel": null,
+      "ttftReason": "Measured from public agent hook via deployment-owned bridge",
+      "cost": {
+        "amount": null,
+        "status": "unknown"
+      },
+      "passed": true
+    }
+  ]
+}

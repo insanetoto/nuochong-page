@@ -1,0 +1,166 @@
+{
+  "time": "2026-10-29T07:14:33.204Z",
+  "node": "v24.21.0",
+  "platform": "linux-x64",
+  "resources": {
+    "cpus": 4,
+    "totalMemoryBytes": 16759443456,
+    "os": "7.0.0-1017-azure"
+  },
+  "database": "PostgreSQL 17.11 (Debian 17.11-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+  "baseImages": {
+    "node": "node@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20",
+    "postgres": "postgres@sha256:31ba9c94a03ada9988f2bb493a22a75eef3a185884533e5cdbcd498ea835b08f"
+  },
+  "images": {
+    "v1": {
+      "id": "sha256:16fa187c7210da92384dd2d304ab82280f22ae639b9be1b0bb88022fdbb072fb",
+      "sourceSha": "382b0dc4e22e1f738b012a77d4cf054125262f45",
+      "sourceDigest": "36f94908651ad82df3ac69f98bde7d556a5547855e9419b87cf45b77aca566c8"
+    },
+    "v2": {
+      "id": "sha256:60523fc499a48c4957ca71d10c22e1a909e4639bc72f8586817780205fea9d11",
+      "sourceSha": "382b0dc4e22e1f738b012a77d4cf054125262f45",
+      "sourceDigest": "36f94908651ad82df3ac69f98bde7d556a5547855e9419b87cf45b77aca566c8"
+    }
+  },
+  "results": [
+    {
+      "name": "all protected website source and approved baseline hashes unchanged",
+      "passed": true,
+      "ms": 3.16556300000002
+    },
+    {
+      "name": "real Fastify API and isolated Harness Host boot",
+      "passed": true,
+      "ms": 2.8742910000000848,
+      "node": "v24.21.0",
+      "fastify": "5.12.7"
+    },
+    {
+      "name": "kernel container limits and readonly artifact are configured",
+      "passed": true,
+      "ms": 88.70625600000494,
+      "memory": "536870912",
+      "cpu": "100000 100000"
+    },
+    {
+      "name": "Host synthetic-call concurrency cap rejects a third active call",
+      "passed": true,
+      "ms": 506.26378600001044
+    },
+    {
+      "name": "persistent synthetic model-call quota blocks excess admission",
+      "passed": true,
+      "ms": 1020.9156320000038
+    },
+    {
+      "name": "API rejects unauthenticated identity, forged tenant and sixth pending job",
+      "passed": true,
+      "ms": 83.39063000000897
+    },
+    {
+      "name": "real HTTP proxy forwards live frames before upstream completes",
+      "passed": true,
+      "ms": 603.290896999999,
+      "firstMs": 4.961607000004733,
+      "totalMs": 603.0169840000017,
+      "frames": 3,
+      "executor": "synthetic"
+    },
+    {
+      "name": "client stream disconnect closes upstream subscription",
+      "passed": true,
+      "ms": 206.01522499999555
+    },
+    {
+      "name": "Host SIGKILL 1: site baseline, explicit AI fault and single terminal recovery",
+      "passed": true,
+      "ms": 6623.298058,
+      "recoverMs": 6511.852996000001,
+      "attempts": 2,
+      "siteContentBaseline": "desktop/mobile × en/zh approved DOM manifests"
+    },
+    {
+      "name": "Host SIGKILL 2: site baseline, explicit AI fault and single terminal recovery",
+      "passed": true,
+      "ms": 4247.083906,
+      "recoverMs": 4137.556199999992,
+      "attempts": 2,
+      "siteContentBaseline": "identical artifact bytes"
+    },
+    {
+      "name": "Host SIGKILL 3: site baseline, explicit AI fault and single terminal recovery",
+      "passed": true,
+      "ms": 4227.933237999998,
+      "recoverMs": 4118.709868999998,
+      "attempts": 2,
+      "siteContentBaseline": "identical artifact bytes"
+    },
+    {
+      "name": "quota remains exhausted after three Host restarts",
+      "passed": true,
+      "ms": 2.4150059999956284
+    },
+    {
+      "name": "same immutable image promotes to all backend roles and rolls back within 60 seconds",
+      "passed": true,
+      "ms": 8495.831477,
+      "candidateImage": "sha256:60523fc499a48c4957ca71d10c22e1a909e4639bc72f8586817780205fea9d11",
+      "promotedImage": "sha256:60523fc499a48c4957ca71d10c22e1a909e4639bc72f8586817780205fea9d11",
+      "rollbackImage": "sha256:16fa187c7210da92384dd2d304ab82280f22ae639b9be1b0bb88022fdbb072fb",
+      "rollbackMs": 2438.7586880000017
+    },
+    {
+      "name": "pg_dump restores exact fixtures into a separate database",
+      "passed": true,
+      "ms": 334.6997139999876,
+      "restoreMs": 326.23494200001005,
+      "source": "prototype",
+      "target": "prototype_restore",
+      "jobs": 10,
+      "fixtureSHA256": "f3c3605b9cbbf6cbd6013a984ef646e8567166e87b80356a63c279413527179f"
+    },
+    {
+      "name": "kernel enforces memory cap and CPU throttling in disposable probes",
+      "passed": true,
+      "ms": 2584.260110999996,
+      "memoryProbeBytes": 67108864,
+      "oomKilled": true,
+      "cpuProbeCores": 0.25,
+      "throttled": 21
+    },
+    {
+      "name": "all tasks terminal with one database effect and terminal event each",
+      "passed": true,
+      "ms": 1.8323969999910332,
+      "tasks": 10
+    },
+    {
+      "name": "website responses remain byte-identical throughout faults and rollback",
+      "passed": true,
+      "ms": 0.1064710000064224,
+      "samples": 311,
+      "failures": 0
+    },
+    {
+      "name": "frontend and complete service logs exclude server credentials; traces correlate",
+      "passed": true,
+      "ms": 165.06892200000584,
+      "credentialLeaks": 0,
+      "traceRoles": [
+        "host",
+        "api",
+        "worker"
+      ]
+    }
+  ],
+  "failure": null,
+  "diagnostics": [],
+  "scope": "Real Docker/Fastify/API/Worker/Host/Harness boot/PostgreSQL/HTTP proxy; synthetic executor, issuer and quota; no public or production deployment",
+  "limitations": [
+    "No paid model calls in this suite; A-06 has separate real model evidence",
+    "Linux DOM baseline is not a Linux pixel baseline; macOS pixel test recorded separately",
+    "No schema migration rollback or production disaster recovery claim"
+  ]
+}

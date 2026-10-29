@@ -203,8 +203,6 @@ export function HomePage() {
   const t = copy[language];
 
   useEffect(() => {
-    // Deferred to client to avoid SSR hydration mismatch.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsTestEnv(window.location.hostname.endsWith(".workers.dev"));
 
     const query = new URLSearchParams(window.location.search).get("lang");
@@ -295,9 +293,9 @@ export function HomePage() {
         <div className="container platform-strip"><span>{t.flow.lead}</span><div>{t.flow.items.map((item, index) => <span className="flow-item" key={item}><b>{item}</b>{index < t.flow.items.length - 1 && <i>→</i>}</span>)}</div></div>
       </section>
 
-      <section className="section product-section" id="product"><div className="container"><div className="section-heading split-heading"><div><span>{t.product.kicker}</span><h2>{t.product.title}</h2></div><p>{t.product.intro}</p></div><div className="capability-grid">{t.product.items.map((item, index) => { const Icon = capabilityIcons[index]; return <article key={item.title}><div className={`cap-icon cap-icon-${index + 1}`} aria-hidden="true"><Icon size={24} strokeWidth={1.9} /></div><span className="cap-tag">{item.tag}</span><h3>{item.title}</h3><p>{item.text}</p><a href="#apply" aria-label={`${t.product.more}: ${item.title}`}>{t.product.more} <span>→</span></a></article>; })}</div></div></section>
-
       <section className="section value-section" id="value"><div className="container"><div className="section-heading centered"><span>{t.value.kicker}</span><h2>{t.value.title}</h2><p>{t.value.intro}</p></div><div className="value-grid">{t.value.items.map((item, index) => <article className={index === 1 ? "featured" : ""} key={item.title}><div className="value-number">0{index + 1}</div><div className="value-icon">{item.icon}</div><h3>{item.title}</h3><p>{item.text}</p><ul>{item.tags.map(tag => <li key={tag}>{tag}</li>)}</ul></article>)}</div></div></section>
+
+      <section className="section product-section" id="product"><div className="container"><div className="section-heading split-heading"><div><span>{t.product.kicker}</span><h2>{t.product.title}</h2></div><p>{t.product.intro}</p></div><div className="capability-grid">{t.product.items.map((item, index) => { const Icon = capabilityIcons[index]; return <article key={item.title}><div className={`cap-icon cap-icon-${index + 1}`} aria-hidden="true"><Icon size={24} strokeWidth={1.9} /></div><span className="cap-tag">{item.tag}</span><h3>{item.title}</h3><p>{item.text}</p><a href="#apply" aria-label={`${t.product.more}: ${item.title}`}>{t.product.more} <span>→</span></a></article>; })}</div></div></section>
 
       <section className="section ai-section"><div className="container ai-grid"><div className="ai-visual"><div className="orbit orbit-one"/><div className="orbit orbit-two"/>{t.ai.chips.map((chip, index) => <div className={`knowledge-chip chip-${["one","two","three","four"][index]}`} key={chip}>{chip}</div>)}<div className="ai-core"><img src="/logo-mark.svg" alt="" /><b>{t.ai.core}</b><span>{t.ai.grounded}</span></div></div><div className="ai-copy"><div className="eyebrow light"><span>AI</span> {t.ai.eyebrow}</div><h2>{t.ai.title1}<br />{t.ai.title2}</h2><p>{t.ai.text}</p><div className="ai-list">{t.ai.items.map(([title, text], index) => <div key={title}><i>0{index + 1}</i><span><b>{title}</b><small>{text}</small></span></div>)}</div></div></div></section>
 

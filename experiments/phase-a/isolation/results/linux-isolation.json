@@ -1,0 +1,124 @@
+{
+  "time": "2026-10-29T06:20:36.142Z",
+  "node": "v24.21.0",
+  "platform": "linux-x64",
+  "scope": "Real RSA signatures and real ToolRuntime guards; synthetic issuer, in-memory memberships/resources/approvals; no external OIDC or production identity",
+  "fixtures": {
+    "tenants": 2,
+    "usersPerTenant": 2,
+    "sameNameDocumentsPerTenant": 2
+  },
+  "results": [
+    {
+      "name": "a1: own tenant documents and own session/run only",
+      "passed": true
+    },
+    {
+      "name": "a2: own tenant documents and own session/run only",
+      "passed": true
+    },
+    {
+      "name": "b1: own tenant documents and own session/run only",
+      "passed": true
+    },
+    {
+      "name": "b2: own tenant documents and own session/run only",
+      "passed": true
+    },
+    {
+      "name": "signed issuer boundary rejects wrong issuer",
+      "passed": true
+    },
+    {
+      "name": "signed issuer boundary rejects wrong audience",
+      "passed": true
+    },
+    {
+      "name": "signed issuer boundary rejects expired",
+      "passed": true
+    },
+    {
+      "name": "signed issuer boundary rejects future not-before",
+      "passed": true
+    },
+    {
+      "name": "signed issuer boundary rejects unknown subject",
+      "passed": true
+    },
+    {
+      "name": "signed issuer boundary rejects algorithm substitution",
+      "passed": true
+    },
+    {
+      "name": "signed issuer boundary rejects unknown signing key",
+      "passed": true
+    },
+    {
+      "name": "signed issuer boundary rejects untrusted key URL",
+      "passed": true
+    },
+    {
+      "name": "signature tampering and unsigned token rejected",
+      "passed": true
+    },
+    {
+      "name": "signed token tenant/owner roles cannot override server membership",
+      "passed": true
+    },
+    {
+      "name": "forged ActorContext and client identity fields rejected",
+      "passed": true
+    },
+    {
+      "name": "real ToolRuntime allows scoped read, rejects other tenant and path traversal",
+      "passed": true
+    },
+    {
+      "name": "host owner tool and missing server context cannot bypass policy",
+      "passed": true
+    },
+    {
+      "name": "no approval: write rejected, no side effect",
+      "passed": true
+    },
+    {
+      "name": "approval bound to tenant/user/run/document; one accepted write and replay denied",
+      "passed": true
+    },
+    {
+      "name": "expired approval cannot execute and cross-tenant approval cannot be created",
+      "passed": true
+    },
+    {
+      "name": "concurrent approval replay accepts only one write",
+      "passed": true
+    },
+    {
+      "name": "revocation between guard and tool body prevents write",
+      "passed": true
+    },
+    {
+      "name": "approver role revocation invalidates unused approval",
+      "passed": true
+    },
+    {
+      "name": "valid token remains denied after membership revoked",
+      "passed": true
+    },
+    {
+      "name": "UTF8/text-only/10MiB upload bounds",
+      "passed": true
+    },
+    {
+      "name": "audit correlates requestId without raw token, prompt or document contents",
+      "passed": true
+    }
+  ],
+  "acceptedSyntheticWrites": 2,
+  "unsafeHostToolExecutions": 0,
+  "auditEntries": 153,
+  "limitations": [
+    "No external IdP login/code flow, JWKS rotation, database RLS or cross-process revocation",
+    "No production object store, persistent approval transactions or quota service"
+  ]
+}

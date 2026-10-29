@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-29",
+  "attempts": [
+    {
+      "run": 40830962343,
+      "sha": "5df6fef",
+      "reason": "容器Host就绪超时，初始报告缺乏容器日志",
+      "thresholdsChanged": false
+    },
+    {
+      "run": 40831550229,
+      "sha": "250cafa",
+      "reason": "诊断定位原生模块缓存无法从普通临时挂载加载；增加Host专用有界可执行缓存后真实启动通过",
+      "thresholdsChanged": false
+    },
+    {
+      "run": 40832635502,
+      "sha": "a57efba",
+      "reason": "Fastify默认removeAdditional静默删除伪造tenantId；关闭自动删除/转换后负例400通过",
+      "thresholdsChanged": false
+    },
+    {
+      "run": 40833070599,
+      "sha": "cf44be3",
+      "reason": "恢复连接串字符串替换误改用户名；改用URL.pathname设置独立目标库",
+      "thresholdsChanged": false
+    }
+  ],
+  "passingRun": 40833880173,
+  "passingTechnicalHead": "db5d713"
+}

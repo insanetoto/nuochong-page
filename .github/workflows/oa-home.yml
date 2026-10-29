@@ -1,0 +1,41 @@
+name: OA native Harness home
+
+on:
+  pull_request:
+    branches: [refactor/integration]
+    paths:
+      - 'apps/oa/**'
+      - '.github/workflows/oa-home.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  home:
+    name: Official Harness Web browser smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            apps/oa/package-lock.json
+      - run: npm ci
+      - run: npm ci --prefix apps/oa --ignore-scripts --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Start the real Web profile and verify isolated browser authentication and rendering
+        run: node apps/oa/verify-home.mjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: oa-home-browser-evidence
+          path: |
+            apps/oa/outputs/oa-home.png
+            apps/oa/outputs/oa-home-probe.json
+          if-no-files-found: ignore
+          retention-days: 14

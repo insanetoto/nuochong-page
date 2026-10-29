@@ -1,0 +1,42 @@
+{
+  "time": "2026-10-29T04:14:32.717Z",
+  "node": "v24.21.0",
+  "platform": "darwin-arm64",
+  "route": {
+    "provider": "deepseek-official",
+    "model": "deepseek-v4-flash"
+  },
+  "status": "succeeded",
+  "totalMs": 1922.880583,
+  "responseMatches": true,
+  "notificationMethods": [
+    "session.event",
+    "session.status",
+    "nuochong.assistant.stream"
+  ],
+  "eventTypes": [
+    "agent/inbox/spliced",
+    "turn/start",
+    "step/start",
+    "system/message",
+    "user/message",
+    "request/header",
+    "request/context",
+    "session/title",
+    "session-log-deepseek/delivery-accepted",
+    "assistant/message",
+    "tool/call",
+    "tool/result",
+    "step/end",
+    "turn/end"
+  ],
+  "errorCode": null,
+  "bridge": true,
+  "chunks": 24,
+  "ttftMs": 1850.537292,
+  "ttftReason": "Measured from public agent hook via deployment-owned bridge",
+  "cost": {
+    "amount": null,
+    "status": "unknown"
+  }
+}

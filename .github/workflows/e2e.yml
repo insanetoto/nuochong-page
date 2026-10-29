@@ -1,16 +1,21 @@
 name: E2E tests
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - dev
       - test
       - main
+      - 'ci/**'
+      - refactor/integration
   pull_request:
     branches:
       - dev
       - test
       - main
+      - refactor/integration
+      - docs/refactor-collaboration-plan
 
 concurrency:
   group: e2e-${{ github.workflow }}-${{ github.ref }}
