@@ -29,7 +29,10 @@ const siteSamples = [];
 const hash = (data) => createHash('sha256').update(data).digest('hex');
 const sanitize = (value) => String(value).replaceAll(secret, '<server-secret>').replaceAll(dbPassword, '<db-password>');
 async function docker(...args) {
-  try { return (await run('docker', args, { maxBuffer: 10 * 1024 * 1024 })).stdout.trim(); }
+  try {
+    const output = await run('docker', args, { maxBuffer: 10 * 1024 * 1024 });
+    return args[0] === 'logs' ? `${output.stdout}\n${output.stderr}`.trim() : output.stdout.trim();
+  }
   catch (error) { throw new Error(sanitize(`docker ${args[0]} failed: ${error.stderr ?? error.message}`).slice(-3000)); }
 }
 const name = (role) => `${id}-${role}`;
@@ -157,6 +160,7 @@ async function contentBaseline() {
 }
 
 let failure;
+const diagnostics = [];
 try {
   const baseline = JSON.parse(readFileSync(resolve(repo, 'docs/refactor/evidence/A-02-baseline.json')));
   await check('all protected website source and approved baseline hashes unchanged', async () => {
@@ -328,12 +332,16 @@ try {
 } catch(error) { failure=sanitize(error.message);process.exitCode=1; }
 finally {
   clearInterval(monitor);await browser?.close();await pool?.end();
+  if(failure)for(const role of containers){
+    try{const state=await inspect(role);diagnostics.push({role,status:state.State.Status,exitCode:state.State.ExitCode,
+      oomKilled:state.State.OOMKilled,log:sanitize(await docker('logs',name(role))).slice(-2500)});}catch{}
+  }
   for(const role of [...containers].reverse())try{await stop(role);}catch(error){failure??=sanitize(error.message);process.exitCode=1;}
   if(logs.some((text)=>text.includes(secret)||text.includes(dbPassword))){failure='credential canary found in service logs';process.exitCode=1;}
   if(networkCreated)try{await docker('network','rm',network);}catch{process.exitCode=1;}
   const report={time:new Date().toISOString(),node:process.version,platform:`${process.platform}-${process.arch}`,
     resources:{cpus:os.cpus().length,totalMemoryBytes:os.totalmem(),os:os.release()},database,
-    baseImages:{node:nodeDigest,postgres:pgDigest},images,results,failure:failure??null,
+    baseImages:{node:nodeDigest,postgres:pgDigest},images,results,failure:failure??null,diagnostics,
     scope:'Real Docker/Fastify/API/Worker/Host/Harness boot/PostgreSQL/HTTP proxy; synthetic executor, issuer and quota; no public or production deployment',
     limitations:['No paid model calls in this suite; A-06 has separate real model evidence',
       'Linux DOM baseline is not a Linux pixel baseline; macOS pixel test recorded separately',

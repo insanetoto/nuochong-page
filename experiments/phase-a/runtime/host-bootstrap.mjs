@@ -12,7 +12,8 @@ export async function bootHarness(stateRoot) {
   const harness = new DeepSeekHarness({ profile: 'sdk-minimal',
     patches: [writeReadonlyPatch(root, true, stateRoot)], dshHome: resolve(stateRoot, 'dsh'),
     cwd: stateRoot, processCwd: root,
-    env: { PATH: process.env.PATH, LANG: 'en_US.UTF-8', TERM: 'dumb' },
+    env: { PATH: process.env.PATH, LANG: 'en_US.UTF-8', TERM: 'dumb',
+      HOME: stateRoot, XDG_CACHE_HOME: resolve(stateRoot, 'cache') },
     initializeTimeoutMs: 20_000, shutdownTimeoutMs: 1000, disposeEofGraceMs: 1000, disposeGraceMs: 1000 });
   try { await harness.start(); return harness; }
   catch (error) { await harness.close(); throw error; }
