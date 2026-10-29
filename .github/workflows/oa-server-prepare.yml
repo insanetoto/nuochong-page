@@ -13,13 +13,13 @@ permissions:
   contents: read
 
 concurrency:
-  group: oa-test-server
+  group: oa-test-server-${{ github.event_name == 'pull_request' && github.ref || 'deploy' }}
   cancel-in-progress: false
 
 jobs:
   prepare:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7

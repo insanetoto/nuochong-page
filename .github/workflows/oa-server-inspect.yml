@@ -50,6 +50,10 @@ jobs:
           done
           printf '\nNGINX VERSION AND FILES\n'; nginx -v 2>&1
           ls -l /etc/nginx/sites-enabled /etc/nginx/conf.d 2>/dev/null || true
+          printf '\nOA STAGING PROGRESS\n'
+          du -sh "$HOME/.local/share/nuochong-oa-test" 2>/dev/null || true
+          ls -lh "$HOME"/.local/share/nuochong-oa-test/incoming-*.tgz 2>/dev/null || true
+          readlink "$HOME/.local/share/nuochong-oa-test/current" 2>/dev/null || true
           printf '\nUSER SUPERVISOR\n'; systemctl --user is-system-running 2>/dev/null || true
           loginctl show-user "$(id -un)" -p Linger 2>/dev/null || true
           printf '\nLISTENING PORTS\n'
