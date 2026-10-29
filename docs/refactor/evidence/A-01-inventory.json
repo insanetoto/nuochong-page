@@ -1,0 +1,981 @@
+{
+  "date": "2026-10-29",
+  "refs": {
+    "origin/main": "46ab969aa3ad10c2b2efd4c4f0b8243bb403943b",
+    "origin/dev": "bdba03f2b4643dda2a81b2c09294fde2b2106ef6",
+    "origin/test": "a9083ddc2c8ecf3f31e3ed7242479884f5ee86fa",
+    "origin/docs/refactor-collaboration-plan": "6e6836508daeb98691c5dd2c29f6cd3b263f615c"
+  },
+  "comparisons": {
+    "origin/main..origin/test": [
+      {
+        "status": "D",
+        "path": ".github/workflows/ci.yml",
+        "disposition": "保留main治理能力；重建新应用门禁",
+        "target": "A-03 / B-06"
+      },
+      {
+        "status": "M",
+        "path": ".github/workflows/deploy-test.yml",
+        "disposition": "保留main治理能力；重建新应用门禁",
+        "target": "A-03 / B-06"
+      },
+      {
+        "status": "M",
+        "path": ".github/workflows/deploy.yml",
+        "disposition": "保留main治理能力；重建新应用门禁",
+        "target": "A-03 / B-06"
+      },
+      {
+        "status": "M",
+        "path": ".github/workflows/e2e.yml",
+        "disposition": "保留main治理能力；重建新应用门禁",
+        "target": "A-03 / B-06"
+      },
+      {
+        "status": "M",
+        "path": "README.md",
+        "disposition": "按新结构更新；保留规划及操作说明",
+        "target": "A-03 / B-01"
+      },
+      {
+        "status": "M",
+        "path": "app/HomePage.tsx",
+        "disposition": "保留main官网基线；test变更单独审查，不直接覆盖",
+        "target": "A-02 / B-01"
+      },
+      {
+        "status": "M",
+        "path": "app/app/(console)/dashboard/page.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/help/[id]/page.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/help/page.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/notifications/detail/[id]/page.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/notifications/inner/[type]/page.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/notifications/layout.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/notifications/page.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/notifications/subscribe/page.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/notifications/tts/page.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/training/[id]/page.tsx",
+        "disposition": "保留交互原型；真实课程/学习数据在D阶段替换",
+        "target": "B-01 / D-01—D-05"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/training/page.tsx",
+        "disposition": "保留交互原型；真实课程/学习数据在D阶段替换",
+        "target": "B-01 / D-01—D-05"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/users/layout.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/users/profile/page.tsx",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/users/security/page.tsx",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/workorders/[id]/page.tsx",
+        "disposition": "保留交互原型；真实工单/执行在E阶段替换",
+        "target": "B-01 / E-01—E-04"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/workorders/page.tsx",
+        "disposition": "保留交互原型；真实工单/执行在E阶段替换",
+        "target": "B-01 / E-01—E-04"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/AppEntry.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/AppShell.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/AuthGuard.tsx",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/ConfirmDialog.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/EmptyState.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/FormField.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/LanguageSwitcher.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/LoginForm.tsx",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/Modal.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/Pagination.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/Panel.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/SearchBar.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/StatusBadge.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/SubNav.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/Tabs.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/UserEditModal.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/UsersManager.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/help/HelpDetail.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/help/HelpHome.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/help/HelpSidebar.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/notifications/NotificationDetail.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/notifications/NotificationsList.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/notifications/NotificationsSubscribe.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/notifications/NotificationsTts.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/profile/AvatarModal.tsx",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/profile/ProfileForm.tsx",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/profile/SecuritySettings.tsx",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/training/TrainingDetail.tsx",
+        "disposition": "保留交互原型；真实课程/学习数据在D阶段替换",
+        "target": "B-01 / D-01—D-05"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/training/TrainingEditModal.tsx",
+        "disposition": "保留交互原型；真实课程/学习数据在D阶段替换",
+        "target": "B-01 / D-01—D-05"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/training/TrainingList.tsx",
+        "disposition": "保留交互原型；真实课程/学习数据在D阶段替换",
+        "target": "B-01 / D-01—D-05"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/workorders/WorkOrderDetail.tsx",
+        "disposition": "保留交互原型；真实工单/执行在E阶段替换",
+        "target": "B-01 / E-01—E-04"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/workorders/WorkOrderEditModal.tsx",
+        "disposition": "保留交互原型；真实工单/执行在E阶段替换",
+        "target": "B-01 / E-01—E-04"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/workorders/WorkOrderList.tsx",
+        "disposition": "保留交互原型；真实工单/执行在E阶段替换",
+        "target": "B-01 / E-01—E-04"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_lib/auth.ts",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/business-messages.ts",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/help.ts",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/i18n.ts",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/list-utils.ts",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/notifications.ts",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/profile.ts",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/training.ts",
+        "disposition": "保留交互原型；真实课程/学习数据在D阶段替换",
+        "target": "B-01 / D-01—D-05"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/workorders.ts",
+        "disposition": "保留交互原型；真实工单/执行在E阶段替换",
+        "target": "B-01 / E-01—E-04"
+      },
+      {
+        "status": "M",
+        "path": "app/business.css",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/globals.css",
+        "disposition": "保留main官网基线；test变更单独审查，不直接覆盖",
+        "target": "A-02 / B-01"
+      },
+      {
+        "status": "M",
+        "path": "eslint.config.mjs",
+        "disposition": "审查test语言环境与lint差异；统一后重跑检查",
+        "target": "A-02 / B-06"
+      },
+      {
+        "status": "M",
+        "path": "playwright.config.ts",
+        "disposition": "审查test语言环境与lint差异；统一后重跑检查",
+        "target": "A-02 / B-06"
+      },
+      {
+        "status": "D",
+        "path": "scripts/check-environment.mjs",
+        "disposition": "保留main治理能力；重建新应用门禁",
+        "target": "A-03 / B-06"
+      },
+      {
+        "status": "A",
+        "path": "tests/e2e/business-modules.spec.ts",
+        "disposition": "保留用例意图；绑定新路由/真实数据夹具后扩充回归",
+        "target": "A-02 / B-06 / B-08"
+      },
+      {
+        "status": "M",
+        "path": "tests/e2e/login.spec.ts",
+        "disposition": "保留用例意图；绑定新路由/真实数据夹具后扩充回归",
+        "target": "A-02 / B-06 / B-08"
+      }
+    ],
+    "origin/main..origin/dev": [
+      {
+        "status": "D",
+        "path": ".github/workflows/ci.yml",
+        "disposition": "保留main治理能力；重建新应用门禁",
+        "target": "A-03 / B-06"
+      },
+      {
+        "status": "M",
+        "path": ".github/workflows/deploy-test.yml",
+        "disposition": "保留main治理能力；重建新应用门禁",
+        "target": "A-03 / B-06"
+      },
+      {
+        "status": "M",
+        "path": ".github/workflows/deploy.yml",
+        "disposition": "保留main治理能力；重建新应用门禁",
+        "target": "A-03 / B-06"
+      },
+      {
+        "status": "M",
+        "path": ".github/workflows/e2e.yml",
+        "disposition": "保留main治理能力；重建新应用门禁",
+        "target": "A-03 / B-06"
+      },
+      {
+        "status": "M",
+        "path": "README.md",
+        "disposition": "按新结构更新；保留规划及操作说明",
+        "target": "A-03 / B-01"
+      },
+      {
+        "status": "M",
+        "path": "app/HomePage.tsx",
+        "disposition": "保留main官网基线；test变更单独审查，不直接覆盖",
+        "target": "A-02 / B-01"
+      },
+      {
+        "status": "M",
+        "path": "app/app/(console)/dashboard/page.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/help/[id]/page.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/help/page.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/notifications/detail/[id]/page.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/notifications/inner/[type]/page.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/notifications/layout.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/notifications/page.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/notifications/subscribe/page.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/notifications/tts/page.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/training/[id]/page.tsx",
+        "disposition": "保留交互原型；真实课程/学习数据在D阶段替换",
+        "target": "B-01 / D-01—D-05"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/training/page.tsx",
+        "disposition": "保留交互原型；真实课程/学习数据在D阶段替换",
+        "target": "B-01 / D-01—D-05"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/users/layout.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/users/profile/page.tsx",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/users/security/page.tsx",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/workorders/[id]/page.tsx",
+        "disposition": "保留交互原型；真实工单/执行在E阶段替换",
+        "target": "B-01 / E-01—E-04"
+      },
+      {
+        "status": "A",
+        "path": "app/app/(console)/workorders/page.tsx",
+        "disposition": "保留交互原型；真实工单/执行在E阶段替换",
+        "target": "B-01 / E-01—E-04"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/AppEntry.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/AppShell.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/AuthGuard.tsx",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/ConfirmDialog.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/EmptyState.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/FormField.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/LanguageSwitcher.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/LoginForm.tsx",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/Modal.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/Pagination.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/SearchBar.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/StatusBadge.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/SubNav.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/Tabs.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/UserEditModal.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/UsersManager.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/help/HelpDetail.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/help/HelpHome.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/help/HelpSidebar.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/notifications/NotificationDetail.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/notifications/NotificationsList.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/notifications/NotificationsSubscribe.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/notifications/NotificationsTts.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/profile/AvatarModal.tsx",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/profile/ProfileForm.tsx",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/profile/SecuritySettings.tsx",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/training/TrainingDetail.tsx",
+        "disposition": "保留交互原型；真实课程/学习数据在D阶段替换",
+        "target": "B-01 / D-01—D-05"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/training/TrainingEditModal.tsx",
+        "disposition": "保留交互原型；真实课程/学习数据在D阶段替换",
+        "target": "B-01 / D-01—D-05"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/training/TrainingList.tsx",
+        "disposition": "保留交互原型；真实课程/学习数据在D阶段替换",
+        "target": "B-01 / D-01—D-05"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/workorders/WorkOrderDetail.tsx",
+        "disposition": "保留交互原型；真实工单/执行在E阶段替换",
+        "target": "B-01 / E-01—E-04"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/workorders/WorkOrderEditModal.tsx",
+        "disposition": "保留交互原型；真实工单/执行在E阶段替换",
+        "target": "B-01 / E-01—E-04"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_components/workorders/WorkOrderList.tsx",
+        "disposition": "保留交互原型；真实工单/执行在E阶段替换",
+        "target": "B-01 / E-01—E-04"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_lib/auth.ts",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/business-messages.ts",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/help.ts",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/i18n.ts",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/list-utils.ts",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/notifications.ts",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/profile.ts",
+        "disposition": "保留界面；替换模拟身份/安全设置，禁止迁移演示认证为生产身份",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/training.ts",
+        "disposition": "保留交互原型；真实课程/学习数据在D阶段替换",
+        "target": "B-01 / D-01—D-05"
+      },
+      {
+        "status": "A",
+        "path": "app/app/_lib/workorders.ts",
+        "disposition": "保留交互原型；真实工单/执行在E阶段替换",
+        "target": "B-01 / E-01—E-04"
+      },
+      {
+        "status": "M",
+        "path": "app/business.css",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/globals.css",
+        "disposition": "保留main官网基线；test变更单独审查，不直接覆盖",
+        "target": "A-02 / B-01"
+      },
+      {
+        "status": "M",
+        "path": "eslint.config.mjs",
+        "disposition": "审查test语言环境与lint差异；统一后重跑检查",
+        "target": "A-02 / B-06"
+      },
+      {
+        "status": "M",
+        "path": "playwright.config.ts",
+        "disposition": "审查test语言环境与lint差异；统一后重跑检查",
+        "target": "A-02 / B-06"
+      },
+      {
+        "status": "D",
+        "path": "scripts/check-environment.mjs",
+        "disposition": "保留main治理能力；重建新应用门禁",
+        "target": "A-03 / B-06"
+      },
+      {
+        "status": "A",
+        "path": "tests/e2e/business-modules.spec.ts",
+        "disposition": "保留用例意图；绑定新路由/真实数据夹具后扩充回归",
+        "target": "A-02 / B-06 / B-08"
+      },
+      {
+        "status": "M",
+        "path": "tests/e2e/login.spec.ts",
+        "disposition": "保留用例意图；绑定新路由/真实数据夹具后扩充回归",
+        "target": "A-02 / B-06 / B-08"
+      }
+    ],
+    "origin/dev..origin/test": [
+      {
+        "status": "M",
+        "path": "app/HomePage.tsx",
+        "disposition": "保留main官网基线；test变更单独审查，不直接覆盖",
+        "target": "A-02 / B-01"
+      },
+      {
+        "status": "M",
+        "path": "app/app/(console)/notifications/layout.tsx",
+        "disposition": "保留路由/交互资产；通知和帮助先保持演示边界，不接真实业务推送",
+        "target": "B-01；真实通知/帮助运营另行变更评审"
+      },
+      {
+        "status": "M",
+        "path": "app/app/(console)/users/layout.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/AppShell.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/Panel.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/SubNav.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/app/_components/UserEditModal.tsx",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/business.css",
+        "disposition": "保留工作台组件/路由/双语外观；模拟数据单独替换，样式不得污染官网",
+        "target": "B-01 / B-02 / B-03"
+      },
+      {
+        "status": "M",
+        "path": "app/globals.css",
+        "disposition": "保留main官网基线；test变更单独审查，不直接覆盖",
+        "target": "A-02 / B-01"
+      }
+    ]
+  },
+  "routes": {
+    "origin/main": [
+      "app/api/country/route.ts",
+      "app/app/(console)/dashboard/page.tsx",
+      "app/app/(console)/users/page.tsx",
+      "app/app/login/page.tsx",
+      "app/app/page.tsx",
+      "app/page.tsx",
+      "examples/d1/app/api/notes/route.ts"
+    ],
+    "origin/dev": [
+      "app/api/country/route.ts",
+      "app/app/(console)/dashboard/page.tsx",
+      "app/app/(console)/help/[id]/page.tsx",
+      "app/app/(console)/help/page.tsx",
+      "app/app/(console)/notifications/detail/[id]/page.tsx",
+      "app/app/(console)/notifications/inner/[type]/page.tsx",
+      "app/app/(console)/notifications/page.tsx",
+      "app/app/(console)/notifications/subscribe/page.tsx",
+      "app/app/(console)/notifications/tts/page.tsx",
+      "app/app/(console)/training/[id]/page.tsx",
+      "app/app/(console)/training/page.tsx",
+      "app/app/(console)/users/page.tsx",
+      "app/app/(console)/users/profile/page.tsx",
+      "app/app/(console)/users/security/page.tsx",
+      "app/app/(console)/workorders/[id]/page.tsx",
+      "app/app/(console)/workorders/page.tsx",
+      "app/app/login/page.tsx",
+      "app/app/page.tsx",
+      "app/page.tsx",
+      "examples/d1/app/api/notes/route.ts"
+    ],
+    "origin/test": [
+      "app/api/country/route.ts",
+      "app/app/(console)/dashboard/page.tsx",
+      "app/app/(console)/help/[id]/page.tsx",
+      "app/app/(console)/help/page.tsx",
+      "app/app/(console)/notifications/detail/[id]/page.tsx",
+      "app/app/(console)/notifications/inner/[type]/page.tsx",
+      "app/app/(console)/notifications/page.tsx",
+      "app/app/(console)/notifications/subscribe/page.tsx",
+      "app/app/(console)/notifications/tts/page.tsx",
+      "app/app/(console)/training/[id]/page.tsx",
+      "app/app/(console)/training/page.tsx",
+      "app/app/(console)/users/page.tsx",
+      "app/app/(console)/users/profile/page.tsx",
+      "app/app/(console)/users/security/page.tsx",
+      "app/app/(console)/workorders/[id]/page.tsx",
+      "app/app/(console)/workorders/page.tsx",
+      "app/app/login/page.tsx",
+      "app/app/page.tsx",
+      "app/page.tsx",
+      "examples/d1/app/api/notes/route.ts"
+    ],
+    "origin/docs/refactor-collaboration-plan": [
+      "app/api/country/route.ts",
+      "app/app/(console)/dashboard/page.tsx",
+      "app/app/(console)/users/page.tsx",
+      "app/app/login/page.tsx",
+      "app/app/page.tsx",
+      "app/page.tsx",
+      "examples/d1/app/api/notes/route.ts"
+    ]
+  }
+}
