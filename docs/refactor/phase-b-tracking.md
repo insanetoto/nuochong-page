@@ -72,3 +72,7 @@ flowchart LR
 - [总体路线图](roadmap.md)
 - [团队协作](collaboration.md)
 - [个人开发指南](developer-onboarding.md)
+
+## A-10细化更新（2026-10-29）
+
+B任务范围/验收已吸收A阶段实测发现，逐项估算合计27–45工程人日，见[tasks.md](tasks.md)和[phase-a-review.md](phase-a-review.md)。当前仍0/8完成，等待最终Go；批准后仅B-01可Ready，其余继续按依赖执行。没有替团队虚构日历排期、成员或生产批准。
