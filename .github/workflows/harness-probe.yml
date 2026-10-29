@@ -29,6 +29,12 @@ jobs:
         run: node experiments/phase-a/runtime/verify-runtime.mjs
       - name: Verify SDK subprocess initialize and close (no model call)
         run: node experiments/phase-a/runtime/verify-sdk.mjs
+      - name: Verify readonly tools, lifecycle and execution adapter (no model call)
+        run: node experiments/phase-a/runtime/verify-adapter.mjs
+      - name: Verify HTTP SSE disconnect and cursor replay (no model call)
+        run: node experiments/phase-a/runtime/verify-sse.mjs
+      - name: Verify provider rate limiting and stalled upstream (synthetic HTTP, no model call)
+        run: node experiments/phase-a/runtime/verify-provider-faults.mjs
       - uses: actions/upload-artifact@v7
         if: always()
         with:

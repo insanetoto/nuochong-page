@@ -1,16 +1,25 @@
 {
-  "time": "2026-10-29T03:44:07.643Z",
+  "time": "2026-10-29T04:21:11.365Z",
   "node": "v24.21.0",
   "platform": "darwin-arm64",
   "results": [
     {
       "profile": "sdk-minimal",
+      "variant": "sdk-minimal",
       "initialized": true,
       "closed": true,
       "error": null
     },
     {
       "profile": "sdk",
+      "variant": "sdk",
+      "initialized": true,
+      "closed": true,
+      "error": null
+    },
+    {
+      "profile": "sdk-minimal",
+      "variant": "sdk-minimal-bridge",
       "initialized": true,
       "closed": true,
       "error": null
