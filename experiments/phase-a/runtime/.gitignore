@@ -1,0 +1,5 @@
+node_modules/
+.dsh-home/
+.env*
+*.log
+outputs/

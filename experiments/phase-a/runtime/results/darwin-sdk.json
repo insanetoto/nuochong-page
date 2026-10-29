@@ -1,0 +1,24 @@
+{
+  "time": "2026-10-29T03:44:07.643Z",
+  "node": "v24.21.0",
+  "platform": "darwin-arm64",
+  "results": [
+    {
+      "profile": "sdk-minimal",
+      "initialized": true,
+      "closed": true,
+      "error": null
+    },
+    {
+      "profile": "sdk",
+      "initialized": true,
+      "closed": true,
+      "error": null
+    }
+  ],
+  "scope": "Real subprocess initialize/close only; no prompt, model request or tool execution",
+  "defaultRoute": {
+    "provider": "deepseek-official",
+    "model": "deepseek-v4-flash"
+  }
+}

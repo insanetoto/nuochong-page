@@ -1,0 +1,37 @@
+name: Harness runtime probe
+
+on:
+  pull_request:
+    branches: [refactor/integration]
+    paths:
+      - 'experiments/phase-a/runtime/**'
+      - '.github/workflows/harness-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime:
+    name: Harness initialize and close
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: npm
+          cache-dependency-path: experiments/phase-a/runtime/package-lock.json
+      - name: Install isolated locked runtime (no native tool install scripts)
+        run: npm ci --prefix experiments/phase-a/runtime --ignore-scripts --no-audit --no-fund
+      - name: Verify named profile configuration
+        run: node experiments/phase-a/runtime/verify-runtime.mjs
+      - name: Verify SDK subprocess initialize and close (no model call)
+        run: node experiments/phase-a/runtime/verify-sdk.mjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: harness-runtime-probe
+          path: experiments/phase-a/runtime/outputs/*.json
+          if-no-files-found: ignore

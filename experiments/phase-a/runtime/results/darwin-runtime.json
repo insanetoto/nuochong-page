@@ -1,0 +1,38 @@
+{
+  "time": "2026-10-29T03:44:06.536Z",
+  "node": "v24.21.0",
+  "platform": "darwin-arm64",
+  "packages": {
+    "dsh": {
+      "version": "0.2.1-rc.2",
+      "license": "MIT",
+      "engines": null
+    },
+    "dsh-sdk-client": {
+      "version": "0.2.1-rc.2",
+      "license": "MIT",
+      "engines": null
+    }
+  },
+  "results": [
+    {
+      "profile": "sdk",
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "outputBytes": 13509,
+      "outputSha256": "6e19a614ad803f1d8f362c96e79ec6f549d4b3a2334554397fbbd671cdb49234",
+      "diagnostic": ""
+    },
+    {
+      "profile": "sdk-minimal",
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "outputBytes": 4658,
+      "outputSha256": "56feccf005343a895dafccff19abec975a43a9f0f3ed70cb929eef457e5dd1c5",
+      "diagnostic": ""
+    }
+  ],
+  "scope": "Named-profile configuration resolution only; not model execution or full SDK handshake"
+}
