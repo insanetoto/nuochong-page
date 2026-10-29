@@ -5,6 +5,7 @@ on:
     branches: [refactor/integration]
     paths:
       - 'experiments/phase-a/runtime/**'
+      - 'experiments/phase-a/isolation/**'
       - '.github/workflows/harness-probe.yml'
   workflow_dispatch:
 
@@ -35,9 +36,13 @@ jobs:
         run: node experiments/phase-a/runtime/verify-sse.mjs
       - name: Verify provider rate limiting and stalled upstream (synthetic HTTP, no model call)
         run: node experiments/phase-a/runtime/verify-provider-faults.mjs
+      - name: Verify signed identity, tenant and tool authorization (synthetic issuer)
+        run: node experiments/phase-a/runtime/verify-isolation.mjs
       - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: harness-runtime-probe
-          path: experiments/phase-a/runtime/outputs/*.json
+          path: |
+            experiments/phase-a/runtime/outputs/*.json
+            experiments/phase-a/isolation/outputs/*.json
           if-no-files-found: ignore
