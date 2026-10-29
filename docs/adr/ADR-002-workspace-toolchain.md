@@ -25,3 +25,7 @@ A-04独立npm ci及macOS/Linux启停已通过；B-01再验证工作区构建和N
 ## A-10最终采纳记录
 
 用户在当前会话明确回复“批准 A-10 Go”。采纳npm workspaces方向与已验证的Host Node24.21.0/SDK0.2.1-rc.2；当前旧root/Node22流水线不自动改变，B-01/B-06再迁移并验证。证据与遗留责任见[阶段评审](../refactor/phase-a-review.md)；后续改变版本、边界或冻结指标须独立记录并重测。
+
+## 当前产品范围变更
+
+2026-10-29起，公司OA以Harness为基座。本文保留已验收技术决策历史；旧业务迁移义务和B—E阶段产品范围由[ADR-010](ADR-010-oa-harness-product-scope.md)及[新路线图](../refactor/roadmap.md)替代，不自动恢复旧业务模块。

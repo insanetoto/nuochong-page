@@ -1,14 +1,16 @@
+> 当前范围更新：只推进[公司OA-Harness基座路线](roadmap.md)和[OA任务](tasks.md)；文中旧B—E示例不再是领取指令。旧业务演示已移除，业务模块以后另行规划。
+
 # 开发人员上手指南：从个人环境到任务验收
 
-适用项目：nuochong-page；日期：2026-10-28。建议按顺序完成首次配置，以后从“领取任务”开始。
+适用项目：nuochong-page；日期：2026-10-29。按顺序完成首次配置，以后从“领取任务”开始。
 
-本指南是个人操作手册；团队规则见 [协作说明](collaboration.md)，任务范围见 [35 项任务清单](tasks.md)。示例中的姓名、邮箱、Issue 编号、分支、SHA 和路径均需换成个人实际值。
+本指南是个人操作手册；团队规则见 [协作说明](collaboration.md)，任务范围见 [OA任务清单](tasks.md)。示例中的姓名、邮箱、Issue 编号、分支、SHA 和路径均需换成个人实际值。
 
 ## 0. 先确认团队准备好了什么
 
 向负责人获取：GitHub 仓库访问权限、任务 Issue URL、指定基础分支/SHA、审查人、测试资源和验收标准。
 
-当前规划在 `docs/refactor-collaboration-plan` 分支，尚未合入 main；不要因 main 没有这些文件而重新创建一份规划。A 阶段 Issues 已建立，见 [执行路线图](phase-a-tracking.md)；`refactor/integration`、AGENTS.md、模板及A/B里程碑标签已在A-03建立或进入审查；Project、强制保护及新运行环境仍需核实，详见 [治理落地状态](governance.md)。
+当前规划随重构集成分支维护；本次OA范围调整见Issue #31和其PR。A阶段已验收，旧B—E停止执行；新OA任务#32—#37见[执行跟踪](oa-tracking.md)。当前增量已验收，仅OA-01 Ready，其余Backlog。refactor/integration和main已启用PR/必需检查，非作者审批数为0；不假定GitHub Project已建立。
 
 当前 `main` 推送会触发生产部署，`test` 推送会触发旧测试环境部署。个人开发只能推送任务分支。没有 Ready Issue 时先请负责人完成任务分派；不要随意挑选未满足依赖的后续任务。
 
@@ -17,7 +19,7 @@
 | 工具 | 当前要求 | 验证命令 |
 | --- | --- | --- |
 | Git | 使用团队支持的稳定版本 | `git --version` |
-| Node.js | 当前 engines 要求 >=22.13.0；建议先统一 Node 22 系列，具体补丁版本由团队冻结 | `node --version` |
+| Node.js | 当前 engines 要求 >=22.13.0；官网CI用Node22；OA原生页面统一Node24.21.0 | `node --version` |
 | npm | 随团队 Node 版本使用；按 package-lock 安装 | `npm --version` |
 | GitHub CLI | 推荐；也可用 GitHub 网页领取任务和创建 PR | `gh --version` |
 | Codex | 使用团队提供的桌面应用或开发环境，登录自己的授权账号 | 打开本任务目录并完成一次只读仓库检查 |
@@ -34,11 +36,11 @@ xcode-select --install
 brew install gh
 ```
 
-Node 从 [官方安装渠道](https://nodejs.org/en/download)或团队现有版本管理器安装。已安装 nvm 的成员可执行 `nvm install 22`、`nvm use 22`，之后核对实际版本；此命令不替代团队精确版本冻结。不要在同一终端混用多个 Node 安装来源。
+Node 从 [官方安装渠道](https://nodejs.org/en/download)或团队现有版本管理器安装。已安装 nvm 的成员可执行 `nvm install 24.21.0`、`nvm use 24.21.0`，之后核对实际版本；此命令不替代团队精确版本冻结。不要在同一终端混用多个 Node 安装来源。
 
 Linux 使用发行版工具和官方安装渠道；Windows 建议统一使用 WSL2 Linux 环境，将代码、Node、npm、Git 和测试全部放在该环境中，避免 Windows Node 与 WSL 路径混用。平台差异无法解决时由平台负责人提供可复现开发环境。
 
-首次开发不需要安装整套 Harness、数据库或生产部署工具。A-04 验证并锁定版本后，按对应任务说明安装；不擅自安装上游最新版替代批准版本。
+首次开发不需要安装整套 Harness、数据库或生产部署工具。Harness已锁定0.2.1-rc.2，按apps/oa说明安装；不擅自安装上游最新版替代批准版本。
 
 ## 2. 配置 Git 署名与 SSH
 
@@ -109,18 +111,18 @@ git config user.name
 git config user.email
 ```
 
-阅读尚未合入的规划可以直接访问 [远程文档入口](https://github.com/insanetoto/nuochong-page/blob/docs/refactor-collaboration-plan/docs/refactor/README.md)。如需本地阅读，在干净工作区执行：
+阅读[当前文档入口](README.md)，获取集成分支：
 
 ```bash
 git fetch origin
-git switch --track origin/docs/refactor-collaboration-plan
+git switch --track origin/refactor/integration
 ```
 
-本地已有同名分支时改用 `git switch docs/refactor-collaboration-plan`。规划分支不是未来所有代码任务的基础分支；实际任务以负责人指定为准。
+本地已有同名分支时用 `git switch refactor/integration`；有未提交改动先妥善保留，不强行切换。该分支用于阅读，实际实现要使用下面的独立任务分支。
 
 ## 5. 在 GitHub 领取任务
 
-1. 打开团队 Project，筛选 Ready；阅读 Issue 中的依赖、范围、交付物和每条 AC（验收标准）。
+1. 打开[OA跟踪表](oa-tracking.md)，筛选Ready；如团队另建Project则同步状态；阅读 Issue 中的依赖、范围、交付物和每条 AC（验收标准）。
 2. 确认依赖已被验收，尚无其他主负责人；“依赖 PR 已打开”不算依赖完成。
 3. 将自己设为 Assignee，填写审查人，状态改为 In progress。没有编辑权限时请负责人分派。
 4. 评论记录基础分支、SHA、计划修改目录和预计验证方法，再开始工作。
@@ -133,15 +135,15 @@ gh issue view 123 --repo insanetoto/nuochong-page
 gh issue edit 123 --repo insanetoto/nuochong-page --add-assignee @me
 ```
 
-Project 状态和自定义字段在网页中更新；不假定 `gh issue edit` 会同步 Project 状态。规划 ID 如 A-06 与 GitHub 的 #123 需由任务映射关联。Issues 尚未建立时，先由 A-03 负责人落实，不自行把后续任务视为 Ready。
+Project 状态和自定义字段在网页中更新；不假定 `gh issue edit` 会同步 Project 状态。规划ID如OA-01对应#32；具体映射见跟踪表。不因Issue已创建就自动视为Ready。
 
 领取评论模板：
 
 ```text
-领取：A-06 / #实际编号
+领取：OA-01 / #32
 负责人：@我；审查人：@成员
 基础：refactor/integration @ 完整SHA
-修改范围：experiments/phase-a/runtime/ 等Issue批准目录
+修改范围：apps/oa/ 等Issue批准目录
 依赖：#编号，已验收
 验证：列出AC对应命令、夹具及所需测试资源
 ```
@@ -153,8 +155,8 @@ Project 状态和自定义字段在网页中更新；不假定 `gh issue edit` �
 ```bash
 git fetch origin
 git show-ref --verify refs/remotes/origin/refactor/integration
-git worktree add -b feature/A-06-harness-spike ../nuochong-A-06 origin/refactor/integration
-cd ../nuochong-A-06
+git worktree add -b feature/OA-01-native-home ../nuochong-OA-01 origin/refactor/integration
+cd ../nuochong-OA-01
 git branch --show-current
 git rev-parse HEAD
 git status --short
@@ -176,11 +178,18 @@ npx playwright install chromium
 npm run dev
 ```
 
-当前默认开发地址为 `http://localhost:3000`；浏览器检查首页、语言切换和业务入口。停止开发服务器使用 Ctrl+C。Playwright 配置会自行启动开发服务器，测试前确认 3000 端口没有其他项目运行，避免误测。
+当前默认开发地址为 `http://localhost:3000`；浏览器检查官网首页和语言切换；旧/app业务路由应404。停止开发服务器使用 Ctrl+C。Playwright 配置会自行启动开发服务器，测试前确认 3000 端口没有其他项目运行，避免误测。
 
 首次在干净分支运行 `npm test`、`npm run build:static`、`npm run test:e2e` 和 `npm run lint`，记录基线结果。此前 main 曾存在 HomePage hooks lint 错误；以当前实测为准，发现存量失败应记录 SHA、错误和归属，不降低规则或归咎于新代码。
 
-当前没有真实认证、数据库或模型调用的必需本地配置，不要凭空创建 OPENAI_API_KEY 或 Harness 配置。未来相关任务引入环境模板后：仅将批准的占位模板入库，真实凭据放忽略文件或受控凭据系统。Codex 账号授权与产品模型凭据分别配置。
+原生OA预览使用独立依赖与状态，不要求模型密钥即可检查页面：
+
+```bash
+npm ci --prefix apps/oa --ignore-scripts --no-audit --no-fund
+npm run oa:start
+```
+
+在终端打开官方打印的私有启动URL；默认127.0.0.1:3080，使用apps/oa/.state。模型对话需管理员另配服务端凭据，当前不向普通员工开放owner管理面。官网Worker的/oa只按NUOCHONG_OA_URL跳转，未配置503；静态站需实际服务/代理。详见[原生首页说明](../../apps/oa/README.md)。产品CLI的NUOCHONG_ACCESS_TOKEN是后续OA服务凭据，不能用DeepSeek/GitHub密钥替代。
 
 ## 8. 使用 Codex 编写代码
 
@@ -189,10 +198,10 @@ npm run dev
 可复制以下任务提示：
 
 ```text
-请完成 Issue <URL>（规划ID：A-06）。
-工作目录：<本任务绝对路径>，任务分支：feature/A-06-harness-spike。
+请完成 Issue <URL>（规划ID：OA-01）。
+工作目录：<本任务绝对路径>，任务分支：feature/OA-01-native-home。
 基础分支及SHA：<负责人指定值>；目标：refactor/integration。
-先读取适用AGENTS.md、Issue、phase-a.md及相关ADR。
+先读取适用AGENTS.md、Issue、roadmap.md、tasks.md及相关ADR。
 范围：<允许目录与交付物>；不包含：<相邻模块>。
 验收标准：<完整AC，含负例和故障场景>。
 按小步实现并运行对应测试，保留其他人的修改。
@@ -216,7 +225,7 @@ npm run build:static
 npm run test:e2e
 ```
 
-按需补充 [协作说明的验证矩阵](collaboration.md)：企业隔离、任务恢复、工具幂等、官网视觉、RAG评测等。仅文档变更检查链接、命令、任务依赖与现状即可，不要求无关全量构建。
+按需补充 [协作说明的验证矩阵](collaboration.md)：资源权限、任务恢复、工具幂等、官网视觉、CLI契约及原生页面等。仅文档变更检查链接、命令、任务依赖与现状即可，不要求无关全量构建。
 
 验收证据按 AC 整理：
 
@@ -238,7 +247,7 @@ git add <本任务文件路径>
 git diff --cached --check
 git diff --cached
 git commit -m "feat(ai): add cancellable run adapter"
-git push -u origin feature/A-06-harness-spike
+git push -u origin feature/OA-01-native-home
 ```
 
 替换 `git add` 占位路径和提交描述；不要原样复制占位符。推送前核对当前分支，不能是 main/test。检查凭据、生成目录和客户资料未被暂存。后续修复继续提交到同一任务分支。
@@ -250,13 +259,13 @@ git push -u origin feature/A-06-harness-spike
 在 GitHub Pull requests 中选择正确 base/head，先创建 Draft PR；按 [协作说明](collaboration.md) 的模板写问题、结果、Issue、证据及风险。CLI 示例：
 
 ```bash
-gh pr create --repo insanetoto/nuochong-page --base refactor/integration --head feature/A-06-harness-spike --draft
+gh pr create --repo insanetoto/nuochong-page --base refactor/integration --head feature/OA-01-native-home --draft
 gh pr checks --repo insanetoto/nuochong-page 456
 ```
 
 `456` 是示例 PR 编号。必要时使用 `gh pr create --web` 打开网页；审查人使用真实 GitHub 用户名。PR 描述填写 `Refs #实际编号`，待业务验收后再关闭 Issue，避免自动关闭掩盖 Validating 状态。
 
-在 Actions 检查结果 SHA 与最新 PR 提交一致；打开失败 job 找到具体步骤，修复后推送并确认重新运行。任务分支推送不一定触发 E2E，现有 E2E PR 目标也未覆盖拟建集成分支；A-03 未补齐前由负责人确认所需验证路径，不把缺失检查误认绿色。
+在 Actions 检查结果 SHA 与最新 PR 提交一致；打开失败 job 找到具体步骤，修复后推送并确认重新运行。任务分支推送触发双构建和线上健康观察，向refactor/integration的PR触发E2E；OA/CLI/契约专项检查按变更路径触发。所有适用检查均需核对，不把缺失检查误认绿色。
 
 CI 和作者自查通过后，转为 Ready for review 并按任务需要请求可选审查（非作者批准不再是必需门禁）。启用 Codex GitHub Review 后按团队约定发起辅助审查；未启用则用独立聊天只读审查 diff。回复每条有效反馈，修复后附验证结果；更新提交后旧批准可能失效，重新请求审查。
 
@@ -312,3 +321,15 @@ AC2：通过，证据<URL>
 - [ ] PR目标正确、CI对应最新SHA、审查反馈已闭环。
 - [ ] 合并后集成验收通过，Issue与Project记录完整。
 - [ ] 发布状态如实记录，未把提交/合并当作生产发布。
+
+## OA专项验证与CLI要求
+
+```bash
+npm run test:cli
+node tools/nuochong-cli/test/package-smoke.mjs
+node apps/oa/verify-home.mjs
+```
+
+CLI用合成HTTP/SSE服务检查协议；原生页面测试使用全新状态、0次模型调用。正式OA API/外部AI联调须在OA-02/03提交真实证据。新增功能必须同步commandId、输入/输出schema、CLI映射、授权/幂等/失败结果；未实现能力标planned。
+
+官网视觉使用tests/visual说明的对应平台普通测试，不更新快照掩盖回归。当前路线不包含知识/培训/工单业务；不要执行历史A/B任务或复制旧演示登录。
