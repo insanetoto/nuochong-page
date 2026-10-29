@@ -43,9 +43,12 @@ export class RuntimeAdapter {
           if (!this.controller.signal.aborted) onNotification(event);
         },
       }), teardownFailure]);
+      const rootTerminal = result.notifications?.filter((n) => n.method === 'session.event'
+        && n.params.sessionId === result.sessionId && n.params.event?.type === 'turn/end').at(-1)?.params.event.data.reason;
       outcome = this.controller.signal.aborted
         ? { status: timedOut ? 'timed_out' : 'cancelled' }
-        : { status: 'succeeded', result };
+        : rootTerminal?.kind === 'completed' ? { status: 'succeeded', result }
+          : { status: 'failed', errorCode: rootTerminal?.kind === 'error' ? 'ModelRequestFailed' : 'UnsuccessfulTurn' };
     } catch (error) {
       outcome = { status: timedOut ? 'timed_out' : this.controller.signal.aborted ? 'cancelled' : 'failed',
         errorCode: error.constructor.name };

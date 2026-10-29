@@ -75,7 +75,9 @@ function fakeFactory(mode, state) {
       async run(_, { onNotification }) {
         state.started = true;
         onNotification({ method: 'fixture.delta', params: { text: 'synthetic' } });
-        if (mode === 'success') return { finalResponse: 'synthetic' };
+        if (mode === 'success' || mode === 'model-error') return { sessionId: 'fixture', finalResponse: 'synthetic',
+          notifications: [{ method: 'session.event', params: { sessionId: 'fixture',
+            event: { type: 'turn/end', data: { reason: { kind: mode === 'success' ? 'completed' : 'error' } } } } }] };
         if (mode === 'disconnect') throw new Error('synthetic transport loss');
         return new Promise((_, reject) => { rejectRun = reject; });
       },
@@ -109,6 +111,10 @@ await check('transport loss is failed rather than successful', 'synthetic transp
   const state = {}; const adapter = new RuntimeAdapter({}, fakeFactory('disconnect', state));
   assert.equal((await adapter.run('fixture')).status, 'failed'); assert.equal(state.closed, true);
 });
+await check('SDK idle with durable model error is failed', 'synthetic transport', async () => {
+  const adapter = new RuntimeAdapter({}, fakeFactory('model-error', {}));
+  assert.equal((await adapter.run('fixture')).status, 'failed');
+});
 await check('cleanup failure cannot become successful outcome', 'synthetic transport', async () => {
   const state = { failClose: true };
   const adapter = new RuntimeAdapter({}, fakeFactory('success', state));
@@ -132,7 +138,7 @@ await check('lifecycle replay deduplicates; rejects foreign cursor and token per
 
 const report = { time: new Date().toISOString(), node: process.version,
   platform: `${process.platform}-${process.arch}`, results,
-  realModel: { status: 'not_run', reason: 'No isolated server credential configured; no model request made' },
+  realModel: { status: 'not_run_in_this_suite', reason: 'This no-key suite makes no model request; see model-probe separately' },
   limitations: ['No real HTTP/SSE reconnect', 'No persistence or host crash recovery',
     'No real model latency, rate limiting, usage, billing or cancellation measurements'] };
 mkdirSync(new URL('./outputs/', import.meta.url), { recursive: true });

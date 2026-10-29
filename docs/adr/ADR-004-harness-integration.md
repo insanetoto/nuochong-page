@@ -28,3 +28,7 @@ sdk与sdk-minimal均用于A阶段验证。生产Profile需在A-05/A-06明确插�
 ## 升级与撤回条件
 
 CLI/SDK同版本升级，在独立PR重跑干净安装和启动、A-06契约与故障测试。若公开接口无法表达取消、状态/结果归属或受控工具授权，则补充官方支持的集成方案原型并修订此ADR；不以私有接口临时绕过。
+
+## A-06 原型补充（2026-10-29，待阶段验收）
+
+实测默认SDK不发布实时token通知；采用自有Profile插件，通过公开服务类与agent/assistant-stream Hook桥接，继续使用官方SDK管理子进程，未访问私有接口。只将持久根会话completed终态映射成功，不能用SDK返回idle代替成功。取消原型采用每次执行独占子进程并关闭；成本和资源将在A-09验证。详见[实测矩阵](../../experiments/phase-a/results/runtime.md)。ADR保持Proposed，生产采纳仍待A-10。

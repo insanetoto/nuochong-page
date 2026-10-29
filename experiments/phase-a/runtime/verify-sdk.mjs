@@ -2,17 +2,20 @@ import { DeepSeekHarness } from '@deepseek-ai/dsh-sdk-client';
 import { fileURLToPath } from 'node:url';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { writeReadonlyPatch } from './profile-patch.mjs';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const env = { PATH: process.env.PATH, LANG: 'en_US.UTF-8', TERM: 'dumb' };
 const results = [];
-for (const profile of ['sdk-minimal', 'sdk']) {
+for (const variant of ['sdk-minimal', 'sdk', 'sdk-minimal-bridge']) {
+  const profile = variant === 'sdk-minimal-bridge' ? 'sdk-minimal' : variant;
   const harness = new DeepSeekHarness({
-    profile, dshHome: resolve(root, '.dsh-home', profile), processCwd: root,
+    profile, patches: variant === 'sdk-minimal-bridge' ? [writeReadonlyPatch(root, true)] : [],
+    dshHome: resolve(root, '.dsh-home', variant), processCwd: root,
     cwd: root, env, initializeTimeoutMs: 20_000, requestTimeoutMs: 20_000,
     shutdownTimeoutMs: 5000,
   });
-  let result = { profile, initialized: false, closed: false, error: null };
+  let result = { profile, variant, initialized: false, closed: false, error: null };
   try {
     await harness.start();
     result.initialized = true;

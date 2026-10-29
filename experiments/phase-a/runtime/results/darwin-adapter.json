@@ -1,5 +1,5 @@
 {
-  "time": "2026-10-29T04:08:39.672Z",
+  "time": "2026-10-29T04:21:11.486Z",
   "node": "v24.21.0",
   "platform": "darwin-arm64",
   "results": [
@@ -7,78 +7,84 @@
       "name": "registered readonly tool returns validated canonical output",
       "scope": "real ToolRuntime",
       "passed": true,
-      "ms": 1.9930420000000026
+      "ms": 1.2544170000000001
     },
     {
       "name": "pre-cancelled call never enters tool body",
       "scope": "real ToolRuntime",
       "passed": true,
-      "ms": 0.17500000000001137
+      "ms": 0.15529199999999932
     },
     {
       "name": "running cancellation joins cooperative tool; subsequent calls blocked",
       "scope": "real ToolRuntime",
       "passed": true,
-      "ms": 1.241375000000005
+      "ms": 0.9051669999999987
     },
     {
       "name": "deadline cooperatively stops tool and joins cleanup",
       "scope": "real ToolRuntime, adapter signal deadline",
       "passed": true,
-      "ms": 26.574457999999993
+      "ms": 25.693625000000004
     },
     {
       "name": "plugin unload removes registry entry and rejects future calls",
       "scope": "real Cordis lifecycle",
       "passed": true,
-      "ms": 0.7831249999999841
+      "ms": 0.4747500000000002
     },
     {
       "name": "success forwards stream and closes once; rejects reuse",
       "scope": "synthetic transport",
       "passed": true,
-      "ms": 0.35320899999999256
+      "ms": 0.3214579999999998
     },
     {
       "name": "cancel closes owned process before terminal result",
       "scope": "synthetic transport",
       "passed": true,
-      "ms": 0.0771660000000054
+      "ms": 0.05237499999999784
     },
     {
       "name": "request deadline closes and joins owned run",
       "scope": "synthetic transport",
       "passed": true,
-      "ms": 26.189707999999996
+      "ms": 26.171542000000002
     },
     {
       "name": "transport loss is failed rather than successful",
       "scope": "synthetic transport",
       "passed": true,
-      "ms": 0.06837500000000318
+      "ms": 0.04708299999998644
+    },
+    {
+      "name": "SDK idle with durable model error is failed",
+      "scope": "synthetic transport",
+      "passed": true,
+      "ms": 0.028125000000002842
     },
     {
       "name": "cleanup failure cannot become successful outcome",
       "scope": "synthetic transport",
       "passed": true,
-      "ms": 0.061166000000014265
+      "ms": 0.05595800000000395
     },
     {
       "name": "deadline teardown failure rejects pending run rather than hanging",
       "scope": "synthetic transport",
       "passed": true,
-      "ms": 26.235374999999976
+      "ms": 26.167249999999996
     },
     {
       "name": "lifecycle replay deduplicates; rejects foreign cursor and token persistence",
       "scope": "in-memory contract fixture",
       "passed": true,
-      "ms": 3.1811250000000086
+      "ms": 0.6315409999999986
     }
   ],
   "realModel": {
-    "status": "not_run",
-    "reason": "No isolated server credential configured; no model request made"
+    "status": "not_run_in_this_suite",
+    "reason": "This no-key suite makes no model request; see model-probe separately"
   },
   "limitations": [
     "No real HTTP/SSE reconnect",

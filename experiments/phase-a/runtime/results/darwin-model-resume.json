@@ -1,0 +1,82 @@
+{
+  "time": "2026-10-29T04:23:10.601Z",
+  "concurrency": 1,
+  "sampleCount": 1,
+  "ttftP95Ms": 1617.339583,
+  "totalP95Ms": 1656.914875,
+  "costStatus": "unknown; usage recorded, no verified billing amount",
+  "results": [
+    {
+      "id": "ef266eb3-fdc3-4853-9418-1c83b6cfb8de-smoke",
+      "mode": "success",
+      "time": "2026-10-29T04:23:10.342Z",
+      "node": "v24.21.0",
+      "platform": "darwin-arm64",
+      "route": {
+        "provider": "deepseek-official",
+        "model": "deepseek-v4-flash"
+      },
+      "status": "succeeded",
+      "totalMs": 1656.914875,
+      "responseMatches": true,
+      "notificationMethods": [
+        "session.event",
+        "session.status",
+        "nuochong.assistant.stream"
+      ],
+      "eventTypes": [
+        "agent/inbox/spliced",
+        "turn/start",
+        "step/start",
+        "system/message",
+        "user/message",
+        "request/header",
+        "request/context",
+        "session/title",
+        "session-log-deepseek/delivery-accepted",
+        "assistant/message",
+        "tool/call",
+        "tool/result",
+        "step/end",
+        "turn/end"
+      ],
+      "errorCode": null,
+      "bridge": true,
+      "chunks": 24,
+      "ttftMs": 1617.339583,
+      "fixtureCalls": 1,
+      "postCancelCalls": 0,
+      "cancelAckMs": null,
+      "cancelClosedMs": null,
+      "usage": [
+        {
+          "inputTokens": 227,
+          "outputTokens": 24,
+          "cacheReadTokens": 128,
+          "cacheWriteTokens": 0,
+          "totalTokens": 379
+        },
+        {
+          "inputTokens": 145,
+          "outputTokens": 11,
+          "cacheReadTokens": 256,
+          "cacheWriteTokens": 0,
+          "totalTokens": 412
+        }
+      ],
+      "auditedCalls": 1,
+      "auditAtCancel": null,
+      "ttftReason": "Measured from public agent hook via deployment-owned bridge",
+      "cost": {
+        "amount": null,
+        "status": "unknown"
+      },
+      "passed": true,
+      "resume": {
+        "restored": true,
+        "sameWorkingDirectory": true,
+        "scope": "Same persisted JSONL home, new process, no new prompt or model request"
+      }
+    }
+  ]
+}
