@@ -29,6 +29,8 @@ jobs:
         run: node experiments/phase-a/runtime/verify-runtime.mjs
       - name: Verify SDK subprocess initialize and close (no model call)
         run: node experiments/phase-a/runtime/verify-sdk.mjs
+      - name: Verify readonly tools, lifecycle and execution adapter (no model call)
+        run: node experiments/phase-a/runtime/verify-adapter.mjs
       - uses: actions/upload-artifact@v7
         if: always()
         with:
