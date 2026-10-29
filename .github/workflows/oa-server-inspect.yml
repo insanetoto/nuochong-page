@@ -42,7 +42,14 @@ jobs:
           docker info --format '{{.ServerVersion}}' 2>/dev/null || true
           free -m
           df -h / /tmp
-          printf '\nSUDO POLICY\n'; sudo -n -l 2>/dev/null || true
+          printf '\nSUDO POLICY\n'; command -v sudo || true; sudo -n -l 2>&1 || true
+          printf '\nOS\n'; cat /etc/os-release | head -6; getconf GNU_LIBC_VERSION
+          printf '\nWRITABLE DEPLOYMENT DIRECTORIES\n'
+          for directory in "$HOME" /var/www/nuochong /etc/nginx /etc/nginx/conf.d /etc/nginx/sites-enabled /etc/systemd/system; do
+            if test -w "$directory"; then printf 'WRITABLE %s\n' "$directory"; else printf 'READONLY %s\n' "$directory"; fi
+          done
+          printf '\nNGINX VERSION AND FILES\n'; nginx -v 2>&1
+          ls -l /etc/nginx/sites-enabled /etc/nginx/conf.d 2>/dev/null || true
           printf '\nUSER SUPERVISOR\n'; systemctl --user is-system-running 2>/dev/null || true
           loginctl show-user "$(id -un)" -p Linger 2>/dev/null || true
           printf '\nLISTENING PORTS\n'
@@ -50,6 +57,25 @@ jobs:
           printf '\nNGINX PUBLIC ROUTING\n'
           (sudo -n nginx -T 2>/dev/null || nginx -T 2>/dev/null || true) | awk '/^[[:space:]]*(listen |server_name |ssl_certificate |root )/{print}'
           REMOTE
+      - name: Check whether existing Cloudflare token supports a named test tunnel
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node --input-type=module <<'JS'
+          for (const [name, path] of [
+            ['tunnel-access', `/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/cfd_tunnel?is_deleted=false&per_page=1`],
+            ['domain-access', '/zones?name=nuochong.net&per_page=1'],
+          ]) {
+            const response = await fetch(`https://api.cloudflare.com/client/v4${path}`, {
+              headers: { authorization: `Bearer ${process.env.CLOUDFLARE_API_TOKEN}` },
+            });
+            const body = await response.json();
+            console.log(JSON.stringify({ check: name, status: response.status, success: body.success,
+              count: Array.isArray(body.result) ? body.result.length : null,
+              errorCodes: body.errors?.map((error) => error.code) }));
+          }
+          JS
       - name: Remove temporary SSH identity
         if: always()
         run: rm -f ~/.ssh/oa_deploy_key
