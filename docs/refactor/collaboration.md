@@ -65,7 +65,7 @@ Backlog → Ready → In progress → In review → Validating → Done
 
 ### 重构期间的工作方式
 
-1. 已验收A阶段和官网基线保留。当前增量Issue #31待验收，新任务仅按[OA跟踪表](oa-tracking.md)解锁。
+1. 已验收A阶段和官网基线保留。当前增量Issue #31已由用户验收（PR #38），新任务仅按[OA跟踪表](oa-tracking.md)解锁。
 2. 从refactor/integration指定SHA建立独立分支，如feature/OA-01-native-home、fix/OA-02-run-recovery；不能从旧test隐式开工。
 3. PR目标refactor/integration，适用检查通过后合入，记录实现、人工验收、集成SHA三种事实。
 4. 旧B—E已撤销；dev/test作为旧环境维护来源，不迁入旧员工/培训/工单演示，不强推覆盖其独立历史。
@@ -236,6 +236,6 @@ AC → 测试/截图/Actions链接；列明未运行项和原因。
 
 ## OA范围与CLI完成定义
 
-新OA-01—06和依赖以[跟踪表](oa-tracking.md)为准；当前0/6完成，本次增量验收后仅OA-01 Ready，不自动执行全路线。原生页面先作本机管理员预览，正式员工接入须有OA-04身份和资源边界。具体OA业务暂不排期。
+新OA-01—06和依赖以[跟踪表](oa-tracking.md)为准；当前0/6完成，本次增量已验收，仅OA-01 Ready，不自动执行全路线。原生页面先作本机管理员预览，正式员工接入须有OA-04身份和资源边界。具体OA业务暂不排期。
 
 每项新增产品能力必须有commandId、版本化输入/输出schema、CLI映射、权限/副作用/幂等说明；Web、CLI和未来MCP复用同一API/服务规则。dry-run不是授权，不将dsh owner管理接口下放给一般调用者。未实现能力明确planned，真实模型/外部AI联调不能用合成测试代替。

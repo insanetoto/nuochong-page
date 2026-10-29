@@ -1,10 +1,10 @@
 # 公司OA基座任务路线与执行跟踪
 
-更新2026-10-29。当前增量 [#31](https://github.com/insanetoto/nuochong-page/issues/31)待负责人验收。以下0/6完成、0/6人工验收；全部Backlog。当前增量验收后仅OA-01可以Ready，其余按依赖解锁。本次不自动开展六项实现或发布生产。
+更新2026-10-29。当前增量 [#31](https://github.com/insanetoto/nuochong-page/issues/31)已由用户明确验收（“验收通过，合入集成分支”，PR #38）。以下0/6完成、0/6人工验收；仅OA-01 Ready，其余Backlog，按依赖解锁。本次不自动开展六项实现或发布生产。
 
 | 任务 | GitHub Issue | 前置 | 状态 | 负责人 | 验收 |
 | --- | --- | --- | --- | --- | --- |
-| OA-01 | [原生首页与独立运行基座](https://github.com/insanetoto/nuochong-page/issues/32) | 当前增量 #31 验收 | Backlog | 未指派 | 未实现/未验收 |
+| OA-01 | [原生首页与独立运行基座](https://github.com/insanetoto/nuochong-page/issues/32) | 当前增量 #31 已验收 | Ready | 未指派 | 未实现/未验收 |
 | OA-02 | [Harness核心运行与会话](https://github.com/insanetoto/nuochong-page/issues/33) | #32 | Backlog | 未指派 | 未实现/未验收 |
 | OA-03 | [CLI与外部AI接入](https://github.com/insanetoto/nuochong-page/issues/34) | #33 | Backlog | 未指派 | 未实现/未验收 |
 | OA-04 | [公司访问基础](https://github.com/insanetoto/nuochong-page/issues/35) | #32 | Backlog | 未指派 | 未实现/未验收 |

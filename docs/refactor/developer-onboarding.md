@@ -10,7 +10,7 @@
 
 向负责人获取：GitHub 仓库访问权限、任务 Issue URL、指定基础分支/SHA、审查人、测试资源和验收标准。
 
-当前规划随重构集成分支维护；本次OA范围调整见Issue #31和其PR。A阶段已验收，旧B—E停止执行；新OA任务#32—#37见[执行跟踪](oa-tracking.md)。当前增量验收前均Backlog，之后仅OA-01可Ready。refactor/integration和main已启用PR/必需检查，非作者审批数为0；不假定GitHub Project已建立。
+当前规划随重构集成分支维护；本次OA范围调整见Issue #31和其PR。A阶段已验收，旧B—E停止执行；新OA任务#32—#37见[执行跟踪](oa-tracking.md)。当前增量已验收，仅OA-01 Ready，其余Backlog。refactor/integration和main已启用PR/必需检查，非作者审批数为0；不假定GitHub Project已建立。
 
 当前 `main` 推送会触发生产部署，`test` 推送会触发旧测试环境部署。个人开发只能推送任务分支。没有 Ready Issue 时先请负责人完成任务分派；不要随意挑选未满足依赖的后续任务。
 
