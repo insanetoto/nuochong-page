@@ -1,0 +1,32 @@
+# A-02 官网保护基线
+
+来源：origin/main `46ab969aa3ad10c2b2efd4c4f0b8243bb403943b`。保护源码/素材/锁文件SHA256与运行环境见 [证据清单](../../docs/refactor/evidence/A-02-baseline.json)。这些源码与main逐文件比较一致；没有采用test的官网区块重排。
+
+## 已有基线
+
+`baselines/darwin/` 包含1440×900、390×844两视口与中英文组合，共4张全页PNG及4份正文/链接/图片/SEO清单。固定light、en-US、Asia/Shanghai、deviceScaleFactor=1、reducedMotion；截图不掩盖正文。
+
+初始采集环境：macOS arm64，Google Chrome 156.0.8078.48，Node v24.21.0；Playwright版本以证据JSON为准。锁定Chromium下载因网络超时未完成，未把本机Chrome伪称为锁定浏览器。基线分平台存储，Linux CI尚无对应截图，不能静默生成/更新后声称视觉通过。A-03/B-06需按批准环境建立独立基线与CI。
+
+## 普通回归
+
+在仓库根目录、相同浏览器/平台执行：
+
+```bash
+npm ci
+PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' npx playwright test --config tests/visual/playwright.config.ts
+```
+
+服务器由测试构建并启动生产静态产物，使用独占4173端口，失败时不复用其他项目服务器。安装或升级浏览器后出现像素差异需定位并审查，不能直接更新消除失败。`--update-snapshots`仅用于经批准的基线创建/变更，普通验收不使用该参数。
+
+## 覆盖与实际结果
+
+普通回归：5/5通过（6.7秒）。四组检查完整正文/标题/描述/favicon、图片加载、锚点、备案/商务邮箱/电话、无资源HTTP错误与页面异常、截图像素一致和申请使用入口。另测query优先于本地偏好、本地偏好优先于浏览器语言，以及语言切换持久化。
+
+首轮移动端检查选中了响应式布局中隐藏的页头按钮，超时；已改为点击实际可见的hero主操作按钮，官网未改动。普通回归已通过，不靠更新截图修复此交互用例。
+
+## 人工验收
+
+产品负责人查看四张PNG、四份JSON和实际交互，确认它们代表需要保留的官网。当前状态：待产品确认，Issue #2不得提前关闭。桌面/移动中英文任一差异需有明确原因与批准记录。
+
+这不是完整业务后台测试，也不验证线上第三方网站或邮件客户端送达。联系入口检查只核验链接与页面信息，不实际发送邮件。

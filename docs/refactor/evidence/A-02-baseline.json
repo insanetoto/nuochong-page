@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-29",
+  "protectedMainSha": "46ab969aa3ad10c2b2efd4c4f0b8243bb403943b",
+  "baseSha": "0a3410e437df14860e483a83768c3a730363a0f5",
+  "platform": "darwin-arm64",
+  "browser": "Google Chrome 156.0.8078.48",
+  "node": "v24.21.0",
+  "playwright": "1.62.1",
+  "testResult": "5 passed (6.7s), ordinary run without --update-snapshots",
+  "screenshotsStatus": "pending product approval",
+  "sha256": {
+    "app/HomePage.tsx": "94d402900667ccd47f310bf0cff9899355e832188a2658bb767616649193dde4",
+    "app/globals.css": "d4298419e8bbc31baa28118eee2825dc206b11b5230e62a47878891374b14c98",
+    "static-src/main.tsx": "3fef7f9da06db78197b8f717e262414365c87e9375b5ebeb0da67c053c2f58f3",
+    "static-src/static.css": "d84e174f1ac4fd27d4acf64cf5016f194154ec8266fb987f96b5c943f7ec8363",
+    "static-src/index.html": "2604904146a15660d08be24313256a8ce043a43d8ccdd2c358b88a7e23ab81bf",
+    "vite.static.config.ts": "7d21da2dedbd743d1bb122a163499301a17b797fa24b21aafa0823188db588ac",
+    "package-lock.json": "e44f695bd2d905938a629e2847c9eb40eab32f8a96386f08bd800778fe98419c",
+    "public/contact_me_qr.png": "30ed2b3445d53e53540192dc19ad21856985db8062b4d9124ac54e18802d70b9",
+    "public/favicon.svg": "712297d11ccc6c20b0d95fef4f51fae26d0b03c06777d399665a4d5dc5a854dd",
+    "public/file.svg": "1e0ae4d1a1ddfa36752988647b731e4abf150c414d069ec83c96fb0aaeff0307",
+    "public/globe.svg": "d051a8c47936990a9085693d307bb7cea1bc1b6d7ed956bcbaacf674f4ec96b9",
+    "public/logo-horizontal.svg": "eb0370fb717b1741c746c3a67d2bac14c5dd19531baef3d4c6bc78485929563e",
+    "public/logo-mark.svg": "712297d11ccc6c20b0d95fef4f51fae26d0b03c06777d399665a4d5dc5a854dd",
+    "public/logo-monochrome.svg": "7cdff45b5fc948059bce770f805b43bbdd26c1d109818ba110b4342b865732f0",
+    "public/logo-tonal.svg": "5b5a19dc1a846d6faccb7861f2210659915ecc744d1aee4975cb406355afb2dd",
+    "public/window.svg": "decf1cf7bb22b5c99c4857cfcd5718ce5465c4454166317589c83fc73df74b66"
+  },
+  "baselineSha256": {
+    "tests/visual/baselines/darwin/desktop-en-content.json": "0ad533f273bf3620139bb5abee4af088eae3f0655b23b1047bc57578ac7719c9",
+    "tests/visual/baselines/darwin/desktop-en.png": "ca567dcafb0e378e053dd9eb2c2768f70be3ff26f4c362af382ee29503b25c61",
+    "tests/visual/baselines/darwin/desktop-zh-content.json": "45055b47d1e2b3b221af004f889f2cacb84d08adb7eba4d8250d03b290273773",
+    "tests/visual/baselines/darwin/desktop-zh.png": "d8416d0e7f30bcc6c9b65edd9fe5e514640113c78271ef85300c7348ba880917",
+    "tests/visual/baselines/darwin/mobile-en-content.json": "0ad533f273bf3620139bb5abee4af088eae3f0655b23b1047bc57578ac7719c9",
+    "tests/visual/baselines/darwin/mobile-en.png": "fd0b22081ac25b65d36a767aa3d2ebd8c7d159a1566df7855a5b27f73e27117a",
+    "tests/visual/baselines/darwin/mobile-zh-content.json": "45055b47d1e2b3b221af004f889f2cacb84d08adb7eba4d8250d03b290273773",
+    "tests/visual/baselines/darwin/mobile-zh.png": "bb5268e01eb74545a8e1d0ae0d59639f35ff9c99edeb3a106b3d5926b12ebd22"
+  }
+}
