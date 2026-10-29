@@ -1,0 +1,105 @@
+{
+  "time": "2026-10-29T04:41:01.860Z",
+  "node": "v24.21.0",
+  "platform": "linux-x64",
+  "database": "PostgreSQL 17.11 (Debian 17.11-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+  "resources": {
+    "cpus": 4,
+    "totalMemoryBytes": 16759443456,
+    "os": "7.0.0-1017-azure"
+  },
+  "scope": "Real isolated PostgreSQL, two independent pools and three SIGKILL worker processes; synthetic executor and same-DB receiver",
+  "results": [
+    {
+      "name": "concurrent duplicate requests and conflicting payload",
+      "passed": true,
+      "ms": 41.415516999999994
+    },
+    {
+      "name": "two independent worker connections compete, round 1",
+      "passed": true,
+      "ms": 10.66825399999999
+    },
+    {
+      "name": "two independent worker connections compete, round 2",
+      "passed": true,
+      "ms": 10.952777999999995
+    },
+    {
+      "name": "two independent worker connections compete, round 3",
+      "passed": true,
+      "ms": 10.73774499999999
+    },
+    {
+      "name": "real worker SIGKILL, lease expiry and fenced recovery, round 1",
+      "passed": true,
+      "ms": 5102.140112,
+      "recoverMs": 5021.178269,
+      "leaseMs": 5000,
+      "checkMs": 1000
+    },
+    {
+      "name": "real worker SIGKILL, lease expiry and fenced recovery, round 2",
+      "passed": true,
+      "ms": 5090.618104,
+      "recoverMs": 5019.434856,
+      "leaseMs": 5000,
+      "checkMs": 1000
+    },
+    {
+      "name": "real worker SIGKILL, lease expiry and fenced recovery, round 3",
+      "passed": true,
+      "ms": 5093.083564999999,
+      "recoverMs": 5020.279342,
+      "leaseMs": 5000,
+      "checkMs": 1000
+    },
+    {
+      "name": "heartbeat renews only live fenced lease; expired owner cannot settle",
+      "passed": true,
+      "ms": 40.270972999998776
+    },
+    {
+      "name": "transient failures retry at most twice; auth failure never retries",
+      "passed": true,
+      "ms": 16.979716999998345
+    },
+    {
+      "name": "uncertain external intent survives lost lease and requires compensation",
+      "passed": true,
+      "ms": 16.765670000000682
+    },
+    {
+      "name": "queued cancellation is idempotent and has no effect",
+      "passed": true,
+      "ms": 4.344678000001295
+    },
+    {
+      "name": "cancel/complete transaction arbitration, round 1",
+      "passed": true,
+      "ms": 12.851066000001083,
+      "terminal": "cancelled",
+      "effectCount": 0
+    },
+    {
+      "name": "cancel/complete transaction arbitration, round 2",
+      "passed": true,
+      "ms": 9.993954999999914,
+      "terminal": "cancelled",
+      "effectCount": 0
+    },
+    {
+      "name": "cancel/complete transaction arbitration, round 3",
+      "passed": true,
+      "ms": 5.705556000000797,
+      "terminal": "cancelled",
+      "effectCount": 0
+    },
+    {
+      "name": "all tasks terminal, exactly one terminal history per task, no duplicate business effects",
+      "passed": true,
+      "ms": 1.3075769999995828,
+      "terminalTasks": 17
+    }
+  ]
+}

@@ -11,7 +11,7 @@
 
 ## 当前状态
 
-2026-10-29：A-01与A-02已验收并关闭，5/10完成。A-03已完成，PR #23通过双构建/E2E后合入refactor/integration，Issue #3关闭。按用户要求必需批准人数为0，其余保护已回读验证。A-04已验收关闭，PR #24已合入；A-05基线002fece已获用户明确确认，指标冻结v1；已通过CI并由PR #25合入refactor/integration（6195bc2），Issue #5关闭；A-06技术原型与真实模型矩阵已完成，PR #26已通过CI，待集成后人工验收；A-07/A-08依赖已满足。Ready/Backlog 等为本项目执行状态，记录在 Issue 正文/总览中；不是已经配置的 GitHub Project 字段。标签、里程碑及保护已落实；当前通过Issue链接表达依赖，未创建GitHub Project。
+2026-10-29：A-01与A-02已验收并关闭，6/10完成。A-03已完成，PR #23通过双构建/E2E后合入refactor/integration，Issue #3关闭。按用户要求必需批准人数为0，其余保护已回读验证。A-04已验收关闭，PR #24已合入；A-05基线002fece已获用户明确确认，指标冻结v1；已通过CI并由PR #25合入refactor/integration（6195bc2），Issue #5关闭；A-06已由PR #26集成且用户明确验收，Issue #6关闭；A-07技术验证通过，PR #27待集成/人工验收；A-08依赖已满足。Ready/Backlog 等为本项目执行状态，记录在 Issue 正文/总览中；不是已经配置的 GitHub Project 字段。标签、里程碑及保护已落实；当前通过Issue链接表达依赖，未创建GitHub Project。
 
 ## 路线与可并行波次
 
@@ -53,8 +53,8 @@ flowchart LR
 | [A-03 / #3](https://github.com/insanetoto/nuochong-page/issues/3) | 协作与仓库治理初始化 | 平台 | insanetoto | Done | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
 | [A-04 / #4](https://github.com/insanetoto/nuochong-page/issues/4) | Harness 与运行版本验证 | AI | insanetoto | Done | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
 | [A-05 / #5](https://github.com/insanetoto/nuochong-page/issues/5) | 架构决策、契约与指标冻结 | 架构＋产品 | insanetoto | Done | [A-04](https://github.com/insanetoto/nuochong-page/issues/4) |
-| [A-06 / #6](https://github.com/insanetoto/nuochong-page/issues/6) | Harness 执行与流式原型 | AI | insanetoto | In review（技术验证通过，待人工验收） | [A-05](https://github.com/insanetoto/nuochong-page/issues/5) |
-| [A-07 / #7](https://github.com/insanetoto/nuochong-page/issues/7) | 持久任务与恢复原型 | 后端 | 待分配 | Backlog | [A-05](https://github.com/insanetoto/nuochong-page/issues/5) |
+| [A-06 / #6](https://github.com/insanetoto/nuochong-page/issues/6) | Harness 执行与流式原型 | AI | insanetoto | Done | [A-05](https://github.com/insanetoto/nuochong-page/issues/5) |
+| [A-07 / #7](https://github.com/insanetoto/nuochong-page/issues/7) | 持久任务与恢复原型 | 后端 | insanetoto | In review（技术验证通过） | [A-05](https://github.com/insanetoto/nuochong-page/issues/5) |
 | [A-08 / #8](https://github.com/insanetoto/nuochong-page/issues/8) | 企业与工具权限原型 | 后端＋测试 | 待分配 | Backlog | [A-05](https://github.com/insanetoto/nuochong-page/issues/5) |
 | [A-09 / #9](https://github.com/insanetoto/nuochong-page/issues/9) | 部署、资源与回滚原型 | 平台＋测试 | 待分配 | Backlog | [A-02](https://github.com/insanetoto/nuochong-page/issues/2)、[A-06](https://github.com/insanetoto/nuochong-page/issues/6)、[A-07](https://github.com/insanetoto/nuochong-page/issues/7)、[A-08](https://github.com/insanetoto/nuochong-page/issues/8) |
 | [A-10 / #10](https://github.com/insanetoto/nuochong-page/issues/10) | 架构阶段 Go/No-Go 评审 | 架构，产品/测试/发布共同审批 | 待分配 | Backlog | [A-03](https://github.com/insanetoto/nuochong-page/issues/3)、[A-09](https://github.com/insanetoto/nuochong-page/issues/9) |
