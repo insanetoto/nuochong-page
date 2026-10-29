@@ -1,36 +1,15 @@
-# 架构重构规划与团队协作入口
+# 公司OA与DeepSeek Harness基座：当前协作入口
 
-更新日期：2026-10-29。A-01—A-09已实现、验证并获验收，A-10已获用户明确Go，最终记录通过PR #30交付。所有A—E仍在规划范围，尚未开展B产品化或生产发布。
+2026-10-29用户调整范围：以DeepSeek Harness为基座建设公司OA，先用官方原生页面作为OA首页；删除旧业务演示，具体OA业务需求以后再规划。旧企业知识/培训/工单B—E路线停止执行。
 
-规划与A阶段原型已通过PR集成至`refactor/integration`，历史规划分支为`docs/refactor-collaboration-plan`；未合入main或test。A 阶段已创建 10 个任务 Issues 和总览 #11；B 阶段已创建 8 个任务 Issues（#12—#19）和总览 #20；A/B里程碑与阶段标签已关联，refactor/integration已建立；尚未启用GitHub Project；main/test/refactor/integration分支保护已配置并回读验证，具体检查差异见治理状态。规划编号与 Issue 编号的映射见执行路线图。
+1. [当前产品路线图](roadmap.md)：产品定位、当前可用范围、六个基座任务与阶段出口。
+2. [任务范围/验收](tasks.md)：OA-01—OA-06的依赖、交付和估算。
+3. [OA执行跟踪](oa-tracking.md)：负责人查看实际状态和Issue入口。
+4. [原生首页运行说明](../../apps/oa/README.md)：启动官方页面、模型配置及入口边界。
+5. [产品CLI规范](cli-native.md)与[可执行客户端](../../tools/nuochong-cli/README.md)。
+6. [范围决策ADR-010](../adr/ADR-010-oa-harness-product-scope.md)、[CLI决策ADR-009](../adr/ADR-009-cli-native-capabilities.md)。
+7. [团队协作](collaboration.md)、[个人开发指南](developer-onboarding.md)。
 
-## 阅读顺序
+官网保持独立。当前只交付源码清理、原生页面本机预览与客户端基础，正式公司身份/API/CLI/MCP联调按新任务执行；不宣称业务OA已经上线。本次不部署main/test或覆盖旧线上环境。
 
-1. [总体路线图](roadmap.md)：产品范围、阶段出口和发布边界。
-2. [A 阶段架构与验证方案](phase-a.md)：决策、目录、原型矩阵和验收清单。
-3. [任务清单](tasks.md)：可转为 GitHub Issues 的任务、范围、验收及依赖。
-4. [Codex 与 GitHub 开发协作说明](collaboration.md)：领取任务、开发、审查、集成和发布。
-5. [开发人员上手指南](developer-onboarding.md)：个人环境配置、GitHub 领取任务、Codex 开发、提交、测试和验收的逐步操作。
-
-6. [A 阶段执行路线图](phase-a-tracking.md)：GitHub Issue 映射、并行波次、负责人入口与状态维护。
-
-7. [B 阶段执行路线图](phase-b-tracking.md)：基础平台任务映射、准入门禁、并行路线与验收跟踪。
-
-8. [A-03 治理落地状态](governance.md)：模板、分支、检查名称、管理员授权和待验收事项。
-
-9. [A阶段Go/No-Go评审与B—E估算](phase-a-review.md)：以最终用户批准和集成SHA作为准入依据。
-
-## 约定
-
-- 官网的中英文内容、视觉、交互、URL、SEO 和备案信息保持基线，AI 服务故障不能阻断官网。
-- 业务平台负责身份、企业隔离、业务数据、任务状态；Harness 负责 Agent 执行与会话能力。
-- 采用模块化单体业务后端与独立 Harness 执行服务；逻辑模块不等于独立微服务。
-- Codex 用于开发和审查；产品运行时采用 DeepSeek Harness。两者的账号、凭据与权限分别管理。
-- A 阶段用于验证候选方案。技术选型、指标和范围变更由负责人记录决策，不能把本文的提案当成已实现能力。
-- 同一任务一个负责人、一个主 PR；在该 PR 中闭环实现、测试、文档与审查。
-
-## 进入 B 前的协作安排
-
-指派产品、架构、模块、测试和发布负责人；确认首发客户为单企业试点还是多企业同时上线；确认知识资料样本、目标模型、预算、测试资源；分配 A 阶段任务。角色可兼任，但作者不能独自完成生产发布审批。
-
-所有阶段在范围内不代表并行启动，也不代表现在合并或部署。A阶段已批准Go，B-01可领取；本次未执行B开发。后续按任务依赖和阶段出口推进。
+A阶段10项已完成的验证与Go保留为历史技术证据；其旧业务范围和人日估算不再约束当前产品。[旧路线归档](archive/business-plan-2026-10-29/roadmap.md)、[历史A阶段评审](phase-a-review.md)可供复用技术结论，不作为继续迁入旧业务页面的授权。

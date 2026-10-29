@@ -1,3 +1,5 @@
+> 当前范围更新：只推进[公司OA-Harness基座路线](roadmap.md)和[OA任务](tasks.md)；文中旧B—E示例不再是领取指令。旧业务演示已移除，业务模块以后另行规划。
+
 # 团队开发协作说明：Codex + GitHub
 
 适用项目：nuochong-page。日期：2026-10-28。适用范围：A—E 全阶段重构。

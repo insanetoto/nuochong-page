@@ -36,3 +36,7 @@ CLI/SDK同版本升级，在独立PR重跑干净安装和启动、A-06契约与�
 ## A-10最终采纳记录
 
 用户在当前会话明确回复“批准 A-10 Go”。A-06真实模型、工具、取消/断流/会话恢复与A-09容器启动已验证。采用公开Hook/服务类的部署自有流式桥，不能把idle当成功；仅根会话completed映射成功。RC与桥协议升级必须重新测试。Host原生模块使用有界私有exec缓存，普通tmp/state保持noexec，不使用privileged绕过。证据与遗留责任见[阶段评审](../refactor/phase-a-review.md)；后续改变版本、边界或冻结指标须独立记录并重测。
+
+## 当前产品范围变更
+
+2026-10-29起，公司OA以Harness为基座。本文保留已验收技术决策历史；旧业务迁移义务和B—E阶段产品范围由[ADR-010](ADR-010-oa-harness-product-scope.md)及[新路线图](../refactor/roadmap.md)替代，不自动恢复旧业务模块。

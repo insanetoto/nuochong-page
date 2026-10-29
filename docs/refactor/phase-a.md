@@ -1,3 +1,5 @@
+> 范围变更（2026-10-29）：本文保留为已验收A阶段的历史证据。用户现改为以DeepSeek Harness为基座的公司OA；旧业务迁移/旧B—E执行计划已撤销，当前以[新路线图](roadmap.md)和[ADR-010](../adr/ADR-010-oa-harness-product-scope.md)为准。
+
 # A 阶段：架构决策、目录、原型与验收
 
 状态：提案。A 阶段只允许隔离原型、基线采集与决策文档；不迁移生产、不替换真实认证、不导入客户数据。原型通过不代表产品功能完成。
@@ -30,6 +32,7 @@ apps/
   api/                     # 模块化单体 HTTP 入口、认证、业务事务
   worker/                  # 持久任务调度、解析/索引与执行适配
   harness-host/            # 具名 Profile 启动、生命周期、独立健康检查
+  cli/                     # A-10后新增：产品CLI，共用业务契约，承接tools/nuochong-cli
 packages/
   contracts/               # 请求、响应、事件 schema；不依赖 Harness/DB
   domain/                  # identity / knowledge / training / workorders / ai-runs
@@ -100,3 +103,7 @@ A-05 输出 `docs/refactor/acceptance-targets.md`，由产品、架构、测试�
 - [Harness 架构](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/architecture.zh.md)：Profile、插件、Agent 与会话边界。
 - [Harness 工作流](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/workflow/workflow/README.zh.md)：原型须核实所锁版本的恢复与后台执行能力。
 - 本地曾检查的上游副本版本为 `86a4022`；它只是研究参考，不是本项目批准的依赖版本。A-04 必须重新核验。
+
+## A-10后的兼容增量：CLI
+
+用户要求后续产品业务功能CLI化；新增[ADR-009](../adr/ADR-009-cli-native-capabilities.md)和[CLI规范](cli-native.md)。目标增加apps/cli与共享能力契约，既有A阶段指标/验收不变；当前基础位于tools/nuochong-cli。

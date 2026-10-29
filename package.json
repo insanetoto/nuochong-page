@@ -12,6 +12,8 @@
     "build:static": "vite build --config vite.static.config.ts",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "test:e2e": "playwright test",
+    "oa:start": "node apps/oa/start.mjs",
+    "test:cli": "node --test tools/nuochong-cli/test/*.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate"
   },
