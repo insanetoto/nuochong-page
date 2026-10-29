@@ -29,7 +29,7 @@ node experiments/phase-a/deployment/verify-deployment.mjs
 - 官网服务器只依赖Node静态文件模块，无业务/AI启动依赖，不接收服务端凭据。API为真实Fastify5.12.7，使用A-08合成签名issuer；Worker使用A-07真实PostgreSQL租约/事务，Host实际启动锁定Harness SDK与只读Profile。
 - 部署任务使用明确标注的合成执行器，**本套件不调用真实模型**。真实模型证据来自A-06，不把合成SSE延迟计入模型TTFT。服务间凭据为每轮随机合成值，绝不加载用户模型密钥。
 - API以数据库事务锁限制最多5个未完成任务；Host最多2个并发合成调用。持久合成调用配额2次，超额429，跨Host重启不重置。这是额度机制验证，不改变用户批准的真实模型不设费用上限政策。
-- Host运行于512MiB/1CPU/128 PID限制、只读文件系统及有界tmpfs下；独立64MiB容器触发真实OOM，0.25CPU容器验证内核节流。依据[Docker资源限制](https://docs.docker.com/engine/containers/resource_constraints/)。尚不是生产容量测定或物理机内存隔离保证。
+- Host运行于512MiB/1CPU/128 PID限制、只读文件系统及有界tmpfs下；普通tmp/state显式noexec，锁定原生模块仅在Host专用32MiB、uid/gid1000、0700的exec缓存加载（不会给容器privileged权限）；独立64MiB容器触发真实OOM，0.25CPU容器验证内核节流。依据[Docker资源限制](https://docs.docker.com/engine/containers/resource_constraints/)。尚不是生产容量测定或物理机内存隔离保证。
 - 真实HTTP代理验证首帧提前到达、客户端断连清理和Host断流的错误事件；Host停机的新AI请求503/AI_UNAVAILABLE。流式演练端点是/probe接口，不是B-04完整持久事件API。
 - 三次SIGKILL整个Host容器（包含SDK子进程），重启后在冻结10秒内恢复任务，检查数据库副作用/终态各一次；同时持续抽样官网字节，首轮停Host期间用Linux浏览器核对4组已批准DOM/SEO/链接/图片清单。Linux没有像素基线，不声称Linux截图通过。
 - 本机另强杀真实Harness Host进程组后运行原5项macOS截图/交互基线，未更新任何截图。复现：先build:static，再执行verify-local-visual.mjs。
@@ -37,3 +37,5 @@ node experiments/phase-a/deployment/verify-deployment.mjs
 - 静态产物、全周期服务日志检查随机服务凭据/数据库密码及token格式泄漏；通过requestId/runId核对API、Worker、Host追踪。生产审计接入由B阶段实现。
 
 原始输出deployment/outputs/deployment-probe.json，已核对证据放results；汇总见[deployment.md](../results/deployment.md)。
+
+实际验证发现Fastify会默认删除未知字段，已显式禁用removeAdditional/coerceTypes/useDefaults，身份伪造字段必须400且不入库。历史失败与修复保存在results/failure-history.json，未修改冻结阈值。
