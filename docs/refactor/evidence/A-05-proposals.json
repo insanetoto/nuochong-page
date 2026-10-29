@@ -1,6 +1,6 @@
 {
   "date": "2026-10-29",
-  "status": "proposed-not-frozen",
+  "status": "frozen-v1",
   "npmMetadataVerified": {
     "fastify": "5.12.7",
     "pg": "8.23.1"
@@ -32,5 +32,11 @@
     "costCap": null,
     "modelCredentialAvailable": false,
     "requiredNonAuthorApprovals": 0
+  },
+  "confirmation": {
+    "date": "2026-10-29",
+    "authority": "user explicit 确认 in current chat",
+    "approvedBaseline": "002fece1e26274a8ef295042239fd0f9866811dc",
+    "pr": 25
   }
 }
