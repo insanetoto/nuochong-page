@@ -11,7 +11,7 @@
 
 ## 当前状态
 
-10 个执行任务已建立，均 Open、未分配；0/10 已验收。A-01 为 Ready，其余为 Backlog，待依赖验收后解锁。Ready/Backlog 等为本项目执行状态，记录在 Issue 正文/总览中；不是已经配置的 GitHub Project 字段。Project、标签、里程碑及原生依赖仍由 A-03 落实。
+2026-10-29：10 个执行任务均 Open；A-01 已由 insanetoto 领取并完成技术盘点，待产品/模块审查；其余未分配。0/10 已验收，后续依赖尚未解锁。Ready/Backlog 等为本项目执行状态，记录在 Issue 正文/总览中；不是已经配置的 GitHub Project 字段。Project、标签、里程碑及原生依赖仍由 A-03 落实。
 
 ## 路线与可并行波次
 
@@ -48,7 +48,7 @@ flowchart LR
 
 | 规划 ID / Issue | 任务 | 建议角色 | 成员 | 状态 | 前置验收 |
 | --- | --- | --- | --- | --- | --- |
-| [A-01 / #1](https://github.com/insanetoto/nuochong-page/issues/1) | 仓库与功能资产盘点 | 架构 | 待分配 | Ready | 无 |
+| [A-01 / #1](https://github.com/insanetoto/nuochong-page/issues/1) | 仓库与功能资产盘点 | 架构 | insanetoto | In review（技术盘点完成，待验收） | 无 |
 | [A-02 / #2](https://github.com/insanetoto/nuochong-page/issues/2) | 官网保护基线 | 前端＋测试 | 待分配 | Backlog | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
 | [A-03 / #3](https://github.com/insanetoto/nuochong-page/issues/3) | 协作与仓库治理初始化 | 平台 | 待分配 | Backlog | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
 | [A-04 / #4](https://github.com/insanetoto/nuochong-page/issues/4) | Harness 与运行版本验证 | AI | 待分配 | Backlog | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
@@ -74,3 +74,7 @@ flowchart LR
 - [完整任务范围与验收](tasks.md)
 - [个人开发上手指南](developer-onboarding.md)
 - [团队协作流程](collaboration.md)
+
+## A-01 本次执行证据
+
+2026-10-29：已获取远程refs；[资产盘点](inventory.md)及[机器快照](evidence/A-01-inventory.json)覆盖main/test 71、main/dev 70、dev/test 9个文件差异。未修改业务或官网；待Issue #1负责人确认迁移处置，尚不计为已验收。
