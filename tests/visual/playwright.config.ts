@@ -1,6 +1,11 @@
 import { defineConfig } from "@playwright/test";
 import { fileURLToPath } from "node:url";
 
+const externalURL = process.env.VISUAL_EXTERNAL_URL;
+if (externalURL && !/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(externalURL)) {
+  throw new Error("VISUAL_EXTERNAL_URL must name an isolated loopback test server");
+}
+
 export default defineConfig({
   testDir: ".",
   testMatch: "homepage.spec.ts",
@@ -10,7 +15,7 @@ export default defineConfig({
   outputDir: "../../test-results/visual",
   snapshotPathTemplate: "{testDir}/baselines/{platform}/{arg}{ext}",
   use: {
-    baseURL: "http://127.0.0.1:4173",
+    baseURL: externalURL ?? "http://127.0.0.1:4173",
     browserName: "chromium",
     locale: "en-US",
     timezoneId: "Asia/Shanghai",
@@ -22,7 +27,7 @@ export default defineConfig({
       : undefined,
     trace: "retain-on-failure",
   },
-  webServer: {
+  webServer: externalURL ? undefined : {
     cwd: fileURLToPath(new URL("../../", import.meta.url)),
     command: "npm run build:static && npx vite preview --config vite.static.config.ts --host 127.0.0.1 --port 4173 --strictPort",
     url: "http://127.0.0.1:4173",

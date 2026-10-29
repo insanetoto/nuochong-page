@@ -1,9 +1,9 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-export function writeReadonlyPatch(root, bridge = false) {
-  mkdirSync(resolve(root, 'outputs'), { recursive: true });
-  const path = resolve(root, 'outputs', bridge ? 'readonly-bridge.patch.yml' : 'readonly.patch.yml');
+export function writeReadonlyPatch(root, bridge = false, outputRoot = resolve(root, 'outputs')) {
+  mkdirSync(outputRoot, { recursive: true });
+  const path = resolve(outputRoot, bridge ? 'readonly-bridge.patch.yml' : 'readonly.patch.yml');
   writeFileSync(path, ['tool-fs', 'tool-working-directory', 'persistent-bash', 'persistent-pwsh',
     ...(bridge ? ['sdk-jsonrpc-server'] : [])]
     .map((id) => `- id: ${id}\n  disabled: true`).join('\n')
