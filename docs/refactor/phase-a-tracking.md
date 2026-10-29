@@ -52,7 +52,7 @@ flowchart LR
 | [A-02 / #2](https://github.com/insanetoto/nuochong-page/issues/2) | 官网保护基线 | 前端＋测试 | insanetoto | Done | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
 | [A-03 / #3](https://github.com/insanetoto/nuochong-page/issues/3) | 协作与仓库治理初始化 | 平台 | insanetoto | Done | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
 | [A-04 / #4](https://github.com/insanetoto/nuochong-page/issues/4) | Harness 与运行版本验证 | AI | insanetoto | Done | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
-| [A-05 / #5](https://github.com/insanetoto/nuochong-page/issues/5) | 架构决策、契约与指标冻结 | 架构＋产品 | 待分配 | Backlog | [A-04](https://github.com/insanetoto/nuochong-page/issues/4) |
+| [A-05 / #5](https://github.com/insanetoto/nuochong-page/issues/5) | 架构决策、契约与指标冻结 | 架构＋产品 | insanetoto | In review（待确认冻结） | [A-04](https://github.com/insanetoto/nuochong-page/issues/4) |
 | [A-06 / #6](https://github.com/insanetoto/nuochong-page/issues/6) | Harness 执行与流式原型 | AI | 待分配 | Backlog | [A-05](https://github.com/insanetoto/nuochong-page/issues/5) |
 | [A-07 / #7](https://github.com/insanetoto/nuochong-page/issues/7) | 持久任务与恢复原型 | 后端 | 待分配 | Backlog | [A-05](https://github.com/insanetoto/nuochong-page/issues/5) |
 | [A-08 / #8](https://github.com/insanetoto/nuochong-page/issues/8) | 企业与工具权限原型 | 后端＋测试 | 待分配 | Backlog | [A-05](https://github.com/insanetoto/nuochong-page/issues/5) |
