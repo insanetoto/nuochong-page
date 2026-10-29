@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "runId",
+    "tenantId",
+    "actorId",
+    "status",
+    "idempotencyKey",
+    "version"
+  ],
+  "properties": {
+    "runId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tenantId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "actorId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "enum": [
+        "queued",
+        "running",
+        "retry_wait",
+        "succeeded",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "sessionId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cancelRequested": {
+      "type": "boolean"
+    },
+    "errorCode": {
+      "enum": [
+        "unauthorized",
+        "forbidden",
+        "invalid_input",
+        "not_found",
+        "conflict",
+        "timeout",
+        "provider_error",
+        "cancelled",
+        "unavailable"
+      ]
+    }
+  }
+}

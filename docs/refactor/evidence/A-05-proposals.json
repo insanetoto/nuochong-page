@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-29",
+  "status": "proposed-not-frozen",
+  "npmMetadataVerified": {
+    "fastify": "5.12.7",
+    "pg": "8.23.1"
+  },
+  "databaseProposal": {
+    "name": "PostgreSQL",
+    "version": "17.11",
+    "source": "https://www.postgresql.org/docs/17/index.html",
+    "installed": false
+  },
+  "runtimeVerified": {
+    "cliSdkVersion": "0.2.1-rc.2",
+    "node": "24.21.0",
+    "platforms": [
+      "darwin-arm64",
+      "linux-x64"
+    ],
+    "linuxRun": 40814085186
+  },
+  "contractFixtures": {
+    "validator": "root-lockfile Ajv 6.15.0",
+    "passed": 16,
+    "failed": 0,
+    "scope": "JSON Schema structure/negative fixtures only, not auth or business implementation"
+  },
+  "userConfirmed": {
+    "model": "SDK default",
+    "defaultResolvedTo": "deepseek-official/deepseek-v4-flash",
+    "costCap": null,
+    "modelCredentialAvailable": false,
+    "requiredNonAuthorApprovals": 0
+  }
+}
