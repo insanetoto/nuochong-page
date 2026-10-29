@@ -2,7 +2,7 @@
 
 日期：2026-10-28。状态：待团队评审；所有 A—E 阶段均纳入本次规划，尚未授权执行产品重构或发布。
 
-本规划只交付文档，已推送至远程 `docs/refactor-collaboration-plan` 分支，尚未合入 main。A 阶段已创建 10 个任务 Issues 和总览 #11；B 阶段已创建 8 个任务 Issues（#12—#19）和总览 #20；尚未创建 GitHub Project 或仓库保护规则。规划编号与 Issue 编号的映射见执行路线图。
+本规划只交付文档，已推送至远程 `docs/refactor-collaboration-plan` 分支，尚未合入 main。A 阶段已创建 10 个任务 Issues 和总览 #11；B 阶段已创建 8 个任务 Issues（#12—#19）和总览 #20；A/B里程碑与阶段标签已关联，refactor/integration已建立；尚未启用GitHub Project；main/test/refactor/integration分支保护已配置并回读验证，具体检查差异见治理状态。规划编号与 Issue 编号的映射见执行路线图。
 
 ## 阅读顺序
 
@@ -15,6 +15,8 @@
 6. [A 阶段执行路线图](phase-a-tracking.md)：GitHub Issue 映射、并行波次、负责人入口与状态维护。
 
 7. [B 阶段执行路线图](phase-b-tracking.md)：基础平台任务映射、准入门禁、并行路线与验收跟踪。
+
+8. [A-03 治理落地状态](governance.md)：模板、分支、检查名称、管理员授权和待验收事项。
 
 ## 约定
 

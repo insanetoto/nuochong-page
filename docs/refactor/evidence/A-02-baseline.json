@@ -7,7 +7,7 @@
   "node": "v24.21.0",
   "playwright": "1.62.1",
   "testResult": "5 passed (6.7s), ordinary run without --update-snapshots",
-  "screenshotsStatus": "pending product approval",
+  "screenshotsStatus": "approved by user in this chat on 2026-10-29",
   "sha256": {
     "app/HomePage.tsx": "94d402900667ccd47f310bf0cff9899355e832188a2658bb767616649193dde4",
     "app/globals.css": "d4298419e8bbc31baa28118eee2825dc206b11b5230e62a47878891374b14c98",
@@ -35,5 +35,6 @@
     "tests/visual/baselines/darwin/mobile-en.png": "fd0b22081ac25b65d36a767aa3d2ebd8c7d159a1566df7855a5b27f73e27117a",
     "tests/visual/baselines/darwin/mobile-zh-content.json": "45055b47d1e2b3b221af004f889f2cacb84d08adb7eba4d8250d03b290273773",
     "tests/visual/baselines/darwin/mobile-zh.png": "bb5268e01eb74545a8e1d0ae0d59639f35ff9c99edeb3a106b3d5926b12ebd22"
-  }
+  },
+  "acceptanceEvidence": "Issue #2 / PR #22; user: A-02确认验收"
 }
