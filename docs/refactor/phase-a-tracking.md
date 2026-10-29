@@ -11,7 +11,7 @@
 
 ## 当前状态
 
-2026-10-29：A-01与A-02已验收并关闭，9/10完成。A-03已完成，PR #23通过双构建/E2E后合入refactor/integration，Issue #3关闭。按用户要求必需批准人数为0，其余保护已回读验证。A-04已验收关闭，PR #24已合入；A-05基线002fece已获用户明确确认，指标冻结v1；已通过CI并由PR #25合入refactor/integration（6195bc2），Issue #5关闭；A-06已由PR #26集成且用户明确验收，Issue #6关闭；A-07由PR #27集成且用户明确验收，Issue #7关闭；2026-10-29用户已恢复A-08—A-10执行，A-08由PR #28集成并获用户验收；A-09由PR #29完成18项容器实测且用户验收；A-10准入评审准备中。Ready/Backlog 等为本项目执行状态，记录在 Issue 正文/总览中；不是已经配置的 GitHub Project 字段。标签、里程碑及保护已落实；当前通过Issue链接表达依赖，未创建GitHub Project。
+2026-10-29：A-01—A-10均获验收（10/10），用户明确批准A-10 Go。A-01—A-09已集成并关闭；A-10最终记录、CI与集成证据见PR #30。8项ADR已Accepted，仅B-01置Ready，B阶段仍0/8交付，未启动B实现或生产发布。必需review人数为0，PR/双构建/E2E及严格新鲜度保护保留。Ready/Backlog为Issue手工维护状态；标签、里程碑与保护已落实，没有声称创建自动GitHub Project。
 
 ## 路线与可并行波次
 
@@ -56,8 +56,8 @@ flowchart LR
 | [A-06 / #6](https://github.com/insanetoto/nuochong-page/issues/6) | Harness 执行与流式原型 | AI | insanetoto | Done | [A-05](https://github.com/insanetoto/nuochong-page/issues/5) |
 | [A-07 / #7](https://github.com/insanetoto/nuochong-page/issues/7) | 持久任务与恢复原型 | 后端 | insanetoto | Done | [A-05](https://github.com/insanetoto/nuochong-page/issues/5) |
 | [A-08 / #8](https://github.com/insanetoto/nuochong-page/issues/8) | 企业与工具权限原型 | 后端＋测试 | insanetoto | Done | [A-05](https://github.com/insanetoto/nuochong-page/issues/5) |
-| [A-09 / #9](https://github.com/insanetoto/nuochong-page/issues/9) | 部署、资源与回滚原型 | 平台＋测试 | insanetoto | Validating（用户已验收，待最终记录集成） | [A-02](https://github.com/insanetoto/nuochong-page/issues/2)、[A-06](https://github.com/insanetoto/nuochong-page/issues/6)、[A-07](https://github.com/insanetoto/nuochong-page/issues/7)、[A-08](https://github.com/insanetoto/nuochong-page/issues/8) |
-| [A-10 / #10](https://github.com/insanetoto/nuochong-page/issues/10) | 架构阶段 Go/No-Go 评审 | 架构，产品/测试/发布共同审批 | 待分配 | Backlog | [A-03](https://github.com/insanetoto/nuochong-page/issues/3)、[A-09](https://github.com/insanetoto/nuochong-page/issues/9) |
+| [A-09 / #9](https://github.com/insanetoto/nuochong-page/issues/9) | 部署、资源与回滚原型 | 平台＋测试 | insanetoto | Done | [A-02](https://github.com/insanetoto/nuochong-page/issues/2)、[A-06](https://github.com/insanetoto/nuochong-page/issues/6)、[A-07](https://github.com/insanetoto/nuochong-page/issues/7)、[A-08](https://github.com/insanetoto/nuochong-page/issues/8) |
+| [A-10 / #10](https://github.com/insanetoto/nuochong-page/issues/10) | 架构阶段 Go/No-Go 评审 | 架构，产品/测试/发布共同审批 | insanetoto | Done（用户批准Go，见PR #30） | [A-03](https://github.com/insanetoto/nuochong-page/issues/3)、[A-09](https://github.com/insanetoto/nuochong-page/issues/9) |
 
 ## 状态维护与验收规则
 
@@ -78,3 +78,7 @@ flowchart LR
 ## A-01 本次执行证据
 
 2026-10-29：已获取远程refs；[资产盘点](inventory.md)及[机器快照](evidence/A-01-inventory.json)覆盖main/test 71、main/dev 70、dev/test 9个文件差异。未修改业务或官网；用户后续已确认迁移处置，PR #21集成后Issue #1已关闭。
+
+## 最终准入材料
+
+[phase-a-review.md](phase-a-review.md)汇总A-01—A-09证据、8项ADR采纳边界、遗留责任、B—E任务估算及Go/No-Go条件。用户已于2026-10-29明确批准Go；最终记录集成后关闭总览并将B-01置Ready，不启动B开发。

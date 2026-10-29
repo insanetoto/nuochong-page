@@ -1,6 +1,6 @@
 # B 阶段任务路线图与执行跟踪
 
-日期：2026-10-28。创建时快照：0/8 已验收，全部 Open、Backlog、未分配。实时状态以各 Issue 的 Assignee、执行记录和验收结论为准，由阶段负责人同步总览。
+日期：2026-10-28。创建时快照：0/8 已验收；A-10已获用户明确Go，B-01为Ready（待分配），其余Open/Backlog。实时状态以各 Issue 的 Assignee、执行记录和验收结论为准，由阶段负责人同步总览。
 
 ## 负责人入口
 
@@ -19,7 +19,7 @@
 
 | 任务 / Issue | 建议角色 | 成员 | 状态 | 前置验收 |
 | --- | --- | --- | --- | --- |
-| [B-01 / #12](https://github.com/insanetoto/nuochong-page/issues/12) 工作区拆分与官网无损迁移 | 前端＋平台 | 待分配 | Backlog | [A-10 / #10](https://github.com/insanetoto/nuochong-page/issues/10) |
+| [B-01 / #12](https://github.com/insanetoto/nuochong-page/issues/12) 工作区拆分与官网无损迁移 | 前端＋平台 | 待分配 | Ready（A-10 Go） | [A-10 / #10](https://github.com/insanetoto/nuochong-page/issues/10) |
 | [B-02 / #13](https://github.com/insanetoto/nuochong-page/issues/13) 身份、企业与权限 | 后端 | 待分配 | Backlog | [A-10 / #10](https://github.com/insanetoto/nuochong-page/issues/10)、[B-01 / #12](https://github.com/insanetoto/nuochong-page/issues/12) |
 | [B-03 / #14](https://github.com/insanetoto/nuochong-page/issues/14) 业务持久化与文件存储 | 后端 | 待分配 | Backlog | [A-10 / #10](https://github.com/insanetoto/nuochong-page/issues/10)、[B-02 / #13](https://github.com/insanetoto/nuochong-page/issues/13) |
 | [B-04 / #15](https://github.com/insanetoto/nuochong-page/issues/15) 持久任务执行器 | 后端 | 待分配 | Backlog | [A-10 / #10](https://github.com/insanetoto/nuochong-page/issues/10)、[B-03 / #14](https://github.com/insanetoto/nuochong-page/issues/14) |
@@ -72,3 +72,7 @@ flowchart LR
 - [总体路线图](roadmap.md)
 - [团队协作](collaboration.md)
 - [个人开发指南](developer-onboarding.md)
+
+## A-10细化更新（2026-10-29）
+
+B任务范围/验收已吸收A阶段实测发现，逐项估算合计27–45工程人日，见[tasks.md](tasks.md)和[phase-a-review.md](phase-a-review.md)。当前仍0/8完成；用户已明确批准Go，仅B-01为Ready，其余继续按依赖执行。没有替团队虚构日历排期、成员或生产批准。
