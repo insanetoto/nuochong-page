@@ -8,6 +8,7 @@
   "api": { "maxActiveJobs": 5, "requestTimeoutMs": 180000 },
   "syntheticQuota": { "calls": 2, "persisted": true, "realModelFeeCap": null },
   "filesystem": "readonly image; writable bounded tmpfs state only",
+  "nativeCache": "Host-only 32MiB executable tmpfs, uid/gid1000 mode0700; general tmp/state remain noexec",
   "requiredServerEnvironment": ["DATABASE_URL", "PROBE_SERVICE_SECRET", "JWT_PUBLIC_KEY", "JOB_SCHEMA"],
   "frontendEnvironment": [],
   "promotion": "same image ID in isolated candidate and target; no rebuild",

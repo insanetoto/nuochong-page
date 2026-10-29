@@ -48,7 +48,14 @@ async function launch(role, image, command, env = {}, options = []) {
     '--network-alias', role, '--read-only', '--cap-drop=ALL', '--security-opt=no-new-privileges',
     '--tmpfs', '/tmp:rw,size=64m,mode=1777', '--tmpfs', '/state:rw,size=128m,mode=1777',
     '--memory=512m', '--memory-swap=512m', '--cpus=1', '--pids-limit=128', ...options];
-  for (const [key, value] of Object.entries(env)) args.push('--env', `${key}=${value}`);
+  const launchEnv = { ...env };
+  if (role === 'host') {
+    // The locked native loader materializes .node files in os.tmpdir before
+    // dlopen. General /tmp stays noexec; only this bounded private cache allows mappings.
+    args.push('--tmpfs', '/native-cache:rw,exec,nosuid,nodev,size=32m,uid=1000,gid=1000,mode=700');
+    launchEnv.NATIVE_CACHE_ROOT = '/native-cache'; launchEnv.TMPDIR = '/native-cache';
+  }
+  for (const [key, value] of Object.entries(launchEnv)) args.push('--env', `${key}=${value}`);
   args.push(image, ...command);
   await docker(...args); containers.add(role);
 }
@@ -334,7 +341,7 @@ finally {
   clearInterval(monitor);await browser?.close();await pool?.end();
   if(failure)for(const role of containers){
     try{const state=await inspect(role);diagnostics.push({role,status:state.State.Status,exitCode:state.State.ExitCode,
-      oomKilled:state.State.OOMKilled,log:sanitize(await docker('logs',name(role))).slice(-2500)});}catch{}
+      oomKilled:state.State.OOMKilled,log:sanitize(await docker('logs',name(role))).slice(-15000)});}catch{}
   }
   for(const role of [...containers].reverse())try{await stop(role);}catch(error){failure??=sanitize(error.message);process.exitCode=1;}
   if(logs.some((text)=>text.includes(secret)||text.includes(dbPassword))){failure='credential canary found in service logs';process.exitCode=1;}
