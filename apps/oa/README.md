@@ -35,3 +35,7 @@ node apps/oa/verify-home.mjs
 ```
 
 测试真实官方Web启动、私有URL换cookie后去token、标题/根组件/按钮渲染及页面异常，保存脱敏JSON和新鲜空工作区截图到outputs。截图不是修改官网原像素基线。Node/浏览器/平台记录在报告；测试结束清理进程与临时状态。
+
+## 服务器测试部署
+
+现有腾讯云连接与HTTPS服务准备见[部署手册](deploy/README.md)。`--public-url`或NUOCHONG_OA_PUBLIC_URL只配置官方公开URL和可信authority，监听仍为回环；反向代理负责前缀、TLS、Cookie和WebSocket。测试环境准备与真实上线分别记录，首次管理员初始化完成前不宣称公网原生页面已可用。

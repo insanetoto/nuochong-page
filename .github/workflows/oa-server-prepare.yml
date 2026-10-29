@@ -49,7 +49,6 @@ jobs:
           cp "$(command -v node)" "$RUNNER_TEMP/oa-payload/runtime/bin/node"
           cp -a apps/oa "$RUNNER_TEMP/oa-payload/apps/oa"
           rm -rf "$RUNNER_TEMP/oa-payload/apps/oa/outputs" "$RUNNER_TEMP/oa-payload/apps/oa/.state"
-          tar -czf "$RUNNER_TEMP/oa-payload.tgz" -C "$RUNNER_TEMP/oa-payload" .
       - name: Stage or update server using existing deployment credentials
         if: github.event_name != 'pull_request'
         env:
@@ -62,14 +61,16 @@ jobs:
           ssh-keyscan -T 10 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
           remote_base=.local/share/nuochong-oa-test
           ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "mkdir -p $remote_base/releases/$GITHUB_SHA"
-          scp -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes "$RUNNER_TEMP/oa-payload.tgz" deploy@"$DEPLOY_HOST":"$remote_base/incoming-$GITHUB_SHA.tgz"
-          checksum=$(sha256sum "$RUNNER_TEMP/oa-payload.tgz" | cut -d' ' -f1)
-          ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "bash -s -- $GITHUB_SHA $checksum" <<'REMOTE'
+          options=()
+          if ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" 'test -d "$HOME/.local/share/nuochong-oa-test/current"'; then
+            options+=(--link-dest=/home/deploy/.local/share/nuochong-oa-test/current)
+          fi
+          rsync -rclptDz "${options[@]}" \
+            -e 'ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes' \
+            "$RUNNER_TEMP/oa-payload/" deploy@"$DEPLOY_HOST":"$remote_base/releases/$GITHUB_SHA/"
+          ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "bash -s -- $GITHUB_SHA" <<'REMOTE'
           set -euo pipefail
           base="$HOME/.local/share/nuochong-oa-test"
-          printf '%s  %s\n' "$2" "$base/incoming-$1.tgz" | sha256sum -c -
-          tar -xzf "$base/incoming-$1.tgz" -C "$base/releases/$1"
-          rm "$base/incoming-$1.tgz"
           bash "$base/releases/$1/apps/oa/deploy/install-user.sh" "$1"
           REMOTE
       - name: Remove temporary SSH identity
