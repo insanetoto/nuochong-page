@@ -307,7 +307,8 @@ try {
     await docker('exec',name('database'),'pg_dump','-U','prototype','-d','prototype','-Fc','-f','/tmp/a09.dump');
     await docker('exec',name('database'),'createdb','-U','prototype','prototype_restore');
     await docker('exec',name('database'),'pg_restore','-U','prototype','-d','prototype_restore','/tmp/a09.dump');
-    const restored=createPool(databaseURL.replace('/prototype','/prototype_restore'),schema);
+    const restoredURL=new URL(databaseURL);restoredURL.pathname='/prototype_restore';
+    const restored=createPool(restoredURL.toString(),schema);
     try {assert.deepEqual(await snapshot(restored),before);}finally{await restored.end();}
     return {restoreMs:performance.now()-restoreAt,source:'prototype',target:'prototype_restore',jobs:before.jobs.length,
       fixtureSHA256:hash(JSON.stringify(before))};
@@ -331,7 +332,10 @@ try {
     assert.ok(siteSamples.length>20);assert.ok(siteSamples.every((r)=>r.ok));return{samples:siteSamples.length,failures:0};
   });
   await check('frontend and complete service logs exclude server credentials; traces correlate',async()=>{
-    for(const file of files(resolve(repo,'dist-static')))assert.ok(!readFileSync(file).includes(Buffer.from(secret)));
+    for(const file of files(resolve(repo,'dist-static'))){
+      const bytes=readFileSync(file);assert.ok(!bytes.includes(Buffer.from(secret)));assert.ok(!bytes.includes(Buffer.from(dbPassword)));
+      if(/\.(js|html|css|json|svg)$/.test(file))assert.equal(/github_pat_[A-Za-z0-9_]{20,}|sk-[a-f0-9]{24,}/.test(bytes.toString('utf8')),false);
+    }
     for(const role of [...containers])logs.push(await docker('logs',name(role)));
     const text=logs.join('\n');assert.equal(text.includes(secret),false);assert.equal(text.includes(dbPassword),false);
     assert.equal(/github_pat_[A-Za-z0-9_]{20,}|sk-[a-f0-9]{24,}/.test(text),false);
