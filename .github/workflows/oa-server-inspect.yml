@@ -1,0 +1,55 @@
+name: Inspect existing OA deployment server
+
+on:
+  push:
+    branches: [feature/oa-test-native-deploy]
+    paths: ['.github/workflows/oa-server-inspect.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    name: Read-only server capabilities
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Install existing deployment SSH identity
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          test -n "$DEPLOY_SSH_KEY" && test -n "$DEPLOY_HOST"
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/oa_deploy_key
+          chmod 600 ~/.ssh/oa_deploy_key
+          ssh-keyscan -T 10 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+      - name: Inspect runtime, supervisor and existing HTTPS routing without changes
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=15 deploy@"$DEPLOY_HOST" 'bash -s' <<'REMOTE'
+          set -eu
+          printf 'ARCH: '; uname -m
+          printf 'USER: '; id -un
+          printf 'GROUPS: '; id -Gn
+          for tool in node npm docker nginx systemctl curl python3 tar; do
+            command -v "$tool" || true
+          done
+          node --version 2>/dev/null || true
+          docker --version 2>/dev/null || true
+          docker info --format '{{.ServerVersion}}' 2>/dev/null || true
+          free -m
+          df -h / /tmp
+          printf '\nSUDO POLICY\n'; sudo -n -l 2>/dev/null || true
+          printf '\nUSER SUPERVISOR\n'; systemctl --user is-system-running 2>/dev/null || true
+          loginctl show-user "$(id -un)" -p Linger 2>/dev/null || true
+          printf '\nLISTENING PORTS\n'
+          ss -ltnH | awk '{n=split($4,a,":"); print a[n]}' | sort -nu
+          printf '\nNGINX PUBLIC ROUTING\n'
+          (sudo -n nginx -T 2>/dev/null || nginx -T 2>/dev/null || true) | awk '/^[[:space:]]*(listen |server_name |ssl_certificate |root )/{print}'
+          REMOTE
+      - name: Remove temporary SSH identity
+        if: always()
+        run: rm -f ~/.ssh/oa_deploy_key
