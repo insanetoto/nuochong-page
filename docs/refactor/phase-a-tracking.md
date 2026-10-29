@@ -11,7 +11,7 @@
 
 ## 当前状态
 
-2026-10-29：A-01与A-02已验收并关闭，2/10完成。A-03已领取，文件与流程配置实施中；强制保护受套餐/权限限制，不能提前验收。A-04依赖已解锁，其余等待各自前置。Ready/Backlog 等为本项目执行状态，记录在 Issue 正文/总览中；不是已经配置的 GitHub Project 字段。Project、标签、里程碑及原生依赖仍由 A-03 落实。
+2026-10-29：A-01与A-02已验收并关闭，2/10完成。A-03已领取，文件与流程配置实施中；强制保护已启用并回读，等待CI与非作者审查，不能提前验收。A-04依赖已解锁，其余等待各自前置。Ready/Backlog 等为本项目执行状态，记录在 Issue 正文/总览中；不是已经配置的 GitHub Project 字段。Project、标签、里程碑及原生依赖仍由 A-03 落实。
 
 ## 路线与可并行波次
 
@@ -50,7 +50,7 @@ flowchart LR
 | --- | --- | --- | --- | --- | --- |
 | [A-01 / #1](https://github.com/insanetoto/nuochong-page/issues/1) | 仓库与功能资产盘点 | 架构 | insanetoto | Done | 无 |
 | [A-02 / #2](https://github.com/insanetoto/nuochong-page/issues/2) | 官网保护基线 | 前端＋测试 | insanetoto | Done | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
-| [A-03 / #3](https://github.com/insanetoto/nuochong-page/issues/3) | 协作与仓库治理初始化 | 平台 | insanetoto | Blocked（治理配置待验证/强制保护不可用） | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
+| [A-03 / #3](https://github.com/insanetoto/nuochong-page/issues/3) | 协作与仓库治理初始化 | 平台 | insanetoto | In review（保护已验证，待独立审查） | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
 | [A-04 / #4](https://github.com/insanetoto/nuochong-page/issues/4) | Harness 与运行版本验证 | AI | 待分配 | Backlog | [A-01](https://github.com/insanetoto/nuochong-page/issues/1) |
 | [A-05 / #5](https://github.com/insanetoto/nuochong-page/issues/5) | 架构决策、契约与指标冻结 | 架构＋产品 | 待分配 | Backlog | [A-04](https://github.com/insanetoto/nuochong-page/issues/4) |
 | [A-06 / #6](https://github.com/insanetoto/nuochong-page/issues/6) | Harness 执行与流式原型 | AI | 待分配 | Backlog | [A-05](https://github.com/insanetoto/nuochong-page/issues/5) |

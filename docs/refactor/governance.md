@@ -1,6 +1,6 @@
 # A-03 协作治理落地与验收
 
-日期：2026-10-29。Issue #3。状态：实施/验证中，不宣称强制保护已生效。
+日期：2026-10-29。Issue #3。状态：保护规则已配置并回读验证；本次PR待最终CI与非作者审查，尚未验收关闭。
 
 ## 已落实资产
 
@@ -13,15 +13,15 @@
 
 ## 发布与权限状态
 
-仓库已由用户改为public，Rulesets可读取，当前为空。传统分支保护读取仍返回403 Resource not accessible by personal access token；需要Administration权限或管理员网页操作。账户拥有admin身份不等于Token获授Administration API权限。
+仓库已由用户改为public；用户随后补充Administration授权。已通过传统分支保护API启用main、test、refactor/integration规则，并逐项回读验证。Rulesets为空不代表传统分支保护不存在。
 
 不自动公开仓库、购买套餐、增加成员或改变生产部署。CODEOWNERS/模板只是指引，不能替代服务端强制规则。
 
-## 拟启用规则（需回读验证）
+## 已启用规则（API回读验证）
 
-对main、test、refactor/integration：要求PR、至少1位非作者批准、新提交撤销旧批准、解决审查讨论、禁止删除与强推。不要为通过当前PR而关闭规则；缺少独立审查成员则保留待审状态。
+对main、test、refactor/integration：要求PR、至少1位非作者批准、新提交撤销旧批准、解决审查讨论、禁止删除与强推；enforce_admins=true，管理员同样受约束。不要为通过当前PR而关闭规则；缺少独立审查成员则保留待审状态。
 
-required checks使用实际作业名：`Build (worker)`、`Build (static)`、`Playwright E2E`；要求分支为最新。线上Health属于环境状态检测，PR事件会跳过，不能作为所有PR强制项。已有分支若工作流未产出某检查，不可直接添加永远不会出现的必需检查；先通过独立PR同步工作流再启用。main/test工作流的修改需要单独审查，不在此次A-03直接推送。
+main和refactor/integration的required checks使用实际作业名：`Build (worker)`、`Build (static)`、`Playwright E2E`；要求分支为最新。线上Health属于环境状态检测，PR事件会跳过，不能作为所有PR强制项。已有分支若工作流未产出某检查，不可直接添加永远不会出现的必需检查；先通过独立PR同步工作流再启用。test当前工作流只有E2E及部署，暂强制Playwright E2E，双构建门禁等B-06同步工作流后再加；此差异明确保留。main/test工作流的修改需要单独审查，不在此次A-03直接推送。
 
 main/test当前仍会触发旧部署。部署等待同SHA完整检查的强制门禁与同产物推广在B-06落实；不能把PR检查误当完整生产发布门禁。
 
@@ -36,9 +36,9 @@ A-02：领取#2→独立截图/内容基线→本地普通回归5/5→PR #22→�
 ## 尚待验收清单
 
 - [ ] 本次PR的构建与新增E2E在集成目标上实跑通过。
-- [ ] 管理员通过API或网页启用适用分支保护并回读验证。
+- [x] 管理员授权后通过API启用三个分支保护并回读验证。
 - [ ] 团队指定独立审查成员，完善CODEOWNERS与审查职责。
 - [ ] Project若启用，明确权限和同步方式；现用#11/#20作为Issue状态总览，不冒充自动看板。
 - [ ] 用户确认治理差异与管理员配置证据后关闭#3。
 
-配置快照见[evidence/A-03-github-setup.json](evidence/A-03-github-setup.json)。待权限问题解决后更新快照，保留此次失败原因与时间，不把历史阻断当作当前状态。
+配置快照见[evidence/A-03-github-setup.json](evidence/A-03-github-setup.json)。此前套餐/权限失败已解除；当前剩余验收项见上表，不把历史阻断当当前状态。

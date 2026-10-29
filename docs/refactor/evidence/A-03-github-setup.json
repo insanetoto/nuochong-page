@@ -41,8 +41,46 @@
     "reason": "user made repository public; GET rulesets returned [] on 2026-10-29"
   },
   "branchProtection": {
-    "state": "blocked",
-    "reason": "403 Resource not accessible by personal access token; Administration grant pending"
+    "state": "enabled-and-readback-verified",
+    "branches": {
+      "main": {
+        "contexts": [
+          "Build (worker)",
+          "Build (static)",
+          "Playwright E2E"
+        ],
+        "strict": true,
+        "requiredApprovals": 1,
+        "enforceAdmins": true,
+        "allowForcePush": false,
+        "allowDelete": false,
+        "conversationResolution": true
+      },
+      "test": {
+        "contexts": [
+          "Playwright E2E"
+        ],
+        "strict": true,
+        "requiredApprovals": 1,
+        "enforceAdmins": true,
+        "allowForcePush": false,
+        "allowDelete": false,
+        "conversationResolution": true
+      },
+      "refactor/integration": {
+        "contexts": [
+          "Build (worker)",
+          "Build (static)",
+          "Playwright E2E"
+        ],
+        "strict": true,
+        "requiredApprovals": 1,
+        "enforceAdmins": true,
+        "allowForcePush": false,
+        "allowDelete": false,
+        "conversationResolution": true
+      }
+    }
   },
   "project": {
     "state": "not-created",
@@ -51,7 +89,7 @@
   "ownerRouting": [
     "insanetoto"
   ],
-  "enforcementClaim": "未启用或核实强制保护，不声称审批或CI已强制阻止合并",
+  "enforcementClaim": "3个分支已启用强制保护；test暂只要求其实际存在的Playwright E2E，其余双构建门禁待B-06同步工作流",
   "integrationBranch": {
     "name": "refactor/integration",
     "baseSha": "57ded3af9ec1d319471046a7e209185acce801d8"
