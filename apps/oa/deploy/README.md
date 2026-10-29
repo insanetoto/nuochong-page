@@ -10,7 +10,7 @@
 
 ## 自动准备与更新
 
-`.github/workflows/oa-server-prepare.yml`在Linux干净安装，并用真实Nginx、HTTPS和/oa-test/前缀检查官方页面、认证cookie及WebSocket。通过后打包Node二进制、锁定依赖与自有启动器，SSH上传至：
+`.github/workflows/oa-server-prepare.yml`在Linux干净安装，并用真实Nginx、HTTPS和/oa-test/前缀检查官方页面、认证cookie及WebSocket。通过后SSH增量同步启动器/锁文件，服务器下载Node（比对GitHub从Node官方取得的SHA256）并按锁文件安装依赖。优先官方Node下载源，镜像仅在校验通过后使用；npm镜像同样受锁文件integrity校验约束。路径：
 
 - 版本：`/home/deploy/.local/share/nuochong-oa-test/releases/<SHA>`
 - 当前版本：`/home/deploy/.local/share/nuochong-oa-test/current`（原子切换）
@@ -53,4 +53,4 @@ systemctl --user start nuochong-oa-test.service
 
 运行环境准备、管理员初始化、真实公网验收分别登记；Actions准备成功不等于已上线。
 
-增量传输使用SSH内的rsync校验和检查与上一版本link-dest，复用内容相同的依赖文件；不在既有版本文件上inplace写入。当前symlink切换后，既有运行进程保持旧版本直至用户服务重启；保留旧版本供回滚。
+源文件增量传输使用SSH内的rsync校验和检查；Node按版本复用，npm按完整锁文件及缓存安装，不从GitHub跨境上传整个依赖目录。当前symlink切换后，既有运行进程保持旧版本直至用户服务重启；保留旧版本供回滚。

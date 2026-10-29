@@ -42,13 +42,6 @@ jobs:
           name: oa-https-prefix-probe
           path: apps/oa/outputs/*
           if-no-files-found: ignore
-      - name: Package Linux runtime and isolated service
-        if: github.event_name != 'pull_request'
-        run: |
-          mkdir -p "$RUNNER_TEMP/oa-payload/runtime/bin" "$RUNNER_TEMP/oa-payload/apps"
-          cp "$(command -v node)" "$RUNNER_TEMP/oa-payload/runtime/bin/node"
-          cp -a apps/oa "$RUNNER_TEMP/oa-payload/apps/oa"
-          rm -rf "$RUNNER_TEMP/oa-payload/apps/oa/outputs" "$RUNNER_TEMP/oa-payload/apps/oa/.state"
       - name: Stage or update server using existing deployment credentials
         if: github.event_name != 'pull_request'
         env:
@@ -60,18 +53,17 @@ jobs:
           chmod 600 ~/.ssh/oa_deploy_key
           ssh-keyscan -T 10 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
           remote_base=.local/share/nuochong-oa-test
-          ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "mkdir -p $remote_base/releases/$GITHUB_SHA"
-          options=()
-          if ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" 'test -d "$HOME/.local/share/nuochong-oa-test/current"'; then
-            options+=(--link-dest=/home/deploy/.local/share/nuochong-oa-test/current)
-          fi
-          rsync -rclptDz "${options[@]}" \
+          ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "mkdir -p $remote_base/releases/$GITHUB_SHA/apps/oa"
+          rsync -rclptDz --exclude=node_modules --exclude=outputs --exclude=.state --exclude='.env*' \
             -e 'ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes' \
-            "$RUNNER_TEMP/oa-payload/" deploy@"$DEPLOY_HOST":"$remote_base/releases/$GITHUB_SHA/"
-          ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "bash -s -- $GITHUB_SHA" <<'REMOTE'
+            apps/oa/ deploy@"$DEPLOY_HOST":"$remote_base/releases/$GITHUB_SHA/apps/oa/"
+          curl -fsSL --retry 2 https://nodejs.org/dist/v24.21.0/SHASUMS256.txt -o "$RUNNER_TEMP/node-shasums.txt"
+          checksum=$(awk '$2 == "node-v24.21.0-linux-x64.tar.xz" {print $1}' "$RUNNER_TEMP/node-shasums.txt")
+          test "${#checksum}" = 64
+          ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "bash -s -- $GITHUB_SHA $checksum" <<'REMOTE'
           set -euo pipefail
           base="$HOME/.local/share/nuochong-oa-test"
-          bash "$base/releases/$1/apps/oa/deploy/install-user.sh" "$1"
+          bash "$base/releases/$1/apps/oa/deploy/install-runtime.sh" "$1" "$2"
           REMOTE
       - name: Remove temporary SSH identity
         if: always()
