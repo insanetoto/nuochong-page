@@ -2,9 +2,9 @@
 
 # 团队开发协作说明：Codex + GitHub
 
-适用项目：nuochong-page。日期：2026-10-28。适用范围：A—E 全阶段重构。
+适用项目：nuochong-page。日期：2026-10-29。适用范围：OA-01—OA-06基座建设。
 
-本文是团队工作协议提案，A-03 负责落实。创建远程 Issues、仓库规则、环境或发布需由有权限的负责人实际执行；A 阶段 Issues 已创建，映射和总览见 [执行路线图](phase-a-tracking.md)；其他设置仍待落实。
+本文为当前团队协作规则，任务和状态见[OA执行跟踪](oa-tracking.md)。GitHub是任务与PR事实来源；仓库文件、Actions结果和人工验收须相互一致。A阶段与旧B路线只保留历史。
 
 首次参与的开发人员请先按 [个人开发上手指南](developer-onboarding.md) 完成环境配置和一次任务闭环，再按本文团队规则协作。
 
@@ -50,7 +50,7 @@ Backlog → Ready → In progress → In review → Validating → Done
 - Done：任务验收完整、依赖记录更新、证据可访问；阶段任务还需对应负责人批准。
 - Blocked：写明阻断原因、所需人/资源、解除条件；有依赖冲突就退回规划，不绕行修改他人范围。
 
-规划任务 ID 不是实际 Issue 编号。A-03 建立映射，例如 `A-06 → #实际编号`，PR 使用真实的 Issue 链接。建立 `stage:A`—`stage:E`、`area:*`、`risk:*` 标签和对应里程碑。标签与字段需管理员落实，当前不假定已存在。
+规划任务 ID 不是实际 Issue 编号。当前OA-01—06对应#32—#37，映射见oa-tracking.md。PR使用真实Issue链接；不假定Project或新标签已建立。旧B标签/里程碑只保留历史。
 
 ## 4. 分支策略：兼顾现有自动部署
 
@@ -59,27 +59,26 @@ Backlog → Ready → In progress → In review → Validating → Done
 - `main` 推送会直接触发生产部署。
 - `test` 推送会部署旧 Cloudflare 测试应用。
 - `test` 有独立业务变更；不能通过强推或覆盖使它“对齐”。
-- 现有 CI 包含双构建，E2E 的 PR 目标限制为 main/dev/test；尚不覆盖拟建集成分支。
+- 现有CI包含Worker/静态构建与集成分支E2E；新增原生OA页面和CLI工作流。
 - 现有 CI 与部署独立触发，不能假定构建失败就会阻止部署。
-- 仓库保护、Codex GitHub Review、Environment 审批是否启用，尚需 A-03 核实。
+- main/refactor/integration已设PR和必需Build/E2E检查、非作者批准数0；新OA能力尚未发布。Project、可选GitHub Review与Environment须分别核实。
 
 ### 重构期间的工作方式
 
-1. A-01 固定基线；A-03 经批准建立 `refactor/integration`，任务从该分支最新提交派生。
-2. 任务分支命名：`feature/A-06-harness-spike`、`fix/B-04-task-lease`、`docs/A-05-contracts`。
-3. 重构 PR 默认合入 `refactor/integration`。A-03 同时扩展 E2E 的 PR 目标，使该分支获得实际检查；在此之前只合入治理/文档变更，不合入未经验证的产品代码。
-4. `dev/test` 作为存量来源和旧环境维护分支，不作为新任务的隐式集成点。必要修复单独 PR，同步策略由 A-01 映射决定。
-5. B-06 建设完成后，集成分支在独立测试环境生成候选版本；由发布 PR 将已验收提交合入 main，并在部署门禁通过后推广同一产物。
-6. B-06 完成前，禁止通过合入 main 提前上线重构；治理文档如需进 main，也要明确确认它会触发当前部署。
+1. 已验收A阶段和官网基线保留。当前增量Issue #31待验收，新任务仅按[OA跟踪表](oa-tracking.md)解锁。
+2. 从refactor/integration指定SHA建立独立分支，如feature/OA-01-native-home、fix/OA-02-run-recovery；不能从旧test隐式开工。
+3. PR目标refactor/integration，适用检查通过后合入，记录实现、人工验收、集成SHA三种事实。
+4. 旧B—E已撤销；dev/test作为旧环境维护来源，不迁入旧员工/培训/工单演示，不强推覆盖其独立历史。
+5. OA-05建设正式不可变产物与部署门禁，在此之前不通过main提前上线重构。任何正式发布单独批准并验证同产物、配置、权限与数据恢复。
 
-计划在仓库侧配置：main、test、refactor/integration 禁止直接推送和强推；PR必需批准人数为0（用户明确要求）；关键目录 CODEOWNERS；required checks 使用真实运行名；新提交使旧批准失效；生产 Environment 由发布负责人审批。实际规则能否强制执行需结合账户权限核验，并记录差异。
+main和refactor/integration的实际必需检查为Build (worker)、Build (static)、Playwright E2E。新增CLI/OA专项检查当前由PR执行并需交付者核对，不声称已加入分支保护。test的保护状态须独立核实；其推送部署仍有效。CODEOWNERS提供路由，非作者审批不作为硬门禁。
 
 ## 5. 每条任务的标准 Issue 模板
 
 ```markdown
-标题：[A-06] Harness 执行与流式原型
-规划 ID：A-06
-阶段/里程碑：A
+标题：[OA-02] Harness核心运行与会话
+规划 ID：OA-02
+阶段/里程碑：OA基座
 负责人：@具体成员
 审查人：@具体成员
 基础分支与 SHA：refactor/integration @ <sha>
@@ -110,10 +109,10 @@ PR、测试运行链接、产物/截图、遗留问题。
 将以下内容填写后发送给 Codex：
 
 ```text
-请实现 GitHub Issue <URL>，规划任务 A-06。
+请实现 GitHub Issue <URL>，规划任务 OA-02。
 工作目录：<本任务独立 checkout/worktree>
 基础提交：<SHA>，目标分支：refactor/integration。
-先阅读适用的 AGENTS.md、docs/refactor/phase-a.md、对应 ADR 和 Issue。
+先阅读适用的 AGENTS.md、docs/refactor/tasks.md、对应 ADR 和 Issue。
 本任务允许修改：<目录清单>；不包含：<相邻任务范围>。
 验收标准：<完整复制 AC，不能只给无法访问的链接>。
 运行：<对应验证命令>，并报告真实通过/失败/未运行及原因。
@@ -130,7 +129,7 @@ PR、测试运行链接、产物/截图、遗留问题。
 ## 7. 并行开发与冲突处理
 
 - 一人主领一个任务；同一 Issue 不让两名作者各自实现后争合并。
-- 可并行示例：A-02/A-03/A-04 在 A-01 后；A-06/A-07/A-08 在 A-05 后。
+- 可并行：OA-01验收后，OA-02与OA-04；其余依赖见oa-tracking.md。
 - 契约、根 package/锁文件、迁移序列、CI 工作流属于共享修改点，负责人协调串行合入。
 - 接口先合并，再并行实现消费方；可以使用显式测试替身，但不能把替身验收写成真实集成通过。
 - 合并依赖任务后更新基础提交，在自己的分支解决冲突并重跑受影响验证。
@@ -152,7 +151,7 @@ node scripts/check-environment.mjs test
 node scripts/check-environment.mjs production
 ```
 
-以上只反映旧结构。B-01/B-06 必须同步更新命令、工作流和本文，不能假定尚未实现的 workspace 脚本存在。曾发现 HomePage 的 hooks lint 存量错误；先核实再由 B-06 修复，不降低规则或忽略失败来获得绿色。
+OA启动/验证用apps/oa命令，CLI用npm run test:cli及独立安装包测试；详见开发指南。OA-01/OA-05必须保持命令、工作流和本文同步，不能假定尚未实现的workspace脚本存在。曾发现 HomePage 的 hooks lint 存量错误；先核实再归属对应任务，不降低规则或忽略失败来获得绿色。
 
 ### 按变更选择验证
 
@@ -160,10 +159,10 @@ node scripts/check-environment.mjs production
 | --- | --- |
 | 仅文档 | 本地链接、任务 ID/依赖图、命令与现状一致，无未声明的已实现承诺 |
 | 官网搬迁/样式/构建 | 两语言、两视口视觉/内容/SEO/交互回归，静态资源检查 |
-| 身份/存储 | 授权负例、两企业隔离、会话失效、迁移与恢复测试 |
+| 身份/存储 | 授权负例、调用方/资源隔离、会话失效、迁移与恢复测试 |
 | AI 执行/工具 | 契约、真实集成冒烟、取消/超时/故障、权限与预算验证 |
 | 持久任务/外部写入 | 崩溃、并发领取、重试、取消竞争、幂等和结果不确定场景 |
-| 知识/培训 | 固定评测集、引用/审核/成绩正确性、角色隔离 |
+| CLI/未来MCP | 真实子进程、机器协议、包独立执行、API同权与真实外部AI联调 |
 | 发布流程 | 失败门禁、产物摘要一致、迁移顺序、恢复/回滚演练 |
 
 健康检查是线上 HTTP 冒烟，不能替代浏览器/业务测试；本机网络失败也不能直接判定线上故障。基础设施故障与代码回归分别记录，不能无限重试掩盖问题。PR CI 默认不使用生产密钥；真实模型集成在受控测试环境限额运行，无密钥不能以假成功替代。
@@ -187,15 +186,15 @@ AC → 测试/截图/Actions链接；列明未运行项和原因。
 
 审查顺序：作者自查→CI→辅助审查（可选）→必要的产品/架构任务验收。Codex GitHub Code Review 启用后可在 PR 评论 `@codex review`；未启用则由独立 Codex 聊天只读审查 diff，并由成员贴回有效结论。检查依据：[OpenAI 官方审查说明](https://developers.openai.com/blog/custom-code-review-rules-for-codex)。
 
-审查重点：官网不变、企业/资源边界、任务状态唯一、外部写入幂等、上游框架耦合、失败恢复、密钥与日志。发现问题应附触发条件、影响和具体位置。Codex 的“没有发现问题”不替代 CI 和人工批准。
+审查重点：官网不变、调用方/资源边界、任务状态唯一、外部写入幂等、上游框架耦合、失败恢复、密钥与日志。发现问题应附触发条件、影响和具体位置。Codex 的“没有发现问题”不替代 CI 和人工批准。
 
-团队建议将长期不变量写入 AGENTS.md；测试能表达的规则放 CI。AGENTS.md 的目录作用域和持久指导方式参考 [OpenAI 开发工作流说明](https://developers.openai.com/cookbook/examples/codex/iterating-development-workflows-with-codex)。A-03 创建，建议核心内容为：
+团队建议将长期不变量写入 AGENTS.md；测试能表达的规则放 CI。AGENTS.md 的目录作用域和持久指导方式参考 [OpenAI 开发工作流说明](https://developers.openai.com/cookbook/examples/codex/iterating-development-workflows-with-codex)。仓库已有AGENTS.md，以下仅解释核心约束：
 
 ```markdown
 # 项目约束
 - 官网文案、视觉、URL、SEO 保持批准基线；差异需独立产品批准。
-- 业务身份与企业作用域来自服务端，模型/客户端字段不能覆盖。
-- 业务任务状态由业务库负责；Harness 事件幂等映射。
+- 调用方身份与资源作用域来自服务端，模型/客户端字段不能覆盖。
+- 运行状态由服务端持久层负责；Harness 事件幂等映射。
 - 不修改上游 Harness 核心；新增集成走批准契约和 ADR。
 - 执行任务前阅读对应 Issue 与 docs/refactor/，仅修改授权范围。
 - 禁止提交密钥、客户原始资料和可识别日志；使用合成测试夹具。
@@ -207,7 +206,7 @@ AC → 测试/截图/Actions链接；列明未运行项和原因。
 
 1. PR 更新至集成分支最新提交，检查重新通过；按任务AC记录自查与验收结果（非作者批准非必需）。
 2. 集成人合并至 refactor/integration，记录结果 SHA；任务转 Validating。
-3. B-06 建成后，由 CI 为结果 SHA 构建不可变产物、生成版本清单，在新测试环境验证。
+3. OA-05 建成后，由 CI 为结果 SHA 构建不可变产物、生成版本清单，在新测试环境验证。
 4. 产品/测试完成 AC，证据回填 Issue；任务 Done。阶段末还需阶段出口批准。
 5. 发布负责人建立候选版本，核验产物摘要、配置、Profile、数据库迁移、备份及回滚条件。
 6. 经批准的发布 PR 合入 main；发布流程必须先通过对应 SHA 的强制检查，再经生产审批推广已验收产物。
@@ -234,3 +233,9 @@ AC → 测试/截图/Actions链接；列明未运行项和原因。
 - [ ] CI通过，自查/可选辅助审查有记录，任务验收完成；非作者审批非必需。
 - [ ] 目标分支合入，集成验证完成，Issue/Project 状态更新。
 - [ ] 涉及发布的任务附版本清单、审批与部署后验证；其余注明尚未发布。
+
+## OA范围与CLI完成定义
+
+新OA-01—06和依赖以[跟踪表](oa-tracking.md)为准；当前0/6完成，本次增量验收后仅OA-01 Ready，不自动执行全路线。原生页面先作本机管理员预览，正式员工接入须有OA-04身份和资源边界。具体OA业务暂不排期。
+
+每项新增产品能力必须有commandId、版本化输入/输出schema、CLI映射、权限/副作用/幂等说明；Web、CLI和未来MCP复用同一API/服务规则。dry-run不是授权，不将dsh owner管理接口下放给一般调用者。未实现能力明确planned，真实模型/外部AI联调不能用合成测试代替。
