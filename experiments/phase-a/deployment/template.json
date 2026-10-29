@@ -1,0 +1,16 @@
+{
+  "scope": "A-09 isolated exercise only; no public or production deployment",
+  "node": "24.21.0",
+  "postgres": "17.11",
+  "fastify": "5.12.7",
+  "roles": ["website", "api", "worker-a", "worker-b", "host"],
+  "host": { "memoryBytes": 536870912, "cpuCores": 1, "pids": 128, "maxConcurrentSyntheticCalls": 2 },
+  "api": { "maxActiveJobs": 5, "requestTimeoutMs": 180000 },
+  "syntheticQuota": { "calls": 2, "persisted": true, "realModelFeeCap": null },
+  "filesystem": "readonly image; writable bounded tmpfs state only",
+  "requiredServerEnvironment": ["DATABASE_URL", "PROBE_SERVICE_SECRET", "JWT_PUBLIC_KEY", "JOB_SCHEMA"],
+  "frontendEnvironment": [],
+  "promotion": "same image ID in isolated candidate and target; no rebuild",
+  "rollback": "v2 to v1 API/Worker/Host images; database schema unchanged",
+  "restore": "pg_dump into a different database followed by exact fixture comparison"
+}
