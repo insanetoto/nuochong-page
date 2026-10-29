@@ -1,0 +1,15 @@
+{
+  "time": "2026-10-29T08:42:38.786Z",
+  "node": "v24.21.0",
+  "platform": "darwin-arm64",
+  "profile": "web",
+  "runtime": "0.2.1-rc.2",
+  "scope": "Official Harness Web UI, fresh isolated local administrator home; no model call or real credential",
+  "passed": true,
+  "title": "DeepSeek Harness",
+  "browser": "156.0.8078.48",
+  "launchTokenRemoved": true,
+  "rendered": true,
+  "pageErrors": 0,
+  "modelCalls": 0
+}

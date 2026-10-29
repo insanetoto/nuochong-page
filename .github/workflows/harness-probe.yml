@@ -1,0 +1,48 @@
+name: Harness runtime probe
+
+on:
+  pull_request:
+    branches: [refactor/integration]
+    paths:
+      - 'experiments/phase-a/runtime/**'
+      - 'experiments/phase-a/isolation/**'
+      - '.github/workflows/harness-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime:
+    name: Harness initialize and close
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: npm
+          cache-dependency-path: experiments/phase-a/runtime/package-lock.json
+      - name: Install isolated locked runtime (no native tool install scripts)
+        run: npm ci --prefix experiments/phase-a/runtime --ignore-scripts --no-audit --no-fund
+      - name: Verify named profile configuration
+        run: node experiments/phase-a/runtime/verify-runtime.mjs
+      - name: Verify SDK subprocess initialize and close (no model call)
+        run: node experiments/phase-a/runtime/verify-sdk.mjs
+      - name: Verify readonly tools, lifecycle and execution adapter (no model call)
+        run: node experiments/phase-a/runtime/verify-adapter.mjs
+      - name: Verify HTTP SSE disconnect and cursor replay (no model call)
+        run: node experiments/phase-a/runtime/verify-sse.mjs
+      - name: Verify provider rate limiting and stalled upstream (synthetic HTTP, no model call)
+        run: node experiments/phase-a/runtime/verify-provider-faults.mjs
+      - name: Verify signed identity, tenant and tool authorization (synthetic issuer)
+        run: node experiments/phase-a/runtime/verify-isolation.mjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: harness-runtime-probe
+          path: |
+            experiments/phase-a/runtime/outputs/*.json
+            experiments/phase-a/isolation/outputs/*.json
+          if-no-files-found: ignore

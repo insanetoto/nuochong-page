@@ -10,12 +10,6 @@
   --line: #dbe4f0;
   --surface: #f5f8fc;
   --white: #ffffff;
-  --surface-strong: #e9eef7;
-  --surface-strong: color-mix(in srgb, var(--surface) 60%, var(--line) 40%);
-  --surface-2: #e2eaf3;
-  --surface-2: color-mix(in srgb, var(--line) 55%, var(--surface) 45%);
-  --mask: rgba(23, 35, 59, 0.2);
-  --mask: color-mix(in srgb, var(--ink) 20%, transparent);
 }
 
 * { box-sizing: border-box; }
