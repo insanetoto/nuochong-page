@@ -60,3 +60,7 @@ node experiments/phase-a/runtime/verify-model.mjs --bridge --disconnect
 - 真实模型在本机macOS运行；Linux当前只执行无密钥真实SDK/工具/故障验证。没有把macOS结果冒充Linux模型测量。
 - 读取工具没有写副作用。任意第三方工具必须协作响应信号，框架不能强杀同进程中的任意JavaScript。
 - 此原型不提供业务鉴权、企业隔离或持久任务权威；由A-07/A-08负责。没有将Harness owner权限授予终端用户。
+
+## 远程验证证据
+
+技术提交 `8bd70b4`：Linux [Harness探针40817710164](https://github.com/insanetoto/nuochong-page/actions/runs/40817710164)产物已下载核对：3个Profile/变体初始化关闭、13项适配/工具验证、SSE和两类供应商故障全部通过。双构建40817710151、E2E40817710168、契约40817710160均成功。后续记录更新提交仍须等待其必需CI再集成。
