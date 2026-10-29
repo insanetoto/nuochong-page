@@ -1,6 +1,6 @@
 # 实施任务清单
 
-状态：A 阶段已创建 Issues #1—#10，总览为 #11，具体映射见 [A 阶段执行路线图](phase-a-tracking.md)。A-01 为 Ready，其余 A 任务为 Backlog；均未分派成员。B 阶段已创建 Issues #12—#19，总览 #20，均 Backlog、未分配，映射见 [B 阶段执行路线图](phase-b-tracking.md)；C—E 尚未创建对应 Issues。编号在规划内稳定；迁入 GitHub 后维护“规划 ID→Issue URL”，依赖以本 ID 表达。每项默认一个负责人和一个主 PR，验收证据附在对应 Issue/PR。
+状态：A 阶段已创建 Issues #1—#10，总览为 #11，具体映射见 [A 阶段执行路线图](phase-a-tracking.md)。2026-10-29：A-01、A-02已验收关闭；A-03由insanetoto领取，强制治理待解除套餐/权限阻断；A-04已具备前置，其余等待依赖。B 阶段已创建 Issues #12—#19，总览 #20，均 Backlog、未分配，映射见 [B 阶段执行路线图](phase-b-tracking.md)；C—E 尚未创建对应 Issues。编号在规划内稳定；迁入 GitHub 后维护“规划 ID→Issue URL”，依赖以本 ID 表达。每项默认一个负责人和一个主 PR，验收证据附在对应 Issue/PR。
 
 ## 执行规则与依赖
 

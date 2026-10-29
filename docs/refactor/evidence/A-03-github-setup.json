@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-29",
+  "milestones": [
+    {
+      "phase": "A",
+      "milestoneNumber": 1,
+      "title": "A阶段：架构验证",
+      "issues": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "phase": "B",
+      "milestoneNumber": 2,
+      "title": "B阶段：真实业务与AI基础",
+      "issues": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ]
+    }
+  ],
+  "rulesets": {
+    "state": "readable-empty",
+    "reason": "user made repository public; GET rulesets returned [] on 2026-10-29"
+  },
+  "branchProtection": {
+    "state": "blocked",
+    "reason": "403 Resource not accessible by personal access token; Administration grant pending"
+  },
+  "project": {
+    "state": "not-created",
+    "reason": "personal Project授权与成员尚未落实，现用Issue总览"
+  },
+  "ownerRouting": [
+    "insanetoto"
+  ],
+  "enforcementClaim": "未启用或核实强制保护，不声称审批或CI已强制阻止合并",
+  "integrationBranch": {
+    "name": "refactor/integration",
+    "baseSha": "57ded3af9ec1d319471046a7e209185acce801d8"
+  }
+}

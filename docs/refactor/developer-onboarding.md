@@ -8,7 +8,7 @@
 
 向负责人获取：GitHub 仓库访问权限、任务 Issue URL、指定基础分支/SHA、审查人、测试资源和验收标准。
 
-当前规划在 `docs/refactor-collaboration-plan` 分支，尚未合入 main；不要因 main 没有这些文件而重新创建一份规划。A 阶段 Issues 已建立，见 [执行路线图](phase-a-tracking.md)；`refactor/integration`、Project、AGENTS.md、保护规则及新运行环境仍属于 A-03 等任务的待落实内容，不能假定已经存在。
+当前规划在 `docs/refactor-collaboration-plan` 分支，尚未合入 main；不要因 main 没有这些文件而重新创建一份规划。A 阶段 Issues 已建立，见 [执行路线图](phase-a-tracking.md)；`refactor/integration`、AGENTS.md、模板及A/B里程碑标签已在A-03建立或进入审查；Project、强制保护及新运行环境仍需核实，详见 [治理落地状态](governance.md)。
 
 当前 `main` 推送会触发生产部署，`test` 推送会触发旧测试环境部署。个人开发只能推送任务分支。没有 Ready Issue 时先请负责人完成任务分派；不要随意挑选未满足依赖的后续任务。
 
