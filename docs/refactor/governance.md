@@ -1,12 +1,12 @@
 # A-03 协作治理落地与验收
 
-日期：2026-10-29。Issue #3。状态：保护规则已配置并回读验证；本次PR待最终CI与非作者审查，尚未验收关闭。
+日期：2026-10-29。Issue #3。状态：保护规则已配置并回读验证；本次PR待最终CI与任务验收，尚未验收关闭。
 
 ## 已落实资产
 
 - 根AGENTS.md：官网基线、企业隔离、适配层、任务/验收/发布边界。
 - .github/ISSUE_TEMPLATE/task.md、PULL_REQUEST_TEMPLATE.md：范围、依赖、AC、证据与恢复。
-- CODEOWNERS：暂路由至已知维护人insanetoto；未虚构团队成员，不表示作者可独自批准自己。
+- CODEOWNERS：暂路由至已知维护人insanetoto；未虚构团队成员，仅为可选审查路由，不强制独立批准。
 - A/B里程碑和stage:A、stage:B标签：已关联现有20个Issue（含两个总览），无未经批准的截止日期。
 - refactor/integration：从已验收A-02提交57ded3af9ec1d319471046a7e209185acce801d8建立；不会修改main/test。
 - E2E触发：新增refactor/integration推送与PR；规划文档分支PR也运行E2E，需以本次Actions验证结果为准。
@@ -19,7 +19,7 @@
 
 ## 已启用规则（API回读验证）
 
-对main、test、refactor/integration：要求PR、至少1位非作者批准、新提交撤销旧批准、解决审查讨论、禁止删除与强推；enforce_admins=true，管理员同样受约束。不要为通过当前PR而关闭规则；缺少独立审查成员则保留待审状态。
+对main、test、refactor/integration：要求PR、必需批准人数为0、解决审查讨论、禁止删除与强推；enforce_admins=true，管理员同样受约束。用户于2026-10-29明确要求“不需要非作者审核”，据此调整审批人数；CI与其余保护保持。
 
 main和refactor/integration的required checks使用实际作业名：`Build (worker)`、`Build (static)`、`Playwright E2E`；要求分支为最新。线上Health属于环境状态检测，PR事件会跳过，不能作为所有PR强制项。已有分支若工作流未产出某检查，不可直接添加永远不会出现的必需检查；先通过独立PR同步工作流再启用。test当前工作流只有E2E及部署，暂强制Playwright E2E，双构建门禁等B-06同步工作流后再加；此差异明确保留。main/test工作流的修改需要单独审查，不在此次A-03直接推送。
 
@@ -37,7 +37,7 @@ A-02：领取#2→独立截图/内容基线→本地普通回归5/5→PR #22→�
 
 - [ ] 本次PR的构建与新增E2E在集成目标上实跑通过。
 - [x] 管理员授权后通过API启用三个分支保护并回读验证。
-- [ ] 团队指定独立审查成员，完善CODEOWNERS与审查职责。
+- [x] 按用户明确要求不设置非作者必需审批；CODEOWNERS保留可选路由。
 - [ ] Project若启用，明确权限和同步方式；现用#11/#20作为Issue状态总览，不冒充自动看板。
 - [ ] 用户确认治理差异与管理员配置证据后关闭#3。
 

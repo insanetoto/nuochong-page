@@ -50,7 +50,7 @@
           "Playwright E2E"
         ],
         "strict": true,
-        "requiredApprovals": 1,
+        "requiredApprovals": 0,
         "enforceAdmins": true,
         "allowForcePush": false,
         "allowDelete": false,
@@ -61,7 +61,7 @@
           "Playwright E2E"
         ],
         "strict": true,
-        "requiredApprovals": 1,
+        "requiredApprovals": 0,
         "enforceAdmins": true,
         "allowForcePush": false,
         "allowDelete": false,
@@ -74,7 +74,7 @@
           "Playwright E2E"
         ],
         "strict": true,
-        "requiredApprovals": 1,
+        "requiredApprovals": 0,
         "enforceAdmins": true,
         "allowForcePush": false,
         "allowDelete": false,
@@ -93,5 +93,18 @@
   "integrationBranch": {
     "name": "refactor/integration",
     "baseSha": "57ded3af9ec1d319471046a7e209185acce801d8"
+  },
+  "reviewPolicyOverride": {
+    "date": "2026-10-29",
+    "authority": "user explicitly instructed 不需要非作者审核",
+    "requiredApprovals": 0,
+    "retained": [
+      "PR required",
+      "required CI",
+      "strict branch freshness",
+      "conversation resolution",
+      "no force pushes/deletions",
+      "enforce admins"
+    ]
   }
 }
