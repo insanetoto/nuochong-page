@@ -1,0 +1,1 @@
+{"passed":true,"stopStart":true,"restart":true,"workspaceRetained":true,"nativeProfileRetained":true,"linger":true,"enabled":true,"launchFileMode":"600","node":"24.21.0","harness":"0.2.1-rc.2","release":"bbb270a321e44eaaf7e627480086283d066ed87c","memoryMax":"805306368","cpuQuotaPerSecUSec":"1s","tasksMax":"256"}
