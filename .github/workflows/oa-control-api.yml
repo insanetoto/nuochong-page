@@ -1,0 +1,42 @@
+name: OA core runtime and identity
+on:
+  push:
+    branches: [feature/oa-02-04-control-api]
+    paths: ['apps/control-api/**', 'tools/nuochong-cli/**', '.github/workflows/oa-control-api.yml']
+  pull_request:
+    branches: [refactor/integration]
+    paths: ['apps/control-api/**', 'tools/nuochong-cli/**', '.github/workflows/oa-control-api.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  control-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17.11
+        env:
+          POSTGRES_USER: oa
+          POSTGRES_PASSWORD: isolated-test-only
+          POSTGRES_DB: oa_test
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: npm
+          cache-dependency-path: apps/control-api/package-lock.json
+      - run: npm ci --prefix apps/control-api --ignore-scripts --no-audit --no-fund
+      - name: Real PostgreSQL, HTTP, CLI, credential isolation and killed worker recovery
+        run: npm test --prefix apps/control-api
+      - name: Real restricted SDK initialization, no model credential or call
+        run: node apps/control-api/src/probe-sdk.mjs
+      - name: Existing CLI protocol regressions and independent package
+        run: |
+          node --test tools/nuochong-cli/test/*.test.mjs
+          node tools/nuochong-cli/test/package-smoke.mjs
