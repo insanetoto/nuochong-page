@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-30",
+  "sourceCommit": "2e9b86eb4d393ea57df1a8e16f687d3cdc7ed746",
+  "chainScriptSha256": "2dfc9ebc604f85b472d0e5597f450ddc6b00719390fcba7a0d9f9f1053eba362",
+  "platform": "darwin-arm64",
+  "node": "24.21.0",
+  "syntheticData": true,
+  "nativeWeb": {
+    "real": true,
+    "isolatedAdministrator": true,
+    "rendered": true,
+    "modelCalls": 0,
+    "initialCheck": "failed twice due to synchronous button count before async UI rendered",
+    "resolution": "wait for visible button, diagnostic and corrected test passed",
+    "nativeWebSharesCompanyIdentity": false
+  },
+  "controlChain": {
+    "real": true,
+    "cliCreatesRun": true,
+    "modelProvider": "deepseek-official",
+    "model": "deepseek-v4-flash",
+    "workerExecutes": true,
+    "mcpReadsRunAndHistory": true,
+    "crossOwnerDenied": true,
+    "submittedModelTurns": 1
+  },
+  "externalAi": {
+    "provider": "deepseek",
+    "model": "deepseek-flash",
+    "requests": 2,
+    "invokedTools": [
+      "auth.me",
+      "models.list"
+    ]
+  },
+  "billing": "unknown; worker provider request count not separately metered",
+  "homepage": {
+    "approvedSourceAssetHashes": 16,
+    "linuxPixelBaseline": "not available"
+  },
+  "publicControlApiDeployed": false
+}

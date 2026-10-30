@@ -39,6 +39,8 @@ const report = { time: new Date().toISOString(), node: process.version, platform
 try {
   let startup;
   for (let i = 0; i < 600; i++) {
+    // Startup output may contain terminal escape sequences.
+    // eslint-disable-next-line no-control-regex
     const matches = log.match(/https?:\/\/[^\s\u001b]+/g) ?? [];
     startup = matches.map((value) => { try { return new URL(value); } catch { return null; } })
       .find((url) => url?.origin === (publicUrl?.origin ?? `http://127.0.0.1:${port}`) && url.search);
@@ -59,7 +61,7 @@ try {
   await page.waitForFunction(() => (document.body.textContent ?? '').trim().length > 20);
   assert.equal(new URL(page.url()).search, '', 'Launch credential must be stripped after cookie exchange.');
   assert.equal(errors.length, 0);
-  assert.ok(await page.getByRole('button').count() > 0);
+  await page.getByRole('button').first().waitFor({ state: 'visible', timeout: 15000 });
   assert.equal((await page.locator('body').innerText()).includes('员工账号'), false);
   if (publicUrl) {
     assert.equal(new URL(page.url()).pathname, '/oa-test/');
@@ -82,7 +84,7 @@ try {
   if (nginx && nginx.exitCode === null) { const closed = once(nginx, 'close'); nginx.kill('SIGTERM'); await closed; }
   if (child.exitCode === null && child.signalCode === null) {
     const closed = once(child, 'close'); process.kill(-child.pid, 'SIGTERM');
-    const force = setTimeout(() => { try { process.kill(-child.pid, 'SIGKILL'); } catch {} }, 7000);
+    const force = setTimeout(() => { try { process.kill(-child.pid, 'SIGKILL'); } catch { /* Process already exited. */ } }, 7000);
     await closed; clearTimeout(force);
   }
   rmSync(state, { recursive: true, force: true }); mkdirSync(resolve(root, 'outputs'), { recursive: true });
