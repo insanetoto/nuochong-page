@@ -1,10 +1,10 @@
 # 公司OA基座任务路线与执行跟踪
 
-更新2026-10-29。当前增量 [#31](https://github.com/insanetoto/nuochong-page/issues/31)已由用户明确验收（“验收通过，合入集成分支”，PR #38）。以下0/6完成、0/6人工验收；仅OA-01 Ready，其余Backlog，按依赖解锁。本次不自动开展六项实现或发布生产。
+更新2026-10-30。当前增量 [#31](https://github.com/insanetoto/nuochong-page/issues/31)已由用户明确验收（“验收通过，合入集成分支”，PR #38）。以下0/6完成、0/6人工验收；仅OA-01 In progress（部分交付），其余Backlog，按依赖解锁。本次不自动开展六项实现或发布生产。
 
 | 任务 | GitHub Issue | 前置 | 状态 | 负责人 | 验收 |
 | --- | --- | --- | --- | --- | --- |
-| OA-01 | [原生首页与独立运行基座](https://github.com/insanetoto/nuochong-page/issues/32) | 当前增量 #31 已验收 | Ready | 未指派 | 未实现/未验收 |
+| OA-01 | [原生首页与独立运行基座](https://github.com/insanetoto/nuochong-page/issues/32) | 当前增量 #31 已验收 | In progress | insanetoto | 公网技术验证通过，整体AC/人工验收待完成 |
 | OA-02 | [Harness核心运行与会话](https://github.com/insanetoto/nuochong-page/issues/33) | #32 | Backlog | 未指派 | 未实现/未验收 |
 | OA-03 | [CLI与外部AI接入](https://github.com/insanetoto/nuochong-page/issues/34) | #33 | Backlog | 未指派 | 未实现/未验收 |
 | OA-04 | [公司访问基础](https://github.com/insanetoto/nuochong-page/issues/35) | #32 | Backlog | 未指派 | 未实现/未验收 |
@@ -31,8 +31,12 @@ flowchart LR
 3. PR目标refactor/integration，引用Issue，提供测试命令/结果和已知限制；更新进度和证据。
 4. CI通过和合并分别登记；负责人明确验收后才记Accepted/关闭为completed，并解锁后继。生产发布另行批准。
 
-本机原生页面预览不等于OA-01完整部署能力已完成；合成HTTP客户端测试不等于OA-02/03真实联调完成。负责人以Issue实际证据为准，不把预估人日当进度。
+公网管理员测试上线不等于OA-01所有AC和人工验收已完成；合成HTTP客户端测试不等于OA-02/03真实联调完成。负责人以Issue实际证据为准，不把预估人日当进度。
 
 ## 历史计划处置
 
 旧B任务#12—#19及总览#20按not_planned撤销，未交付也未验收；旧B里程碑停止执行。其内容与B—E路线保留在[历史归档](archive/business-plan-2026-10-29/roadmap.md)。A阶段#1—#10已验收历史与证据保留，不纳入本表的6项完成率。具体OA业务尚未规划。
+
+## 最新审计入口
+
+[2026-10-30审计](progress-2026-10-30.md)：0/6整体验收、1/6部分交付、5/6未启动。测试环境已上线，不再是仅本机预览；OA-01缺少的隔离/状态保留等证据和test→集成分支对齐须先收尾。已上线不等于OA-01已人工验收。
