@@ -9,8 +9,9 @@ export function createApp(pool){
   const app=Fastify({logger:false,bodyLimit:128*1024,genReqId:()=>randomUUID()});
   const identity=new Identity(pool);const store=new Store(pool);const connections=new Set();
   app.addHook('onRequest',async(req,reply)=>{reply.header('cache-control','no-store');reply.header('x-request-id',req.id);});
-  app.setErrorHandler((error,req,reply)=>{
+  app.setErrorHandler(async(error,req,reply)=>{
     const status=error instanceof ApiError?error.status:error.statusCode>=400&&error.statusCode<500?error.statusCode:500;
+    if(status>=400&&status<500&&req.oaAudit){try{await pool.query('INSERT INTO audit(actor_id,action,resource_id,result) VALUES($1,$2,NULL,$3)',[req.oaAudit.actorId,req.oaAudit.action,'deny']);}catch{ /* Audit failure must not expose credentials or turn a denied operation into an allowed one. */ }}
     reply.code(status).send({code:error instanceof ApiError?error.code:[400,413,415].includes(status)?'INVALID_INPUT':'REQUEST_FAILED',requestId:req.id});
   });
   app.setNotFoundHandler((req,reply)=>reply.code(404).send({code:'NOT_FOUND',requestId:req.id}));
@@ -59,6 +60,7 @@ export function createApp(pool){
     app.route({method:command.method,url:path,handler:async(req,reply)=>{
       const token=/^Bearer (.+)$/.exec(req.headers.authorization??'')?.[1];
       const actor=await identity.authenticate(token);
+      req.oaAudit={actorId:actor.id,action:command.id};
       if(command.scope!=='authenticated')identity.require(actor,command.scope,command.admin);
       requireThat(req.body===undefined || (req.body!==null && typeof req.body==='object' && !Array.isArray(req.body)),400,'INVALID_INPUT');
       const input={...(req.body??{}),...req.query,...req.params};

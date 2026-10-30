@@ -1,0 +1,24 @@
+name: OA integration gate
+on:
+  pull_request:
+    branches: [refactor/integration]
+permissions:
+  contents: read
+  checks: read
+jobs:
+  gate:
+    name: OA required gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+      - name: Test gate failure and missing-check policy
+        run: node --test scripts/ci/oa-gate.test.mjs
+      - name: Wait for all OA checks on the PR head commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OA_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/ci/oa-gate.mjs

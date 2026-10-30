@@ -3,10 +3,6 @@ name: Product CLI contracts
 on:
   pull_request:
     branches: [refactor/integration]
-    paths:
-      - 'tools/nuochong-cli/**'
-      - 'experiments/phase-a/contracts/**'
-      - '.github/workflows/product-cli.yml'
   workflow_dispatch:
 
 permissions:
