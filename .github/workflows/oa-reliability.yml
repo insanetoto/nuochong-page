@@ -22,9 +22,36 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Build one immutable test image
-        run: docker build -f apps/control-api/deploy/ci/Dockerfile -t oa-reliability:${{ github.sha }} .
+        run: |
+          docker build -f apps/control-api/deploy/ci/Dockerfile --build-arg OA_RELEASE=candidate -t oa-reliability:${{ github.sha }} .
+          docker build -f apps/control-api/deploy/ci/Dockerfile --build-arg OA_RELEASE=previous -t oa-reliability:previous .
       - name: Verify actual SDK and native dependencies in bounded container
         run: docker run --rm --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m oa-reliability:${{ github.sha }} node apps/control-api/src/probe-sdk.mjs
+      - name: Promote same image and roll back application independently
+        run: |
+          docker tag oa-reliability:${{ github.sha }} oa-reliability:candidate
+          docker tag oa-reliability:candidate oa-reliability:target
+          test "$(docker image inspect -f '{{.Id}}' oa-reliability:candidate)" = "$(docker image inspect -f '{{.Id}}' oa-reliability:target)"
+          test "$(docker image inspect -f '{{.Id}}' oa-reliability:target)" != "$(docker image inspect -f '{{.Id}}' oa-reliability:previous)"
+          docker run --rm --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m oa-reliability:target node apps/control-api/src/probe-sdk.mjs
+          docker tag oa-reliability:previous oa-reliability:target
+          test "$(docker image inspect -f '{{.Id}}' oa-reliability:target)" = "$(docker image inspect -f '{{.Id}}' oa-reliability:previous)"
+          docker run --rm --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m oa-reliability:target node apps/control-api/src/probe-sdk.mjs
+      - name: Kill and restart actual Harness host container three times
+        run: |
+          for attempt in 1 2 3; do
+            docker run -d --name oa-host-${attempt} --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m oa-reliability:candidate node apps/control-api/deploy/ci/hold-host.mjs
+            ready=0
+            for second in $(seq 1 30); do
+              if docker logs oa-host-${attempt} 2>&1 | grep -q OA_HOST_READY; then ready=1; break; fi
+              test "$(docker inspect -f '{{.State.Running}}' oa-host-${attempt})" = true
+              sleep 1
+            done
+            test "$ready" = 1
+            docker kill --signal KILL oa-host-${attempt}
+            docker rm oa-host-${attempt}
+          done
+          docker run --rm --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m oa-reliability:candidate node apps/control-api/src/probe-sdk.mjs
       - name: Exercise API restart and killed worker three times
         run: |
           for attempt in 1 2 3; do
@@ -42,4 +69,10 @@ jobs:
           source_count=$(docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_test -At -c "SELECT count(*) FROM oa_recovery.principals WHERE id='synthetic-1'")
           restored_count=$(docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_restore -At -c "SELECT count(*) FROM oa_recovery.principals WHERE id='synthetic-1'")
           test "$source_count" = 1 && test "$restored_count" = 1
+          for table in schema_versions principals credentials sessions runtime_config runs events audit; do
+            query="SELECT md5(coalesce(string_agg(row_to_json(t)::text, ',' ORDER BY row_to_json(t)::text), '')) FROM oa_recovery.$table t"
+            source_hash=$(docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_test -At -c "$query")
+            restored_hash=$(docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_restore -At -c "$query")
+            test "$source_hash" = "$restored_hash"
+          done
           rm /tmp/oa-recovery.sql
