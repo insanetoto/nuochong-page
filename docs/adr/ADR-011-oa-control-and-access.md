@@ -26,6 +26,8 @@ sdk-minimal禁用所有文件/目录/持久shell工具，只有自有只读curre
 
 ## 契约、CLI与部署边界
 
-20项能力在tools/nuochong-cli/src/registry.mjs及core-commands.mjs定义输入/输出、权限、HTTP、CLI映射。API直接使用这份元数据和验证器；CLI可独立打包，无后端依赖。现有创建/事件基础字段与A-05快照保持兼容，客户端版本0.2.0、契约1.1。未来OA-03负责扩展外部AI与MCP，不复制鉴权或状态机。
+22项能力在tools/nuochong-cli/src/registry.mjs及core-commands.mjs定义输入/输出、权限、HTTP、CLI映射。API直接使用这份元数据和验证器；CLI可独立打包，无后端依赖。现有创建/事件基础字段与A-05快照保持兼容，客户端版本0.2.0、契约1.1。未来OA-03负责扩展外部AI与MCP，不复制鉴权或状态机。
 
 新API必须显式迁移、配置数据库、初始化管理员和单独启动；无内存回退，无自动复制原生页面凭据/实验密钥。仓库同时包含API及Worker服务单元，但本次没有自动改动已上线Native测试入口或新增公网控制API；生产发布仍需独立批准。验证与使用见apps/control-api/README.md。
+
+OA-04补充：auth logout只撤销当前已认证凭据，不接受客户端指定目标；auth principals set-role仅管理员可用，角色变化递增主体epoch，使全部旧凭据失效，服务主体不能提升为admin，最后一个活跃管理员不能降级。重新启用同一状态不重复撤销新凭据。

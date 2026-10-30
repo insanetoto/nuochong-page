@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { transaction } from './db.mjs';
 import { requireThat } from './errors.mjs';
+import { HISTORY_PAGE_SIZE } from '../../../tools/nuochong-cli/src/core-commands.mjs';
 export const runDTO = (row) => ({ runId:row.id, actorId:row.owner_id, sessionId:row.session_id, status:row.status,
   idempotencyKey:row.idempotency_key, version:row.version, cancelRequested:row.cancel_requested, ...(row.error_code && {errorCode:row.error_code}) });
 export const sessionDTO = (row) => ({sessionId:row.id,name:row.name,createdAt:row.created_at.toISOString()});
@@ -32,9 +33,9 @@ export class Store {
     let cursor;
     if(input.after){cursor=await this.ownedRun(actor,input.after);requireThat(cursor.session_id===input.sessionId,400,'INVALID_CURSOR');}
     const rows=(await this.pool.query(`SELECT * FROM runs WHERE owner_id=$1 AND session_id=$2
-      AND ($3::text IS NULL OR (created_at,id)>(SELECT created_at,id FROM runs WHERE id=$3)) ORDER BY created_at,id LIMIT 6`,[actor.id,input.sessionId,input.after??null])).rows;
-    const page=rows.slice(0,5);
-    return {items:page.map(r=>({runId:r.id,status:r.status,prompt:r.prompt,...(r.output!==null&&{response:r.output})})),...(rows.length>5&&{nextCursor:page.at(-1).id})};
+      AND ($3::text IS NULL OR (created_at,id)>(SELECT created_at,id FROM runs WHERE id=$3)) ORDER BY created_at,id LIMIT $4`,[actor.id,input.sessionId,input.after??null,HISTORY_PAGE_SIZE+1])).rows;
+    const page=rows.slice(0,HISTORY_PAGE_SIZE);
+    return {items:page.map(r=>({runId:r.id,status:r.status,prompt:r.prompt,...(r.output!==null&&{response:r.output})})),...(rows.length>HISTORY_PAGE_SIZE&&{nextCursor:page.at(-1).id})};
   }
   async createRun(actor,input) {
     return transaction(this.pool,async(db)=>{

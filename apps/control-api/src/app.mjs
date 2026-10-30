@@ -25,6 +25,7 @@ export function createApp(pool){
   const config=async()=>{const c=(await pool.query('SELECT * FROM runtime_config WHERE id=1')).rows[0];return {provider:'deepseek-official',model:c.model,clockTool:c.clock_tool,version:c.version};};
   const handlers={
     'auth.me':async(a)=>({...principalDTO(a),scopes:a.scopes}),
+    'auth.logout':(a)=>identity.logout(a),
     'auth.principals.list':async(a,i)=>{
       if(i.after)requireThat((await pool.query('SELECT 1 FROM principals WHERE id=$1',[i.after])).rowCount,404,'NOT_FOUND');
       const rows=(await pool.query('SELECT * FROM principals WHERE ($1::text IS NULL OR (created_at,id)<(SELECT created_at,id FROM principals WHERE id=$1)) ORDER BY created_at DESC,id DESC LIMIT 101',[i.after??null])).rows;
@@ -32,6 +33,7 @@ export function createApp(pool){
     },
     'auth.principals.create':(a,i)=>identity.createPrincipal(a,i),
     'auth.principals.set-active':(a,i)=>identity.changePrincipal(a,i),
+    'auth.principals.set-role':(a,i)=>identity.setRole(a,i),
     'auth.credentials.create':(a,i)=>identity.createCredential(a,i),
     'auth.credentials.list':async(a,i)=>{
       if(i.after)requireThat((await pool.query('SELECT 1 FROM credentials WHERE id=$1',[i.after])).rowCount,404,'NOT_FOUND');
@@ -65,6 +67,7 @@ export function createApp(pool){
       requireThat(new Set(fields).size===fields.length,400,'INVALID_INPUT');
       if(command.streaming&&req.headers['last-event-id']){requireThat(!input.after,400,'INVALID_INPUT');input.after=req.headers['last-event-id'];}
       requireThat(valid(command.inputSchema,input),400,'INVALID_INPUT');
+      requireThat(Object.values(input).flat().every(value=>typeof value!=='string'||!value.includes('\0')),400,'INVALID_INPUT');
       if(command.streaming){
         const initial = await store.replay(actor,input.runId,input.after);
         if (!initial.length && input.after) {

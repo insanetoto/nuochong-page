@@ -1,7 +1,7 @@
 name: OA core runtime and identity
 on:
   push:
-    branches: [feature/oa-02-04-control-api]
+    branches: [feature/oa-02-runtime, feature/oa-04-access]
     paths: ['apps/control-api/**', 'tools/nuochong-cli/**', '.github/workflows/oa-control-api.yml']
   pull_request:
     branches: [refactor/integration]

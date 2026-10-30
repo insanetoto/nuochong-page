@@ -2,7 +2,7 @@
 
 OA/Harness能力的命令行入口；通过控制API使用服务端身份、资源授权和运行状态。独立于上游 `dsh`，不会暴露 Harness 宿主管理权限、数据库或模型凭据。
 
-当前实现20项运行/会话/身份/模型与只读工具命令，与apps/control-api使用同一契约；已有真实PostgreSQL/HTTP/CLI及本机真实模型验收。新API尚未发布公网，不能把原生Web端口当作控制API。未来MCP、审计/用量等仍为planned；旧业务模块不属于当前清单。
+当前实现22项运行/会话/身份/模型与只读工具命令，与apps/control-api使用同一契约；已有真实PostgreSQL/HTTP/CLI及本机真实模型验收。新API尚未发布公网，不能把原生Web端口当作控制API。未来MCP、审计/用量等仍为planned；旧业务模块不属于当前清单。
 
 ## 直接运行与安装
 
@@ -87,4 +87,6 @@ node tools/nuochong-cli/test/package-smoke.mjs
 
 原生Harness Web的3080端口不是本客户端的控制API。当前兼容API位于apps/control-api，绑定实际服务地址与受限凭据后使用；合成测试、真实数据库与真实模型报告分别记录。
 
-20项命令列表通过capabilities/schema发现。新增示例：`nuochong auth me`、`nuochong sessions list`、`nuochong models config get`、`nuochong tools list`、`nuochong runtime status`。身份/凭据管理须admin用户且auth:manage；模型配置须config:write。成员只能访问自身运行/会话。列表/history可用JSON after游标，退出前查询终态而不是把stream退出0等同于模型成功。完整部署/身份边界见[控制API手册](../../apps/control-api/README.md)。
+22项命令列表通过capabilities/schema发现。新增示例：`nuochong auth me`、`nuochong sessions list`、`nuochong models config get`、`nuochong tools list`、`nuochong runtime status`。身份/凭据管理须admin用户且auth:manage；模型配置须config:write。成员只能访问自身运行/会话。列表/history可用JSON after游标，退出前查询终态而不是把stream退出0等同于模型成功。完整部署/身份边界见[控制API手册](../../apps/control-api/README.md)。
+
+OA-04补充：auth logout只撤销当前已认证凭据，不接受客户端指定目标；auth principals set-role仅管理员可用，角色变化递增主体epoch，使全部旧凭据失效，服务主体不能提升为admin，最后一个活跃管理员不能降级。重新启用同一状态不重复撤销新凭据。
