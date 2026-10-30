@@ -174,10 +174,11 @@ test('teardown failure cannot be recorded as completed and terminal state is uni
 test('history cursor uses exact database timestamps and never repeats or leaks rows',async(t)=>{
  const f=await fixture(t);const a=await f.member();const id=await f.create(a.token);const run=await f.store.ownedRun({id:a.principalId},id);
  for(let i=0;i<12;i++)await f.create(a.token,'page '+i,{sessionId:run.session_id});
- const first=await f.store.history({id:a.principalId},{sessionId:run.session_id});assert.equal(first.items.length,5);assert.ok(first.nextCursor);
- const second=await f.store.history({id:a.principalId},{sessionId:run.session_id,after:first.nextCursor});assert.equal(second.items.length,5);
- const third=await f.store.history({id:a.principalId},{sessionId:run.session_id,after:second.nextCursor});assert.equal(third.items.length,3);
- assert.equal(new Set([...first.items,...second.items,...third.items].map(r=>r.runId)).size,13);assert.ok(!third.nextCursor);
+ const first=await f.store.history({id:a.principalId},{sessionId:run.session_id});assert.equal(first.items.length,4);assert.ok(first.nextCursor);
+ const second=await f.store.history({id:a.principalId},{sessionId:run.session_id,after:first.nextCursor});assert.equal(second.items.length,4);
+ const third=await f.store.history({id:a.principalId},{sessionId:run.session_id,after:second.nextCursor});assert.equal(third.items.length,4);
+ const fourth=await f.store.history({id:a.principalId},{sessionId:run.session_id,after:third.nextCursor});assert.equal(fourth.items.length,1);
+ assert.equal(new Set([...first.items,...second.items,...third.items,...fourth.items].map(r=>r.runId)).size,13);assert.ok(!fourth.nextCursor);
  const b=await f.member('other');assert.equal((await f.call('/api/ai/sessions?after='+run.session_id,{token:b.token})).status,404);
 });
 test('transient PostgreSQL notifications stream without a durable cursor and remain owner scoped',async(t)=>{
@@ -217,4 +218,43 @@ test('bounded session/principal/credential lists expose complete non-overlapping
   const b=await f.call(path+'?after='+a.data.nextCursor);assert.equal(b.data.items.length,2);assert.ok(!b.data.nextCursor);
   assert.equal(new Set([...a.data.items,...b.data.items].map(r=>r[key])).size,102);
  }
+});
+test('role promotion/demotion is administrator-only and invalidates all old credentials',async(t)=>{
+ const f=await fixture(t);const a=await f.member();const service=await f.member('service','service');
+ const change=(id,role,token=f.admin.token)=>f.call('/api/auth/principals/'+id+'/role',{token,method:'POST',body:{role}});
+ assert.equal((await change(a.principalId,'admin',a.token)).status,403);
+ assert.equal((await change(service.principalId,'admin')).status,400);
+ assert.equal((await change(f.admin.principalId,'member')).status,409);
+ assert.equal((await change(a.principalId,'admin')).status,200);
+ assert.equal((await f.call('/api/auth/me',{token:a.token})).status,401);
+ const key=await f.call('/api/auth/credentials',{method:'POST',body:{principalId:a.principalId,scopes:['auth:manage'],expiresAt:new Date(Date.now()+3600000).toISOString()}});
+ assert.equal((await f.call('/api/auth/principals',{token:key.data.token})).status,200);
+ assert.equal((await change(a.principalId,'member')).status,200);
+ assert.equal((await f.call('/api/auth/me',{token:key.data.token})).status,401);
+});
+test('self logout revokes only the authenticated credential and cannot target another principal',async(t)=>{
+ const f=await fixture(t);const a=await f.member();const b=await f.member('other');
+ assert.equal((await f.call('/api/auth/logout',{token:a.token,method:'POST',body:{credentialId:b.credentialId}})).status,400);
+ assert.equal((await f.call('/api/auth/logout',{token:a.token,method:'POST',body:{}})).status,200);
+ assert.equal((await f.call('/api/auth/me',{token:a.token})).status,401);
+ assert.equal((await f.call('/api/auth/me',{token:b.token})).status,200);
+ assert.equal((await f.call('/api/auth/me')).status,200);
+ const c=await f.member('service logout','service');
+ const bin=new URL('../../../tools/nuochong-cli/bin/nuochong.mjs',import.meta.url).pathname;
+ const result=await exec(process.execPath,[bin,'auth','logout'],{env:{PATH:process.env.PATH,NUOCHONG_API_URL:f.origin,NUOCHONG_ACCESS_TOKEN:c.token}});
+ assert.equal(JSON.parse(result.stdout).data.credentialId,c.credentialId);assert.equal((await f.call('/api/auth/me',{token:c.token})).status,401);
+});
+test('native owner cookies/JWT/identity headers never become company API identity or an owner interface',async(t)=>{
+ const f=await fixture(t);const a=await f.member();
+ for(const headers of [{'x-user-id':f.admin.principalId,'x-role':'admin'},{cookie:'dsh-web-auth=synthetic-owner-cookie'},{authorization:'Bearer synthetic.header.signature'}]){
+  assert.equal((await f.call('/api/auth/me',{token:null,headers})).status,401);
+ }
+ for(const token of [a.token,f.admin.token])for(const path of ['/api/owner','/rpc','/settings','/plugins','/api/ai/tools/execute'])assert.equal((await f.call(path,{token,method:'POST',body:{command:'do-not-execute'}})).status,404);
+ assert.equal((await f.call('/api/ai/sessions?actorId='+f.admin.principalId,{token:a.token})).status,400);
+});
+test('invalid database text is rejected without creating identity or run side effects',async(t)=>{
+ const f=await fixture(t);const a=await f.member();
+ assert.equal((await f.call('/api/ai/runs',{token:a.token,method:'POST',body:{prompt:'bad\0text',idempotencyKey:'bad'}})).status,400);
+ assert.equal((await f.call('/api/auth/principals',{method:'POST',body:{name:'bad\0name',kind:'user',role:'member'}})).status,400);
+ assert.equal((await f.pool.query('SELECT count(*)::int AS n FROM runs')).rows[0].n,0);
 });

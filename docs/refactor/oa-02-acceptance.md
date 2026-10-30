@@ -6,7 +6,7 @@
 | --- | --- |
 | 官方SDK/公开协议适配 | dsh-sdk-client0.2.1-rc.2、公开resumeSession与Hook/JSON-RPC流桥；未修改上游核心 |
 | 正式运行API | create/get/cancel/events，创建幂等、取消确认与终态区分、持久事件cursor、瞬态token无cursor；与CLI同契约 |
-| 会话与历史 | 按服务端主体归属隔离，创建/列表/get/history；数据库精确时间/id游标，不重复遗漏；单history页5项避免超CLI响应限额 |
+| 会话与历史 | 按服务端主体归属隔离，创建/列表/get/history；数据库精确时间/id游标，不重复遗漏；单history页4项避免超CLI响应限额 |
 | 模型/工具配置 | 固定已验收deepseek-official/deepseek-v4-flash、CAS版本化配置；仅只读current_time可开关，无任意URL/密钥/插件写入接口 |
 | 权威状态与恢复 | PostgreSQL17.11，独立API/Worker，租约+会话锁+fencing；实际API进程重启保留运行，实际Worker强杀后未知dispatch停重试 |
 | 正确终态 | 根session completed且SDK清理确认才成功；idle、子会话完成、耗尽、错误、清理失败不能冒充成功 |

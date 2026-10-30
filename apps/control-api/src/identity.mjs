@@ -64,6 +64,23 @@ export class Identity {
       return this.issue(db,p,[...new Set(input.scopes)],new Date(expiry));
     });
   }
+  async setRole(actor,input) {
+    this.require(actor,'auth:manage',true);
+    return transaction(this.pool,async(db)=>{
+      await db.query("SELECT pg_advisory_xact_lock(hashtext('oa-admin-change'))");
+      const principal=(await db.query('SELECT * FROM principals WHERE id=$1 FOR UPDATE',[input.principalId])).rows[0];
+      requireThat(principal,404,'NOT_FOUND');
+      requireThat(principal.kind!=='service'||input.role==='member',400,'INVALID_INPUT');
+      if(principal.role===input.role)return principalDTO(principal);
+      if(principal.active&&principal.role==='admin')requireThat((await db.query("SELECT 1 FROM principals WHERE active AND role='admin' AND id<>$1",[principal.id])).rowCount,409,'LAST_ADMIN');
+      const row=(await db.query('UPDATE principals SET role=$2,epoch=epoch+1 WHERE id=$1 RETURNING *',[principal.id,input.role])).rows[0];
+      return principalDTO(row);
+    });
+  }
+  async logout(actor) {
+    const result=await this.pool.query('UPDATE credentials SET revoked=true WHERE id=$1 AND principal_id=$2 RETURNING id',[actor.credential_id,actor.id]);
+    requireThat(result.rowCount,401,'UNAUTHORIZED');return {credentialId:actor.credential_id,revoked:true};
+  }
   async revoke(actor,input) {
     this.require(actor,'auth:manage',true);
     const row=(await this.pool.query('UPDATE credentials SET revoked=true WHERE id=$1 RETURNING *',[input.credentialId])).rows[0];

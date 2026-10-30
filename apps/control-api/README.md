@@ -45,7 +45,7 @@ npm run worker --prefix apps/control-api
 
 ## CLI与契约
 
-能力清单与JSON Schema来自tools/nuochong-cli/src/registry.mjs和core-commands.mjs，20项能力都有命令映射。CLI0.2.0/契约1.1，独立包无需后端依赖：
+能力清单与JSON Schema来自tools/nuochong-cli/src/registry.mjs和core-commands.mjs，22项能力都有命令映射。CLI0.2.0/契约1.1，独立包无需后端依赖：
 
 ```sh
 node tools/nuochong-cli/bin/nuochong.mjs capabilities --json
@@ -60,7 +60,7 @@ node tools/nuochong-cli/bin/nuochong.mjs tools list
 
 SSE持久生命周期事件有单调sequence/cursor，瞬态run.delta没有id、不会写入事件表；断开不自动取消运行。API每100ms重新验证连接凭据，Worker按租约心跳检查撤权并关闭SDK。已消费终态cursor返回409 STREAM_COMPLETE，应查询运行终态。单客户端瞬态积压超过64KiB/出现背压会断开，用持久cursor恢复或查状态，不能把断流当成功。
 
-会话/身份/凭据列表每页100项，after和nextCursor基于数据库精确(created_at,id)排序；私有会话cursor仍查归属。history每页5项，确保最坏UTF8输入/输出也在CLI的1MiB响应上限内。普通HTTP错误只返回稳定code/requestId，不透传数据库、模型诊断或凭据。
+会话/身份/凭据列表每页100项，after和nextCursor基于数据库精确(created_at,id)排序；私有会话cursor仍查归属。history每页4项，确保最坏UTF8/JSON转义输入/输出也在CLI的1MiB响应上限内。普通HTTP错误只返回稳定code/requestId，不透传数据库、模型诊断或凭据。
 
 ## SDK、持久状态与恢复
 
@@ -87,3 +87,5 @@ TEST_DATABASE_URL=... node apps/control-api/test/verify-real-model.mjs
 CI使用PostgreSQL17.11服务验证真实HTTP/CLI、权限、SSE、强杀/fencing和故障；故障executor仅测试注入，生产入口没有fixture开关。SDK启动检查真实进程但不调用模型。真实默认模型验收另存脱敏报告，真实提交轮数不是provider HTTP请求数，计费金额未知，不按零费用记录。
 
 本次未将新控制API发布到现有公网Native测试路径，未改main/test、Nginx或既有模型配置；现有原生页面继续原方式运行。公网控制面推广需实际数据库、独立入口/TLS/服务凭据配置与发布验收；MCP/外部AI集成和运营稳定性仍按OA-03/OA-05执行。
+
+OA-04补充：auth logout只撤销当前已认证凭据，不接受客户端指定目标；auth principals set-role仅管理员可用，角色变化递增主体epoch，使全部旧凭据失效，服务主体不能提升为admin，最后一个活跃管理员不能降级。重新启用同一状态不重复撤销新凭据。

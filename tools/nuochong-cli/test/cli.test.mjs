@@ -39,7 +39,7 @@ const frame = (data) => `id: ${data.eventId}\nevent: ${data.type}\ndata: ${JSON.
 
 test('AI discovery exposes side effects, schemas and honest availability without credentials', async () => {
   const result = await cli(['capabilities', '--json']); assert.equal(result.code, 0); assert.equal(result.stderr, '');
-  const data = JSON.parse(result.stdout).data; assert.equal(data.commands.length, 20);
+  const data = JSON.parse(result.stdout).data; assert.equal(data.commands.length, 22);
   assert.ok(data.commands.every((c) => c.inputSchema.additionalProperties === false && c.authorization && !c.automaticRetry));
   assert.ok(data.commands.every((c) => c.serverStatus === 'oa-control-api'));
   assert.equal(data.transportAdapters.mcp, 'planned-adapter-of-same-contracts');

@@ -1,13 +1,13 @@
 # 公司OA基座任务路线与执行跟踪
 
-更新2026-10-30。当前增量 [#31](https://github.com/insanetoto/nuochong-page/issues/31)已由用户明确验收（“验收通过，合入集成分支”，PR #38）。当前1/6完成并人工验收（OA-01），OA-02/OA-04 Ready，其余三项Backlog，均未启动后续开发。本次不自动开展六项实现或发布生产。
+更新2026-10-30。当前增量 [#31](https://github.com/insanetoto/nuochong-page/issues/31)已由用户明确验收（“验收通过，合入集成分支”，PR #38）。当前1/6完成并人工验收（OA-01），OA-02 Validating、OA-04 In review，其余三项Backlog。本次不自动开展六项实现或发布生产。
 
 | 任务 | GitHub Issue | 前置 | 状态 | 负责人 | 验收 |
 | --- | --- | --- | --- | --- | --- |
 | OA-01 | [原生首页与独立运行基座](https://github.com/insanetoto/nuochong-page/issues/32) | 当前增量 #31 已验收 | Accepted | insanetoto | 2026-10-30用户明确验收 |
-| OA-02 | [Harness核心运行与会话](https://github.com/insanetoto/nuochong-page/issues/33) | #32 | In review | insanetoto | OA-02技术验证通过，待最终CI与验收 |
+| OA-02 | [Harness核心运行与会话](https://github.com/insanetoto/nuochong-page/issues/33) | #32 | Validating | insanetoto | PR46合入且CI通过，待人工验收 |
 | OA-03 | [CLI与外部AI接入](https://github.com/insanetoto/nuochong-page/issues/34) | #33 | Backlog | 未指派 | 未实现/未验收 |
-| OA-04 | [公司访问基础](https://github.com/insanetoto/nuochong-page/issues/35) | #32 | Ready | 未指派 | 未实现/未验收 |
+| OA-04 | [公司访问基础](https://github.com/insanetoto/nuochong-page/issues/35) | #32 | In review | insanetoto | 角色/撤权实现完成，待CI及人工验收 |
 | OA-05 | [权限、稳定性与运行保障](https://github.com/insanetoto/nuochong-page/issues/36) | #33, #35 | Backlog | 未指派 | 未实现/未验收 |
 | OA-06 | [基座验收与首个业务需求评审](https://github.com/insanetoto/nuochong-page/issues/37) | #34, #35, #36 | Backlog | 未指派 | 未实现/未验收 |
 
@@ -39,8 +39,12 @@ flowchart LR
 
 ## 最新审计入口
 
-[2026-10-30审计](progress-2026-10-30.md)：早期审计曾为0/6整体验收；当前OA-01已人工验收，1/6完成、其余5/6未启动。测试环境已上线，不再是仅本机预览；早期缺口现已通过PR44和真实演练补齐，见最新收尾报告。已上线和人工验收分别记录；用户确认见下方。
+[2026-10-30审计](progress-2026-10-30.md)：早期审计曾为0/6整体验收；当前OA-01已人工验收，1/6完成、OA-02/OA-04已实施待人工验收，其余3项未启动。测试环境已上线，不再是仅本机预览；早期缺口现已通过PR44和真实演练补齐，见最新收尾报告。已上线和人工验收分别记录；用户确认见下方。
 
 ## OA-01最新收尾
 
-[整体验收报告](oa-01-acceptance.md)：真实停止隔离、启动/重启后的工作区与原生配置保留、恢复后的认证WebSocket及版本清单均通过；PR44同步部署代码回集成分支。历史审计所列技术缺口已补齐，用户于2026-10-30确认“OA-01 验收通过”。当前1/6整体人工验收，OA-02/OA-04 Ready，OA-03/05/06 Backlog；均未开工。
+[整体验收报告](oa-01-acceptance.md)：真实停止隔离、启动/重启后的工作区与原生配置保留、恢复后的认证WebSocket及版本清单均通过；PR44同步部署代码回集成分支。历史审计所列技术缺口已补齐，用户于2026-10-30确认“OA-01 验收通过”。该次解锁时OA-02/OA-04为Ready；当前实施状态以下方及表格为准。
+
+## OA-02与OA-04实施更新
+
+[OA-02验收报告](oa-02-acceptance.md)与[OA-04验收报告](oa-04-acceptance.md)记录正式API/Worker、PostgreSQL状态/权限、22项CLI契约、真实默认模型与撤权/恢复测试。PR46为核心运行基础；OA-04独立后继PR补齐角色变更/自助撤权。当前仍1/6整体人工验收；两项待负责人确认，不提前关闭Issue/解锁后继。新控制API未额外公网发布。
