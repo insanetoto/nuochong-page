@@ -39,7 +39,9 @@ jobs:
           const oa = 'https://www.nuochong.net/oa-test/';
           try {
             const response = await fetch(oa, { signal: AbortSignal.timeout(10000) });
-            if (response.ok && /<title>DeepSeek Harness<\/title>/.test(await response.text())) {
+            const body = await response.text();
+            if ((response.ok && /<title>DeepSeek Harness<\/title>/.test(body)) ||
+                (response.status === 401 && body.trim() === 'dsh web authentication required; reopen the URL printed by dsh web.')) {
               config.vars.NUOCHONG_OA_URL = oa;
               console.log('Verified native Harness home; enabling test /oa redirect.');
             } else console.log('Native OA administrator bootstrap not ready; /oa remains explicitly unavailable.');
