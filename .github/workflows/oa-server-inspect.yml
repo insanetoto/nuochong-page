@@ -56,6 +56,9 @@ jobs:
           readlink "$HOME/.local/share/nuochong-oa-test/current" 2>/dev/null || true
           printf '\nUSER SUPERVISOR\n'; systemctl --user is-system-running 2>/dev/null || true
           loginctl show-user "$(id -un)" -p Linger 2>/dev/null || true
+          printf '\nOA USER SERVICE\n'
+          systemctl --user show nuochong-oa-test.service -p LoadState -p ActiveState -p SubState -p Result -p ExecMainStatus 2>&1 || true
+          journalctl --user -u nuochong-oa-test.service -n 25 --no-pager 2>&1 | sed -E 's#https?://[^[:space:]]+#<redacted-url>#g' || true
           printf '\nLISTENING PORTS\n'
           ss -ltnH | awk '{n=split($4,a,":"); print a[n]}' | sort -nu
           printf '\nNGINX PUBLIC ROUTING\n'
