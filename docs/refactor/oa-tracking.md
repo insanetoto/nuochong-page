@@ -50,9 +50,9 @@ flowchart LR
 [OA-02验收报告](oa-02-acceptance.md)与[OA-04验收报告](oa-04-acceptance.md)记录正式API/Worker、PostgreSQL状态/权限、22项CLI契约、真实默认模型与撤权/恢复测试。PR46为核心运行基础；[PR47](https://github.com/insanetoto/nuochong-page/pull/47)独立补齐角色变更/自助撤权并通过Linux CI。此处为OA-02/04验收时的历史快照；2026-10-30用户在会话中明确确认：“OA-02、OA-04 均验收通过”。 关闭#33/#35，仅将#34/#36设Ready，不自动开工。新控制API未额外公网发布。
 
 
-## OA-03整体验收
+## OA-03整体验收（当时状态）
 
-2026-10-30用户明确确认“OA-03 验收通过”。[PR49](https://github.com/insanetoto/nuochong-page/pull/49)已合入，真实DeepSeek、隔离数据库/MCP、CLI及远程CI通过。#34关闭为completed，OA-06仍等待OA-05验收。MCP流式事件仍由CLI提供；新控制API未公网发布。
+2026-10-30用户明确确认“OA-03 验收通过”。[PR49](https://github.com/insanetoto/nuochong-page/pull/49)已合入，真实DeepSeek、隔离数据库/MCP、CLI及远程CI通过。#34关闭为completed，当时OA-06仍等待OA-05验收；两项现均已验收。MCP流式事件仍由CLI提供；新控制API未公网发布。
 
 
 ## OA-05整体验收
@@ -60,6 +60,6 @@ flowchart LR
 2026-10-30用户明确确认“OA-05 验收通过”。[PR51](https://github.com/insanetoto/nuochong-page/pull/51)已合入，隔离演练、CI及保护门禁通过；见[验证记录](oa-05-acceptance.md)的明确限制。#36关闭为completed，OA-06依赖已满足。
 
 
-## OA-06评审进行中
+## OA-06评审及决定
 
 [基座评审](oa-06-foundation-review.md)与[知识库需求草案](oa-06-knowledge-discovery.md)已形成；真实模型/CLI/MCP及独立原生首页以同一产品基线验证，统一员工Web及公网控制API尚未提供。最终CI通过；用户于2026-10-30确认“批准有限 Go 并验收 OA-06”。未实现知识库业务，具体功能清单与生产发布未获批准。
