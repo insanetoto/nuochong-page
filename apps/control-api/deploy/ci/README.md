@@ -2,7 +2,7 @@
 
 `.github/workflows/oa-reliability.yml` 在短期 Linux Runner 构建正式控制 API/CLI/MCP 镜像，使用隔离 PostgreSQL 和合成身份，不读取模型密钥、不连接公网测试或生产数据库。容器限制为只读根、768 MiB、1 CPU、256 PID 和 64 MiB 可执行 tmpfs；在其中启动真实受限 Harness SDK。此检查不是生产容量测定。
 
-演练将候选镜像直接标记为目标，核对同一 image ID；再切换到不同标签版本的上一镜像，分别启动 SDK 和真实 API 进程检查。两个版本只有镜像标签不同，不验证破坏性代码和数据库迁移回滚。三次强杀实际 Harness Host 容器后重新启动，另三次强杀 Worker 子进程，验证租约恢复、未知 dispatch 不重放和终态唯一；三次 API 子进程重启验证持久状态和跨进程撤权。Host 与 Worker 故障分别验证，Host 容器测试没有执行真实模型任务，不能推断生产在途模型调用可恢复。
+演练将候选镜像直接标记为目标，核对同一 image ID；再切换到不同标签版本的上一镜像，分别启动 SDK 和真实 API 进程检查。两个版本只有镜像标签不同，不验证破坏性代码和数据库迁移回滚。三次强杀实际 Harness Host 容器后重新启动，另三次强杀 Worker 子进程，验证租约恢复、未知 dispatch 不重放和终态唯一；三次 API 子进程重启验证持久状态和跨进程撤权。Host 容器同时启动真实SDK和持久Worker，并用合成阻塞执行器触发未知dispatch；恢复时验证终态唯一和不重放。Host 容器测试没有执行真实模型任务，不能推断生产在途模型调用可恢复。
 
 独立 `pg_dump` 到新建数据库恢复合成表，并逐表比较 schema_versions、principals、credentials、sessions、runtime_config、runs、events、audit 的排序内容摘要。该小规模夹具不代表生产备份的 RPO/RTO、加密、保留周期或跨区域灾备。数据恢复与应用镜像切换分别执行。MCP 使用实际 stdio/API/数据库验证权限和幂等；模型计费未测量，记录为 unknown。
 

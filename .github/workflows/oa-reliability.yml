@@ -44,7 +44,8 @@ jobs:
       - name: Kill and restart actual Harness host container three times
         run: |
           for attempt in 1 2 3; do
-            docker run -d --name oa-host-${attempt} --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m oa-reliability:candidate node apps/control-api/deploy/ci/hold-host.mjs
+            docker run --rm --network host --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m -e TEST_DATABASE_URL=postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test -e OA_TEST_SCHEMA=oa_host_${attempt} oa-reliability:candidate node apps/control-api/deploy/ci/host-cycle.mjs setup
+            docker run -d --name oa-host-${attempt} --network host --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m -e TEST_DATABASE_URL=postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test -e OA_TEST_SCHEMA=oa_host_${attempt} oa-reliability:candidate node apps/control-api/deploy/ci/host-cycle.mjs hold
             ready=0
             for second in $(seq 1 30); do
               if docker logs oa-host-${attempt} 2>&1 | grep -q OA_HOST_READY; then ready=1; break; fi
@@ -54,6 +55,7 @@ jobs:
             test "$ready" = 1
             docker kill --signal KILL oa-host-${attempt}
             docker rm oa-host-${attempt}
+            docker run --rm --network host --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m -e TEST_DATABASE_URL=postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test -e OA_TEST_SCHEMA=oa_host_${attempt} oa-reliability:candidate node apps/control-api/deploy/ci/host-cycle.mjs verify
           done
           docker run --rm --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m oa-reliability:candidate node apps/control-api/src/probe-sdk.mjs
       - name: Exercise API restart and killed worker three times
