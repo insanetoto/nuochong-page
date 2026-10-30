@@ -13,7 +13,7 @@ Web、nuochong CLI与未来MCP使用同一版本化能力契约和服务端授�
 | runs create/get/cancel/events | HTTP客户端已实现；正式OA控制API实现位于apps/control-api，与原生Web网关协议分离；新API尚未公网发布 |
 | session/model/tool/runtime/auth等 | OA-02/OA-04实现20项共享契约/CLI映射，真实数据库与模型证据分别记录 |
 | 知识/培训/工单等业务命令 | 不在当前计划或能力清单中，未来需求确认后另行定义 |
-| MCP | OA-03按相同契约实现，目前没有MCP服务或外部账号连接 |
+| MCP | OA-03提供受限stdio适配，使用同一契约和API授权；流式事件仍通过CLI，不开放管理员工具 |
 
 当前代码与运行方式见[CLI包](../../tools/nuochong-cli/README.md)。原生Web端口不是产品CLI控制API；本次在隔离真实PostgreSQL上验证正式API/CLI，真实模型证据见控制API包结果，不把合成故障算作真实模型。
 
@@ -40,4 +40,4 @@ Web、nuochong CLI与未来MCP使用同一版本化能力契约和服务端授�
 
 未来每个产品能力PR必须有commandId/schema、CLI映射、授权/副作用/幂等说明、成功/错误机器示例和负例测试。纯布局/视觉交互无须强行变成命令；只有UI按钮或mock成功不能算业务功能完成。
 
-未来MCP适配参考[官方工具协议](https://modelcontextprotocol.io/specification/2025-11-25/server/tools)，复用能力元数据及schema；本次没有声称完成该协议服务。旧B—E矩阵已被[OA路线图](roadmap.md)取代，旧估算不能套用于当前CLI增量。
+未来MCP适配参考[官方工具协议](https://modelcontextprotocol.io/specification/2025-11-25/server/tools)，复用能力元数据及schema；stdio适配和DeepSeek模型真实工具调用验证见tools/nuochong-mcp/README.md。旧B—E矩阵已被[OA路线图](roadmap.md)取代，旧估算不能套用于当前CLI增量。

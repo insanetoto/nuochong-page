@@ -40,7 +40,7 @@ export const commands = [...runCommands, ...coreCommands];
 export function manifest() {
   return { contractVersion: CONTRACT_VERSION, clientVersion: CLIENT_VERSION, discovery: 'local-client-contracts; not live permission discovery',
     commands, plannedDomains: ['permissions', 'audit', 'usage', 'settings', 'integrations'],
-    transportAdapters: { cli: 'implemented-foundation', http: 'oa-control-api', mcp: 'planned-adapter-of-same-contracts' } };
+    transportAdapters: { cli: 'implemented-foundation', http: 'oa-control-api', mcp: 'restricted-stdio-adapter-of-same-contracts' } };
 }
 
 // This package deliberately supports only the primitive schemas it publishes.
