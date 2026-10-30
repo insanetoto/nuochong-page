@@ -30,7 +30,7 @@ test("server-renders the English homepage by default", async () => {
 });
 
 test("retired business routes return 404 instead of restoring demo login or employee pages", async () => {
-  for (const path of ["/app", "/app/login", "/app/dashboard", "/app/users"]) {
+    for (const path of ["/app", "/app/login", "/app/dashboard", "/app/users", "/app/training", "/app/notifications", "/app/workorders", "/app/help", "/app/users/profile", "/app/users/security"]) {
     const response = await render(path);
     assert.equal(response.status, 404, path);
     assert.doesNotMatch(await response.text(), /ng-alain\.com|mock-token|员工账号/);

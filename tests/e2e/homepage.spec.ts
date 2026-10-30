@@ -12,7 +12,7 @@ test("website remains bilingual without a business-system entry", async ({ page 
 
 test("retired business pages stay unavailable even with a previous demo token", async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("nuochong-business-token", "mock-token"));
-  for (const path of ["/app", "/app/login", "/app/dashboard", "/app/users"]) {
+  for (const path of ["/app", "/app/login", "/app/dashboard", "/app/users", "/app/training", "/app/notifications", "/app/workorders", "/app/help", "/app/users/profile", "/app/users/security"]) {
     const response = await page.goto(path);
     expect(response?.status()).toBe(404);
     await expect(page.locator(".bs-login-card, .bs-table, .bs-stat-card")).toHaveCount(0);

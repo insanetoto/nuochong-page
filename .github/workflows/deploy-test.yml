@@ -29,8 +29,25 @@ jobs:
 
       - name: Set test worker name
         run: |
-          node --input-type=module -e \
-            "import fs from 'node:fs'; const p='dist/server/wrangler.json'; const c=JSON.parse(fs.readFileSync(p,'utf8')); c.name='nuochong-company-homepage-test'; fs.writeFileSync(p, JSON.stringify(c, null, 2));"
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const path = 'dist/server/wrangler.json';
+          const config = JSON.parse(fs.readFileSync(path, 'utf8'));
+          config.name = 'nuochong-company-homepage-test';
+          config.vars ??= {};
+          delete config.vars.NUOCHONG_OA_URL;
+          const oa = 'https://www.nuochong.net/oa-test/';
+          try {
+            const response = await fetch(oa, { signal: AbortSignal.timeout(10000) });
+            const body = await response.text();
+            if ((response.ok && /<title>DeepSeek Harness<\/title>/.test(body)) ||
+                (response.status === 401 && body.trim() === 'dsh web authentication required; reopen the URL printed by dsh web.')) {
+              config.vars.NUOCHONG_OA_URL = oa;
+              console.log('Verified native Harness home; enabling test /oa redirect.');
+            } else console.log('Native OA administrator bootstrap not ready; /oa remains explicitly unavailable.');
+          } catch { console.log('Native OA endpoint unavailable; /oa remains explicitly unavailable.'); }
+          fs.writeFileSync(path, JSON.stringify(config, null, 2));
+          JS
 
       - name: Deploy to Cloudflare Workers
         env:
