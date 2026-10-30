@@ -1,6 +1,6 @@
 # OA-04 公司访问基础验收
 
-2026-10-30；Issue #35，独立分支feature/oa-04-access。OA-01已获人工验收；复用OA-02正式API/持久身份底座，并独立完善角色变更、自助撤权和Native owner隔离验收。技术实现完成，[PR #47](https://github.com/insanetoto/nuochong-page/pull/47)及远程检查通过；整体人工验收待负责人确认。
+2026-10-30；Issue #35，独立分支feature/oa-04-access。OA-01已获人工验收；复用OA-02正式API/持久身份底座，并独立完善角色变更、自助撤权和Native owner隔离验收。技术实现完成，[PR #47](https://github.com/insanetoto/nuochong-page/pull/47)及远程检查通过；整体人工验收已通过。
 
 ## 实际身份方案
 
@@ -32,4 +32,4 @@
 
 [ADR-011](../adr/ADR-011-oa-control-and-access.md)记录采用的控制面与身份方案；[访问/部署手册](../../apps/control-api/README.md)包含权限矩阵、迁移/初始化/撤权命令及独立服务模板。未新增公网控制API或员工Web入口，没有改动现有Native测试页面及main/test发布。后续公网推广需要专用数据库、TLS入口和服务凭据配置；MCP属于OA-03，运营审计/限流/灾备属于OA-05。
 
-状态：技术证据齐备，整体人工验收待确认；不提前关闭#35，不自动解锁OA-05。
+状态：Accepted。2026-10-30用户在会话中明确确认：“OA-02、OA-04 均验收通过”。 #35关闭为completed，OA-05设Ready，不自动开工或发布。
