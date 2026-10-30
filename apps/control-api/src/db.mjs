@@ -3,8 +3,10 @@ import {createHash} from 'node:crypto';
 import { readFileSync } from 'node:fs';
 export function poolFor(url, schema = 'oa_control') {
   if (!url || !/^oa_[a-z0-9_]{1,48}$/.test(schema)) throw new Error('Database URL and valid OA schema are required.');
-  return new pg.Pool({ connectionString: url, max: 10, connectionTimeoutMillis: 5000,
+  const pool = new pg.Pool({ connectionString: url, max: 10, connectionTimeoutMillis: 5000,
     options: `-c search_path=${schema},pg_catalog`, statement_timeout: 5000, idle_in_transaction_session_timeout: 5000 });
+  pool.oaSchema = schema;
+  return pool;
 }
 export async function transaction(pool, body) {
   const db = await pool.connect();

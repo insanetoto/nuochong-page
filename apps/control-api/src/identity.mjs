@@ -1,6 +1,6 @@
 import { randomUUID, randomBytes, createHash } from 'node:crypto';
 import { transaction } from './db.mjs';
-import { ApiError, requireThat } from './errors.mjs';
+import { requireThat } from './errors.mjs';
 export const SCOPES = ['runs:write', 'runs:read', 'sessions:write', 'sessions:read', 'config:read', 'config:write', 'auth:manage'];
 export const MEMBER_SCOPES = SCOPES.filter((scope) => !['config:write','auth:manage'].includes(scope));
 const hash = (value) => createHash('sha256').update(value).digest('hex');
@@ -47,6 +47,7 @@ export class Identity {
       await db.query("SELECT pg_advisory_xact_lock(hashtext('oa-admin-change'))");
       const principal = (await db.query('SELECT * FROM principals WHERE id=$1 FOR UPDATE',[input.principalId])).rows[0];
       requireThat(principal,404,'NOT_FOUND');
+      if(principal.active===input.active)return principalDTO(principal);
       if (principal.role==='admin' && !input.active) requireThat((await db.query("SELECT 1 FROM principals WHERE active AND role='admin' AND id<>$1",[principal.id])).rowCount,409,'LAST_ADMIN');
       const row=(await db.query('UPDATE principals SET active=$2,epoch=epoch+1 WHERE id=$1 RETURNING *',[principal.id,input.active])).rows[0];
       return principalDTO(row);

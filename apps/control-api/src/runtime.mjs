@@ -33,7 +33,7 @@ export class HarnessExecution {
         }
       }});
       const reason=result.notifications?.filter(n=>n.method==='session.event'&&n.params.sessionId===result.sessionId&&n.params.event?.type==='turn/end').at(-1)?.params.event.data.reason;
-      return reason?.kind==='completed'?{status:'succeeded',text:result.finalResponse,toolCalls:this.toolCalls}:{status:'failed',errorCode:'provider_error'};
+      return reason?.kind==='completed'&&result.sessionId===this.run.session_id?{status:'succeeded',text:result.finalResponse,toolCalls:this.toolCalls}:{status:'failed',errorCode:'provider_error'};
     }catch(error){this.failureCategory=error.constructor.name;return {status:'failed',errorCode:'unavailable'};}
     finally{await this.close();}
   }

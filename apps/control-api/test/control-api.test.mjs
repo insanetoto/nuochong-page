@@ -6,7 +6,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { poolFor,migrate } from '../src/db.mjs';
 import { createApp } from '../src/app.mjs';
-import { Identity,MEMBER_SCOPES } from '../src/identity.mjs';
+import { MEMBER_SCOPES } from '../src/identity.mjs';
 import { workOnce } from '../src/worker.mjs';
 const exec=promisify(execFile);
 const databaseURL=process.env.TEST_DATABASE_URL;
@@ -174,8 +174,47 @@ test('teardown failure cannot be recorded as completed and terminal state is uni
 test('history cursor uses exact database timestamps and never repeats or leaks rows',async(t)=>{
  const f=await fixture(t);const a=await f.member();const id=await f.create(a.token);const run=await f.store.ownedRun({id:a.principalId},id);
  for(let i=0;i<12;i++)await f.create(a.token,'page '+i,{sessionId:run.session_id});
- const first=await f.store.history({id:a.principalId},{sessionId:run.session_id});assert.equal(first.items.length,10);assert.ok(first.nextCursor);
- const second=await f.store.history({id:a.principalId},{sessionId:run.session_id,after:first.nextCursor});assert.equal(second.items.length,3);
- assert.equal(new Set([...first.items,...second.items].map(r=>r.runId)).size,13);assert.ok(!second.nextCursor);
+ const first=await f.store.history({id:a.principalId},{sessionId:run.session_id});assert.equal(first.items.length,5);assert.ok(first.nextCursor);
+ const second=await f.store.history({id:a.principalId},{sessionId:run.session_id,after:first.nextCursor});assert.equal(second.items.length,5);
+ const third=await f.store.history({id:a.principalId},{sessionId:run.session_id,after:second.nextCursor});assert.equal(third.items.length,3);
+ assert.equal(new Set([...first.items,...second.items,...third.items].map(r=>r.runId)).size,13);assert.ok(!third.nextCursor);
  const b=await f.member('other');assert.equal((await f.call('/api/ai/sessions?after='+run.session_id,{token:b.token})).status,404);
+});
+test('transient PostgreSQL notifications stream without a durable cursor and remain owner scoped',async(t)=>{
+ const f=await fixture(t);const a=await f.member();const id=await f.create(a.token);
+ const response=await fetch(f.origin+'/api/ai/runs/'+id+'/events',{headers:{authorization:'Bearer '+a.token}});
+ await f.pool.query('SELECT pg_notify($1,$2)',['oa_delta_'+f.pool.oaSchema,JSON.stringify({runId:'unrelated',text:'MUST_NOT_LEAK'})]);
+ await f.pool.query('SELECT pg_notify($1,$2)',['oa_delta_'+f.pool.oaSchema,JSON.stringify({runId:id,text:'synthetic transient token'})]);
+ await delay(150);await f.store.cancel({id:a.principalId},id);
+ const text=await response.text();assert.match(text,/event: run.delta\ndata: /);assert.match(text,/synthetic transient token/);assert.doesNotMatch(text,/MUST_NOT_LEAK/);
+ assert.ok(!(await f.store.replay({id:a.principalId},id)).some(e=>e.type==='run.delta'));
+});
+test('actual API process restart retains run state and observes revocation committed by another process',async(t)=>{
+ const {spawn}=await import('node:child_process');const {once}=await import('node:events');const {createServer}=await import('node:net');
+ const f=await fixture(t);const a=await f.member();const id=await f.create(a.token);
+ const schema=(await f.pool.query('SELECT current_schema() AS schema')).rows[0].schema;
+ const probe=createServer();await new Promise(resolve=>probe.listen(0,'127.0.0.1',resolve));const port=probe.address().port;await new Promise(resolve=>probe.close(resolve));
+ let child;const stop=async()=>{if(child&&child.exitCode===null){const ended=once(child,'exit');child.kill('SIGTERM');await ended;}};t.after(stop);
+ const launch=async()=>{
+  child=spawn(process.execPath,[new URL('../src/server.mjs',import.meta.url).pathname],{env:{PATH:process.env.PATH,DATABASE_URL:databaseURL,OA_DATABASE_SCHEMA:schema,OA_API_PORT:String(port)},stdio:'ignore'});
+  for(let i=0;i<100;i++){try{const r=await fetch(`http://127.0.0.1:${port}/api/auth/me`,{headers:{authorization:'Bearer '+f.admin.token}});if(r.ok)return;}catch{ /* Poll while the actual process binds its socket. */ }await delay(50);}throw new Error('API did not become ready.');
+ };
+ const read=()=>fetch(`http://127.0.0.1:${port}/api/ai/runs/${id}`,{headers:{authorization:'Bearer '+a.token}});
+ await launch();assert.equal((await read()).status,200);await stop();await launch();
+ const restored=await read();assert.equal(restored.status,200);assert.equal((await restored.json()).runId,id);
+ await f.call('/api/auth/credentials/'+a.credentialId+'/revoke',{method:'POST',body:{}});
+ assert.equal((await read()).status,401);await stop();
+});
+test('bounded session/principal/credential lists expose complete non-overlapping cursor pages',async(t)=>{
+ const f=await fixture(t);const actor=await f.identity.authenticate(f.admin.token);
+ for(let i=0;i<101;i++)await f.store.createSession(actor,{name:'session '+i});
+ const first=await f.call('/api/ai/sessions');assert.equal(first.data.items.length,100);assert.ok(first.data.nextCursor);
+ const second=await f.call('/api/ai/sessions?after='+first.data.nextCursor);assert.equal(second.data.items.length,1);assert.ok(!second.data.nextCursor);
+ assert.equal(new Set([...first.data.items,...second.data.items].map(s=>s.sessionId)).size,101);
+ for(let i=0;i<101;i++)await f.member('principal '+i);
+ for(const [path,key] of [['/api/auth/principals','principalId'],['/api/auth/credentials','credentialId']]){
+  const a=await f.call(path);assert.equal(a.data.items.length,100);assert.ok(a.data.nextCursor);
+  const b=await f.call(path+'?after='+a.data.nextCursor);assert.equal(b.data.items.length,2);assert.ok(!b.data.nextCursor);
+  assert.equal(new Set([...a.data.items,...b.data.items].map(r=>r[key])).size,102);
+ }
 });

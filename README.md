@@ -51,3 +51,7 @@ npm run test:cli
 - 官网macOS原像素基线继续保留；A阶段Harness实验在experiments/phase-a中作为历史技术证据，不是已交付OA业务。
 
 重构集成目标为refactor/integration。main/test仍对应旧发布流程；本次源码清理不自动删除线上服务，不直接覆盖test分支独立历史。正式公司入口和生产发布按新路线另行验收、批准。
+
+## OA-02 / OA-04控制面与访问基础
+
+正式API/Worker、PostgreSQL迁移、管理员初始化与20项CLI契约见[控制API手册](apps/control-api/README.md)。新控制面仍待单独配置数据库与入口后发布；已上线原生管理员页面不自动变为全员OA/SSO入口。

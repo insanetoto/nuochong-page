@@ -32,5 +32,15 @@ export async function workOnce({store,identity,executorFactory,leaseMs=5000,time
   finally{clearInterval(heartbeat);clearTimeout(timer);signal?.removeEventListener('abort',stop);await executor?.close().catch(()=>{});}
   return true;
 }
-export function productionExecutor({stateRoot,apiKey}){return run=>new HarnessExecution(run,{stateRoot,apiKey});}
-export async function workLoop(options,signal){while(!signal.aborted){try{if(!await workOnce({...options,signal}))await delay(100,undefined,{signal});}catch(error){if(signal.aborted)break;await delay(250,undefined,{signal}).catch(()=>{});}}}
+export function productionExecutor({stateRoot,apiKey,pool}){return run=>{
+  let pending='';let timer;let delivery=Promise.resolve();
+  const flush=()=>{
+    clearTimeout(timer);timer=undefined;const chars=[...pending];pending='';
+    for(let index=0;index<chars.length;index+=400){const data=JSON.stringify({runId:run.id,text:chars.slice(index,index+400).join('')});
+      delivery=delivery.then(()=>pool.query('SELECT pg_notify($1,$2)',['oa_delta_'+pool.oaSchema,data])).catch(()=>{});
+    }
+  };
+  const inner=new HarnessExecution(run,{stateRoot,apiKey,onDelta:text=>{if(typeof text==='string'&&pending.length+text.length<=20000){pending+=text;timer??=setTimeout(flush,50);}}});
+  return {execute:async()=>{const result=await inner.execute();flush();await delivery;return result;},close:async()=>{clearTimeout(timer);pending='';await inner.close();await delivery;}};
+};}
+export async function workLoop(options,signal){while(!signal.aborted){try{if(!await workOnce({...options,signal}))await delay(100,undefined,{signal});}catch{if(signal.aborted)break;await delay(250,undefined,{signal}).catch(()=>{});}}}

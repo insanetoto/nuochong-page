@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { poolFor,migrate } from '../src/db.mjs';
 import { createApp } from '../src/app.mjs';
 import { MEMBER_SCOPES } from '../src/identity.mjs';
-import { workOnce } from '../src/worker.mjs';
+import { workOnce,productionExecutor } from '../src/worker.mjs';
 import { HarnessExecution } from '../src/runtime.mjs';
 // Local-only credential reuse; never copied to CI, database, output or artifacts.
 const envFile=new URL('../../../experiments/phase-a/runtime/.env.local',import.meta.url);
@@ -45,7 +45,13 @@ try{
  const recoveredId=await submit('Ignore the interrupted counting task. What exact OA_CONTROL_ marker was in my first message? Reply only with the marker.',first.session_id);await execute();
  const recovered=await f.store.ownedRun(actor,recoveredId);assert.equal(recovered.status,'succeeded');assert.ok(recovered.output.includes(marker));
  const history=await f.store.history(actor,{sessionId:first.session_id});assert.equal(history.items.length,4);
- Object.assign(report,{passed:true,realDefaultModel:true,readonlyToolAudited:true,newHostSessionRestored:true,realCancellation:true,interruptedSessionRestored:true,sameActorPrivateHistory:true});
+ phase='production-worker-token-sse';
+ const streamedId=await submit('Write the integers from 1 to 60, one per line. Do not use tools.',first.session_id);
+ const stream=await fetch(app.listeningOrigin+'/api/ai/runs/'+streamedId+'/events',{headers});assert.equal(stream.status,200);
+ await workOnce({...f,executorFactory:productionExecutor({stateRoot,apiKey:process.env.DEEPSEEK_API_KEY,pool})});report.submittedTurns++;
+ const frames=await stream.text();assert.match(frames,/event: run.delta/);assert.match(frames,/event: run.completed/);
+ assert.equal((await f.store.ownedRun(actor,streamedId)).status,'succeeded');
+ Object.assign(report,{passed:true,realTokenSSE:true,realDefaultModel:true,readonlyToolAudited:true,newHostSessionRestored:true,realCancellation:true,interruptedSessionRestored:true,sameActorPrivateHistory:true});
 }catch{Object.assign(report,{passed:false,phase,sdkFailureCategory:latestExecution?.failureCategory??null});process.exitCode=1;}
 finally{
  await app?.close();await pool.query(`DROP SCHEMA IF EXISTS ${schema} CASCADE`);await pool.end();rmSync(stateRoot,{recursive:true,force:true});

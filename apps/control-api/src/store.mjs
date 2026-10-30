@@ -32,9 +32,9 @@ export class Store {
     let cursor;
     if(input.after){cursor=await this.ownedRun(actor,input.after);requireThat(cursor.session_id===input.sessionId,400,'INVALID_CURSOR');}
     const rows=(await this.pool.query(`SELECT * FROM runs WHERE owner_id=$1 AND session_id=$2
-      AND ($3::text IS NULL OR (created_at,id)>(SELECT created_at,id FROM runs WHERE id=$3)) ORDER BY created_at,id LIMIT 11`,[actor.id,input.sessionId,input.after??null])).rows;
-    const page=rows.slice(0,10);
-    return {items:page.map(r=>({runId:r.id,status:r.status,prompt:r.prompt,...(r.output!==null&&{response:r.output})})),...(rows.length>10&&{nextCursor:page.at(-1).id})};
+      AND ($3::text IS NULL OR (created_at,id)>(SELECT created_at,id FROM runs WHERE id=$3)) ORDER BY created_at,id LIMIT 6`,[actor.id,input.sessionId,input.after??null])).rows;
+    const page=rows.slice(0,5);
+    return {items:page.map(r=>({runId:r.id,status:r.status,prompt:r.prompt,...(r.output!==null&&{response:r.output})})),...(rows.length>5&&{nextCursor:page.at(-1).id})};
   }
   async createRun(actor,input) {
     return transaction(this.pool,async(db)=>{

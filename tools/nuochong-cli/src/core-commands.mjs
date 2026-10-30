@@ -18,7 +18,7 @@ export const coreCommands=[
  command('sessions.create','POST','/api/ai/sessions',object({name:text}),session,'sessions:write'),
  command('sessions.list','GET','/api/ai/sessions',object({after:text},[]),object({items:array(session),nextCursor:text},['items']),'sessions:read'),
  command('sessions.get','GET','/api/ai/sessions/{sessionId}',object({sessionId:text}),session,'sessions:read'),
- command('sessions.history','GET','/api/ai/sessions/{sessionId}/history',object({sessionId:text,after:text},['sessionId']),object({items:array(object({runId:text,status:{enum:['queued','running','retry_wait','succeeded','failed','cancelled']},prompt:{type:'string',maxLength:20000},response:{type:'string',maxLength:20000}},['runId','status','prompt']),10),nextCursor:text},['items']),'sessions:read'),
+ command('sessions.history','GET','/api/ai/sessions/{sessionId}/history',object({sessionId:text,after:text},['sessionId']),object({items:array(object({runId:text,status:{enum:['queued','running','retry_wait','succeeded','failed','cancelled']},prompt:{type:'string',maxLength:20000},response:{type:'string',maxLength:20000}},['runId','status','prompt']),5),nextCursor:text},['items']),'sessions:read'),
  command('models.list','GET','/api/ai/models',object({}),object({items:array(object({provider:{const:'deepseek-official'},model:{const:'deepseek-v4-flash'}}),1)}),'config:read'),
  command('models.config.get','GET','/api/ai/config',object({}),config,'config:read'),
  command('models.config.update','POST','/api/ai/config',object({model:{const:'deepseek-v4-flash'},clockTool:{type:'boolean'},expectedVersion:{type:'integer',minimum:1}}),config,'config:write',true),

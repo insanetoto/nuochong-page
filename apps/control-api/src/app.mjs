@@ -9,8 +9,19 @@ export function createApp(pool){
   const app=Fastify({logger:false,bodyLimit:128*1024,genReqId:()=>randomUUID()});
   const identity=new Identity(pool);const store=new Store(pool);const connections=new Set();
   app.addHook('onRequest',async(req,reply)=>{reply.header('cache-control','no-store');reply.header('x-request-id',req.id);});
-  app.setErrorHandler((error,req,reply)=>{reply.code(error instanceof ApiError?error.status:error.statusCode===400?400:500).send({code:error instanceof ApiError?error.code:error.statusCode===400?'INVALID_INPUT':'REQUEST_FAILED',requestId:req.id});});
-  app.addHook('preClose',async()=>{for(const response of connections)response.destroy();});
+  app.setErrorHandler((error,req,reply)=>{
+    const status=error instanceof ApiError?error.status:error.statusCode>=400&&error.statusCode<500?error.statusCode:500;
+    reply.code(status).send({code:error instanceof ApiError?error.code:[400,413,415].includes(status)?'INVALID_INPUT':'REQUEST_FAILED',requestId:req.id});
+  });
+  app.setNotFoundHandler((req,reply)=>reply.code(404).send({code:'NOT_FOUND',requestId:req.id}));
+  const deltaSubscribers=new Map();let listener;
+  app.addHook('onReady',async()=>{
+    listener=await pool.connect();
+    listener.on('error',()=>{for(const response of connections)response.destroy();});
+    listener.on('notification',message=>{try{const data=JSON.parse(message.payload);if(typeof data.runId==='string'&&typeof data.text==='string')for(const accept of deltaSubscribers.get(data.runId)??[])accept(data);}catch{ /* Ignore malformed transient notices; durable state remains authoritative. */ }});
+    await listener.query('LISTEN oa_delta_'+pool.oaSchema);
+  });
+  app.addHook('preClose',async()=>{for(const response of connections)response.destroy();if(listener){await listener.query('UNLISTEN *').catch(()=>{});listener.release(true);listener=null;}});
   const config=async()=>{const c=(await pool.query('SELECT * FROM runtime_config WHERE id=1')).rows[0];return {provider:'deepseek-official',model:c.model,clockTool:c.clock_tool,version:c.version};};
   const handlers={
     'auth.me':async(a)=>({...principalDTO(a),scopes:a.scopes}),
@@ -62,9 +73,15 @@ export function createApp(pool){
         }
         reply.hijack();const raw=reply.raw;connections.add(raw);
         raw.writeHead(200,{'content-type':'text/event-stream','cache-control':'no-store','x-request-id':req.id,'x-accel-buffering':'no'});
+        const pending=[];let pendingBytes=0;
+        const accept=data=>{if(raw.destroyed||raw.writableEnded)return;pendingBytes+=Buffer.byteLength(data.text);if(pendingBytes>65536){raw.destroy();return;}pending.push(data);};
+        if(!deltaSubscribers.has(input.runId))deltaSubscribers.set(input.runId,new Set());
+        deltaSubscribers.get(input.runId).add(accept);
         let after=input.after;let terminal=false;const deadline=Date.now()+180000;
         try{while(!raw.destroyed&&!raw.writableEnded&&!terminal&&Date.now()<deadline){
           await identity.authenticate(token);
+          for(const data of pending.splice(0)){pendingBytes-=Buffer.byteLength(data.text);if(!raw.write(`event: run.delta\ndata: ${JSON.stringify(data)}\n\n`)){raw.destroy();break;}}
+          if(raw.destroyed)break;
           for(const event of await store.replay(actor,input.runId,after)){
             if(raw.destroyed)break;
             if(!raw.write(`id: ${event.eventId}\nevent: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`)){
@@ -74,7 +91,7 @@ export function createApp(pool){
             after=event.eventId;if(['run.completed','run.failed','run.cancelled'].includes(event.type))terminal=true;
           }
           if(!terminal)await delay(100);
-        }}catch{}finally{connections.delete(raw);if(!raw.destroyed)raw.end();}
+        }}catch{ /* End the stream on revocation or transport failure without exposing diagnostics. */ }finally{connections.delete(raw);deltaSubscribers.get(input.runId)?.delete(accept);if(!deltaSubscribers.get(input.runId)?.size)deltaSubscribers.delete(input.runId);if(!raw.destroyed)raw.end();}
         return;
       }
       const data=await handlers[command.id](actor,input);
