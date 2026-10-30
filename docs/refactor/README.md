@@ -20,4 +20,4 @@ A阶段10项已完成的验证与Go保留为历史技术证据；其旧业务范
 
 ## OA-02 / OA-04当前实施
 
-[控制API与访问基础](../../apps/control-api/README.md)、[核心验收](oa-02-acceptance.md)、[访问验收](oa-04-acceptance.md)已形成。OA-01/02/04已验收，当前3/6完成；OA-03/OA-05 Ready、OA-06 Backlog，其余三项未启动。历史“仅本机预览”或早期完成率以最新跟踪表为准，新控制API尚未新增公网发布。
+[控制API与访问基础](../../apps/control-api/README.md)、[核心验收](oa-02-acceptance.md)、[访问验收](oa-04-acceptance.md)已形成。OA-01至OA-04已验收，当前4/6完成；OA-05 Ready、OA-06 Backlog。历史“仅本机预览”或早期完成率以最新跟踪表为准，新控制API尚未新增公网发布。

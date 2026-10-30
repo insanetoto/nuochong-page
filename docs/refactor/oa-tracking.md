@@ -1,12 +1,12 @@
 # 公司OA基座任务路线与执行跟踪
 
-更新2026-10-30。当前增量 [#31](https://github.com/insanetoto/nuochong-page/issues/31)已由用户明确验收（“验收通过，合入集成分支”，PR #38）。当前3/6完成并人工验收（OA-01/02/04），OA-03/OA-05 Ready，OA-06 Backlog。本次不自动开展六项实现或发布生产。
+更新2026-10-30。当前增量 [#31](https://github.com/insanetoto/nuochong-page/issues/31)已由用户明确验收（“验收通过，合入集成分支”，PR #38）。当前4/6完成并人工验收（OA-01至OA-04），OA-05 Ready，OA-06 Backlog。本次不自动开展六项实现或发布生产。
 
 | 任务 | GitHub Issue | 前置 | 状态 | 负责人 | 验收 |
 | --- | --- | --- | --- | --- | --- |
 | OA-01 | [原生首页与独立运行基座](https://github.com/insanetoto/nuochong-page/issues/32) | 当前增量 #31 已验收 | Accepted | insanetoto | 2026-10-30用户明确验收 |
 | OA-02 | [Harness核心运行与会话](https://github.com/insanetoto/nuochong-page/issues/33) | #32 | Accepted | insanetoto | 2026-10-30用户明确验收，PR46 |
-| OA-03 | [CLI与外部AI接入](https://github.com/insanetoto/nuochong-page/issues/34) | #33 | Ready | 未指派 | 前置已验收，尚未领取/开工 |
+| OA-03 | [CLI与外部AI接入](https://github.com/insanetoto/nuochong-page/issues/34) | #33 | Accepted | insanetoto | 2026-10-30用户明确验收，PR49 |
 | OA-04 | [公司访问基础](https://github.com/insanetoto/nuochong-page/issues/35) | #32 | Accepted | insanetoto | 2026-10-30用户明确验收，PR47 |
 | OA-05 | [权限、稳定性与运行保障](https://github.com/insanetoto/nuochong-page/issues/36) | #33, #35 | Ready | 未指派 | 前置已验收，尚未领取/开工 |
 | OA-06 | [基座验收与首个业务需求评审](https://github.com/insanetoto/nuochong-page/issues/37) | #34, #35, #36 | Backlog | 未指派 | 未实现/未验收 |
@@ -48,3 +48,8 @@ flowchart LR
 ## OA-02与OA-04实施更新
 
 [OA-02验收报告](oa-02-acceptance.md)与[OA-04验收报告](oa-04-acceptance.md)记录正式API/Worker、PostgreSQL状态/权限、22项CLI契约、真实默认模型与撤权/恢复测试。PR46为核心运行基础；[PR47](https://github.com/insanetoto/nuochong-page/pull/47)独立补齐角色变更/自助撤权并通过Linux CI。当前3/6整体人工验收；2026-10-30用户在会话中明确确认：“OA-02、OA-04 均验收通过”。 关闭#33/#35，仅将#34/#36设Ready，不自动开工。新控制API未额外公网发布。
+
+
+## OA-03整体验收
+
+2026-10-30用户明确确认“OA-03 验收通过”。[PR49](https://github.com/insanetoto/nuochong-page/pull/49)已合入，真实DeepSeek、隔离数据库/MCP、CLI及远程CI通过。#34关闭为completed，OA-06仍等待OA-05验收。MCP流式事件仍由CLI提供；新控制API未公网发布。
