@@ -1,6 +1,6 @@
 # 公司OA基座任务路线与执行跟踪
 
-更新2026-10-30。当前增量 [#31](https://github.com/insanetoto/nuochong-page/issues/31)已由用户明确验收（“验收通过，合入集成分支”，PR #38）。当前5/6完成并人工验收（OA-01至OA-05），OA-06 Ready。本次不自动开展六项实现或发布生产。
+更新2026-10-30。当前增量 [#31](https://github.com/insanetoto/nuochong-page/issues/31)已由用户明确验收（“验收通过，合入集成分支”，PR #38）。当前5/6完成并人工验收（OA-01至OA-05），OA-06 In review。本次不自动开展六项实现或发布生产。
 
 | 任务 | GitHub Issue | 前置 | 状态 | 负责人 | 验收 |
 | --- | --- | --- | --- | --- | --- |
@@ -9,7 +9,7 @@
 | OA-03 | [CLI与外部AI接入](https://github.com/insanetoto/nuochong-page/issues/34) | #33 | Accepted | insanetoto | 2026-10-30用户明确验收，PR49 |
 | OA-04 | [公司访问基础](https://github.com/insanetoto/nuochong-page/issues/35) | #32 | Accepted | insanetoto | 2026-10-30用户明确验收，PR47 |
 | OA-05 | [权限、稳定性与运行保障](https://github.com/insanetoto/nuochong-page/issues/36) | #33, #35 | Accepted | insanetoto | 2026-10-30用户明确验收，PR51 |
-| OA-06 | [基座验收与首个业务需求评审](https://github.com/insanetoto/nuochong-page/issues/37) | #34, #35, #36 | Ready | 未指派 | 前置已验收，待领取 |
+| OA-06 | [基座验收与首个业务需求评审](https://github.com/insanetoto/nuochong-page/issues/37) | #34, #35, #36 | In review | insanetoto | 同版本验证与知识库评审草案，待CI及验收 |
 
 ```mermaid
 flowchart LR
@@ -58,3 +58,8 @@ flowchart LR
 ## OA-05整体验收
 
 2026-10-30用户明确确认“OA-05 验收通过”。[PR51](https://github.com/insanetoto/nuochong-page/pull/51)已合入，隔离演练、CI及保护门禁通过；见[验证记录](oa-05-acceptance.md)的明确限制。#36关闭为completed，OA-06依赖已满足。
+
+
+## OA-06评审进行中
+
+[基座评审](oa-06-foundation-review.md)与[知识库需求草案](oa-06-knowledge-discovery.md)已形成；真实模型/CLI/MCP及独立原生首页以同一产品基线验证，统一员工Web及公网控制API尚未提供。完成最终CI后由负责人决定有限Go/No-Go；未实现知识库业务。
