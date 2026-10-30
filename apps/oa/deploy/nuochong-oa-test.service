@@ -1,0 +1,23 @@
+[Unit]
+Description=Nuochong test Harness native Web
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/.local/share/nuochong-oa-test/current
+Environment=NUOCHONG_OA_HOME=%h/.local/state/nuochong-oa-test
+Environment=NUOCHONG_OA_PUBLIC_URL=https://www.nuochong.net/oa-test/
+EnvironmentFile=-%h/.local/state/nuochong-oa-test/model.env
+ExecStart=%h/.local/share/nuochong-oa-test/current/runtime/bin/node apps/oa/deploy/service.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+KillMode=control-group
+UMask=0077
+NoNewPrivileges=true
+MemoryMax=768M
+CPUQuota=100%
+TasksMax=256
+
+[Install]
+WantedBy=default.target
