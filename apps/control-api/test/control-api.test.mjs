@@ -163,7 +163,8 @@ test('actual killed worker process recovers authority without replaying dispatch
  await until(async()=>(await f.store.ownedRun({id:a.principalId},id)).dispatched);
  const exit=once(child,'exit');child.kill('SIGKILL');await exit;await delay(400);
  await f.store.recoverExpired();assert.equal((await f.store.ownedRun({id:a.principalId},id)).status,'failed');
- assert.equal(await f.store.claim(),null);
+ assert.equal(await f.store.claim(),null);assert.equal(await f.store.recoverExpired(),0);
+ const events=await f.store.replay({id:a.principalId},id);assert.equal(events.filter(e=>['run.completed','run.failed','run.cancelled'].includes(e.type)).length,1);
 });
 test('teardown failure cannot be recorded as completed and terminal state is unique',async(t)=>{
  const f=await fixture(t);const a=await f.member();const id=await f.create(a.token);
