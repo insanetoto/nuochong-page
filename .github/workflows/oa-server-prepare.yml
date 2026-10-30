@@ -1,0 +1,70 @@
+name: Prepare native OA test service
+
+on:
+  push:
+    branches: [feature/oa-test-native-deploy, test]
+    paths: ['apps/oa/**', '.github/workflows/oa-server-prepare.yml']
+  pull_request:
+    branches: [test]
+    paths: ['apps/oa/**', '.github/workflows/oa-server-prepare.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: oa-test-server-${{ github.event_name == 'pull_request' && github.ref || 'deploy' }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            apps/oa/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm ci --prefix apps/oa --ignore-scripts --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Install test-only reverse proxy
+        run: sudo apt-get update -qq && sudo apt-get install -y nginx
+      - name: Verify native UI through real HTTPS Nginx prefix, cookies and WebSocket
+        run: OA_PROBE_NGINX=1 node apps/oa/verify-home.mjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: oa-https-prefix-probe
+          path: apps/oa/outputs/*
+          if-no-files-found: ignore
+      - name: Stage or update server using existing deployment credentials
+        if: github.event_name != 'pull_request'
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/oa_deploy_key
+          chmod 600 ~/.ssh/oa_deploy_key
+          ssh-keyscan -T 10 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+          remote_base=.local/share/nuochong-oa-test
+          ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "mkdir -p $remote_base/releases/$GITHUB_SHA/apps/oa"
+          rsync -rclptDz --exclude=node_modules --exclude=outputs --exclude=.state --exclude='.env*' \
+            -e 'ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes' \
+            apps/oa/ deploy@"$DEPLOY_HOST":"$remote_base/releases/$GITHUB_SHA/apps/oa/"
+          curl -fsSL --retry 2 https://nodejs.org/dist/v24.21.0/SHASUMS256.txt -o "$RUNNER_TEMP/node-shasums.txt"
+          checksum=$(awk '$2 == "node-v24.21.0-linux-x64.tar.xz" {print $1}' "$RUNNER_TEMP/node-shasums.txt")
+          test "${#checksum}" = 64
+          ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "bash -s -- $GITHUB_SHA $checksum" <<'REMOTE'
+          set -euo pipefail
+          base="$HOME/.local/share/nuochong-oa-test"
+          bash "$base/releases/$1/apps/oa/deploy/install-runtime.sh" "$1" "$2"
+          REMOTE
+      - name: Remove temporary SSH identity
+        if: always()
+        run: rm -f ~/.ssh/oa_deploy_key

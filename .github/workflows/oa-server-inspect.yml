@@ -1,0 +1,89 @@
+name: Inspect existing OA deployment server
+
+on:
+  push:
+    branches: [feature/oa-test-native-deploy]
+    paths: ['.github/workflows/oa-server-inspect.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    name: Read-only server capabilities
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Install existing deployment SSH identity
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          test -n "$DEPLOY_SSH_KEY" && test -n "$DEPLOY_HOST"
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/oa_deploy_key
+          chmod 600 ~/.ssh/oa_deploy_key
+          ssh-keyscan -T 10 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+      - name: Inspect runtime, supervisor and existing HTTPS routing without changes
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=15 deploy@"$DEPLOY_HOST" 'bash -s' <<'REMOTE'
+          set -eu
+          printf 'ARCH: '; uname -m
+          printf 'USER: '; id -un
+          printf 'GROUPS: '; id -Gn
+          for tool in node npm docker nginx systemctl curl python3 tar; do
+            command -v "$tool" || true
+          done
+          node --version 2>/dev/null || true
+          docker --version 2>/dev/null || true
+          docker info --format '{{.ServerVersion}}' 2>/dev/null || true
+          free -m
+          df -h / /tmp
+          printf '\nSUDO POLICY\n'; command -v sudo || true; sudo -n -l 2>&1 || true
+          printf '\nOS\n'; cat /etc/os-release | head -6; getconf GNU_LIBC_VERSION
+          printf '\nWRITABLE DEPLOYMENT DIRECTORIES\n'
+          for directory in "$HOME" /var/www/nuochong /etc/nginx /etc/nginx/conf.d /etc/nginx/sites-enabled /etc/systemd/system; do
+            if test -w "$directory"; then printf 'WRITABLE %s\n' "$directory"; else printf 'READONLY %s\n' "$directory"; fi
+          done
+          printf '\nNGINX VERSION AND FILES\n'; nginx -v 2>&1
+          ls -l /etc/nginx/sites-enabled /etc/nginx/conf.d 2>/dev/null || true
+          printf '\nOA STAGING PROGRESS\n'
+          du -sh "$HOME/.local/share/nuochong-oa-test" 2>/dev/null || true
+          ls -lh "$HOME"/.local/share/nuochong-oa-test/incoming-*.tgz 2>/dev/null || true
+          readlink "$HOME/.local/share/nuochong-oa-test/current" 2>/dev/null || true
+          printf '\nUSER SUPERVISOR\n'; systemctl --user is-system-running 2>/dev/null || true
+          loginctl show-user "$(id -un)" -p Linger 2>/dev/null || true
+          printf '\nOA USER SERVICE\n'
+          systemctl --user show nuochong-oa-test.service -p LoadState -p ActiveState -p SubState -p Result -p ExecMainStatus 2>&1 || true
+          journalctl --user -u nuochong-oa-test.service -n 25 --no-pager 2>&1 | sed -E 's#https?://[^[:space:]]+#<redacted-url>#g' || true
+          printf '\nLISTENING PORTS\n'
+          ss -ltnH | awk '{n=split($4,a,":"); print a[n]}' | sort -nu
+          printf '\nNGINX PUBLIC ROUTING\n'
+          (sudo -n nginx -T 2>/dev/null || nginx -T 2>/dev/null || true) | awk '/^[[:space:]]*(listen |server_name |ssl_certificate |root )/{print}'
+          REMOTE
+      - name: Check whether existing Cloudflare token supports a named test tunnel
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node --input-type=module <<'JS'
+          for (const [name, path] of [
+            ['tunnel-access', `/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/cfd_tunnel?is_deleted=false&per_page=1`],
+            ['domain-access', '/zones?name=nuochong.net&per_page=1'],
+            ['private-service-access', `/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/connectivity/directory/services`],
+          ]) {
+            const response = await fetch(`https://api.cloudflare.com/client/v4${path}`, {
+              headers: { authorization: `Bearer ${process.env.CLOUDFLARE_API_TOKEN}` },
+            });
+            const body = await response.json();
+            console.log(JSON.stringify({ check: name, status: response.status, success: body.success,
+              count: Array.isArray(body.result) ? body.result.length : null,
+              errorCodes: body.errors?.map((error) => error.code) }));
+          }
+          JS
+      - name: Remove temporary SSH identity
+        if: always()
+        run: rm -f ~/.ssh/oa_deploy_key
