@@ -1,0 +1,36 @@
+name: Verify live native OA
+on:
+  push:
+    branches: [feature/oa-test-native-deploy]
+    paths: ['.github/workflows/oa-live-check.yml', 'scripts/verify-oa-live.mjs']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      # User explicitly authorized this server-to-Actions credential transfer on 2026-10-30.
+      - name: Verify live login with a temporary masked credential
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/oa_live_key
+          chmod 600 ~/.ssh/oa_live_key
+          ssh-keyscan -T 10 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+          launch_url=$(ssh -i ~/.ssh/oa_live_key -o BatchMode=yes -o IdentitiesOnly=yes deploy@"$DEPLOY_HOST" 'cat "$HOME/.local/state/nuochong-oa-test/launch-url"')
+          printf '::add-mask::%s\n' "$launch_url"
+          export OA_PRIVATE_LAUNCH_URL="$launch_url"
+          node --input-type=module -e 'for (const value of new URL(process.env.OA_PRIVATE_LAUNCH_URL).searchParams.values()) console.log("::add-mask::" + value)'
+          node scripts/verify-oa-live.mjs
+      - if: always()
+        run: rm -f ~/.ssh/oa_live_key
