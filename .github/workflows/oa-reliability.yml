@@ -1,0 +1,34 @@
+name: OA reliability verification
+on:
+  pull_request:
+    branches: [refactor/integration]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-container:
+    name: OA container and recovery
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17.11
+        env:
+          POSTGRES_USER: oa
+          POSTGRES_PASSWORD: isolated-test-only
+          POSTGRES_DB: oa_test
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build one immutable test image
+        run: docker build -f apps/control-api/deploy/ci/Dockerfile -t oa-reliability:${{ github.sha }} .
+      - name: Verify actual SDK and native dependencies in bounded container
+        run: docker run --rm --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m oa-reliability:${{ github.sha }} node apps/control-api/src/probe-sdk.mjs
+      - name: Exercise API restart and killed worker three times
+        run: |
+          for attempt in 1 2 3; do
+            docker run --rm --network host --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m -e TEST_DATABASE_URL=postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test oa-reliability:${{ github.sha }} node --test --test-name-pattern='actual killed worker process|actual API process restart' apps/control-api/test/control-api.test.mjs
+          done
+      - name: Verify MCP access in the same image
+        run: docker run --rm --network host --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m -e TEST_DATABASE_URL=postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test oa-reliability:${{ github.sha }} node --test tools/nuochong-mcp/test/mcp.test.mjs
