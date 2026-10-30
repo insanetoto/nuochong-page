@@ -1,6 +1,7 @@
 const text={type:'string',minLength:1,maxLength:256};
 const object=(properties,required=Object.keys(properties))=>({type:'object',additionalProperties:false,properties,required});
 const array=(items,maxItems=100)=>({type:'array',items,maxItems});
+export const ACCESS_SCOPES=['runs:write','runs:read','sessions:write','sessions:read','config:read','config:write','auth:manage'];
 const principal=object({principalId:text,name:text,kind:{enum:['user','service']},role:{enum:['admin','member']},active:{type:'boolean'}});
 const credential=object({credentialId:text,principalId:text,scopes:array(text,7),expiresAt:{type:'string',format:'date-time'},revoked:{type:'boolean'}});
 const session=object({sessionId:text,name:text,createdAt:{type:'string',format:'date-time'}});
@@ -12,7 +13,7 @@ export const coreCommands=[
  command('auth.principals.list','GET','/api/auth/principals',object({after:text},[]),object({items:array(principal),nextCursor:text},['items']),'auth:manage',true),
  command('auth.principals.create','POST','/api/auth/principals',object({name:text,kind:{enum:['user','service']},role:{enum:['admin','member']}}),principal,'auth:manage',true),
  command('auth.principals.set-active','POST','/api/auth/principals/{principalId}/active',object({principalId:text,active:{type:'boolean'}}),principal,'auth:manage',true),
- command('auth.credentials.create','POST','/api/auth/credentials',object({principalId:text,scopes:{...array(text,7),minItems:1},expiresAt:{type:'string',format:'date-time'}}),object({...credential.properties,token:{type:'string',minLength:46,maxLength:46}}),'auth:manage',true),
+ command('auth.credentials.create','POST','/api/auth/credentials',object({principalId:text,scopes:{...array({enum:ACCESS_SCOPES},7),minItems:1},expiresAt:{type:'string',format:'date-time'}}),object({...credential.properties,token:{type:'string',minLength:46,maxLength:46}}),'auth:manage',true),
  command('auth.credentials.list','GET','/api/auth/credentials',object({after:text},[]),object({items:array(credential),nextCursor:text},['items']),'auth:manage',true),
  command('auth.credentials.revoke','POST','/api/auth/credentials/{credentialId}/revoke',object({credentialId:text}),credential,'auth:manage',true),
  command('sessions.create','POST','/api/ai/sessions',object({name:text}),session,'sessions:write'),

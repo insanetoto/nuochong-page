@@ -5,7 +5,7 @@
 | 任务 | GitHub Issue | 前置 | 状态 | 负责人 | 验收 |
 | --- | --- | --- | --- | --- | --- |
 | OA-01 | [原生首页与独立运行基座](https://github.com/insanetoto/nuochong-page/issues/32) | 当前增量 #31 已验收 | Accepted | insanetoto | 2026-10-30用户明确验收 |
-| OA-02 | [Harness核心运行与会话](https://github.com/insanetoto/nuochong-page/issues/33) | #32 | Ready | 未指派 | 未实现/未验收 |
+| OA-02 | [Harness核心运行与会话](https://github.com/insanetoto/nuochong-page/issues/33) | #32 | In review | insanetoto | OA-02技术验证通过，待最终CI与验收 |
 | OA-03 | [CLI与外部AI接入](https://github.com/insanetoto/nuochong-page/issues/34) | #33 | Backlog | 未指派 | 未实现/未验收 |
 | OA-04 | [公司访问基础](https://github.com/insanetoto/nuochong-page/issues/35) | #32 | Ready | 未指派 | 未实现/未验收 |
 | OA-05 | [权限、稳定性与运行保障](https://github.com/insanetoto/nuochong-page/issues/36) | #33, #35 | Backlog | 未指派 | 未实现/未验收 |

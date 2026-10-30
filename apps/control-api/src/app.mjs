@@ -48,7 +48,7 @@ export function createApp(pool){
     'runs.cancel':(a,i)=>store.cancel(a,i.runId),
     'models.list':async()=>({items:[{provider:'deepseek-official',model:'deepseek-v4-flash'}]}),
     'models.config.get':config,
-    'models.config.update':async(a,i)=>{const result=await pool.query('UPDATE runtime_config SET model=$1,clock_tool=$2,version=version+1 WHERE id=1 AND version=$3 RETURNING id',[i.model,i.clockTool,i.expectedVersion]);requireThat(result.rowCount,409,'CONFLICT');return config();},
+    'models.config.update':async(a,i)=>{const result=await pool.query('UPDATE runtime_config SET model=$1,clock_tool=$2,version=version+1 WHERE id=1 AND version=$3 RETURNING model,clock_tool,version',[i.model,i.clockTool,i.expectedVersion]);requireThat(result.rowCount,409,'CONFLICT');const c=result.rows[0];return {provider:'deepseek-official',model:c.model,clockTool:c.clock_tool,version:c.version};},
     'tools.list':async()=>({items:[{name:'current_time',readonly:true,enabled:(await config()).clockTool}]}),
     'runtime.status':async()=>({provider:'deepseek-official',model:(await config()).model,profile:'sdk-minimal',tools:'readonly',apiVersion:'1.1'}),
   };

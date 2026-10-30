@@ -1,7 +1,8 @@
 import { randomUUID, randomBytes, createHash } from 'node:crypto';
 import { transaction } from './db.mjs';
 import { requireThat } from './errors.mjs';
-export const SCOPES = ['runs:write', 'runs:read', 'sessions:write', 'sessions:read', 'config:read', 'config:write', 'auth:manage'];
+import { ACCESS_SCOPES } from '../../../tools/nuochong-cli/src/core-commands.mjs';
+export const SCOPES = ACCESS_SCOPES;
 export const MEMBER_SCOPES = SCOPES.filter((scope) => !['config:write','auth:manage'].includes(scope));
 const hash = (value) => createHash('sha256').update(value).digest('hex');
 export const principalDTO = (row) => ({ principalId: row.id, name: row.name, kind: row.kind, role: row.role, active: row.active });
