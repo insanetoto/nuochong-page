@@ -42,7 +42,7 @@ test('AI discovery exposes side effects, schemas and honest availability without
   const data = JSON.parse(result.stdout).data; assert.equal(data.commands.length, 22);
   assert.ok(data.commands.every((c) => c.inputSchema.additionalProperties === false && c.authorization && !c.automaticRetry));
   assert.ok(data.commands.every((c) => c.serverStatus === 'oa-control-api'));
-  assert.equal(data.transportAdapters.mcp, 'planned-adapter-of-same-contracts');
+  assert.equal(data.transportAdapters.mcp, 'restricted-stdio-adapter-of-same-contracts');
   assert.equal((await cli(['permissions', 'list'])).code, 14);
   assert.ok(!data.plannedDomains.some((d) => ['knowledge', 'training', 'workorders'].includes(d)));
   assert.equal((await cli(['knowledge', 'search'])).code, 2);

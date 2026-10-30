@@ -2,10 +2,10 @@ name: OA core runtime and identity
 on:
   push:
     branches: [feature/oa-02-runtime, feature/oa-04-access]
-    paths: ['apps/control-api/**', 'tools/nuochong-cli/**', '.github/workflows/oa-control-api.yml']
+    paths: ['apps/control-api/**', 'tools/nuochong-cli/**', 'tools/nuochong-mcp/**', '.github/workflows/oa-control-api.yml']
   pull_request:
     branches: [refactor/integration]
-    paths: ['apps/control-api/**', 'tools/nuochong-cli/**', '.github/workflows/oa-control-api.yml']
+    paths: ['apps/control-api/**', 'tools/nuochong-cli/**', 'tools/nuochong-mcp/**', '.github/workflows/oa-control-api.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -32,6 +32,9 @@ jobs:
           cache: npm
           cache-dependency-path: apps/control-api/package-lock.json
       - run: npm ci --prefix apps/control-api --ignore-scripts --no-audit --no-fund
+      - run: npm ci --prefix tools/nuochong-mcp --ignore-scripts --no-audit --no-fund
+      - name: MCP stdio, API permissions and idempotency against PostgreSQL
+        run: npm test --prefix tools/nuochong-mcp
       - name: Real PostgreSQL, HTTP, CLI, credential isolation and killed worker recovery
         run: npm test --prefix apps/control-api
       - name: Real restricted SDK initialization, no model credential or call
