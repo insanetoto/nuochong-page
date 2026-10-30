@@ -258,3 +258,13 @@ test('invalid database text is rejected without creating identity or run side ef
  assert.equal((await f.call('/api/auth/principals',{method:'POST',body:{name:'bad\0name',kind:'user',role:'member'}})).status,400);
  assert.equal((await f.pool.query('SELECT count(*)::int AS n FROM runs')).rows[0].n,0);
 });
+
+
+test('denied operations create only minimal audit metadata without exposing credentials or inputs',async(t)=>{
+ const f=await fixture(t);const member=await f.member('synthetic');const secret='synthetic-private-input';
+ const denied=await f.call('/api/ai/config',{token:member.token,method:'POST',body:{model:secret,clockTool:false,expectedVersion:1}});
+ assert.equal(denied.status,403);assert.equal((await f.call('/api/ai/config')).data.version,1);
+ const rows=(await f.pool.query("SELECT actor_id,action,resource_id,result FROM audit WHERE actor_id=$1 AND result='deny'",[member.principalId])).rows;
+ assert.ok(rows.some(r=>r.action==='models.config.update'&&r.resource_id===null));
+ assert.ok(!JSON.stringify(rows).includes(secret));assert.ok(!JSON.stringify(rows).includes(member.token));
+});

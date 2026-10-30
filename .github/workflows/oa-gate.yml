@@ -15,7 +15,8 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24.21.0
-      - name: Wait for all OA checks on this exact commit
+      - name: Wait for all OA checks on the PR head commit
         env:
           GH_TOKEN: ${{ github.token }}
+          OA_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: node scripts/ci/oa-gate.mjs
