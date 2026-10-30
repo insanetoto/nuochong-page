@@ -32,3 +32,14 @@ jobs:
           done
       - name: Verify MCP access in the same image
         run: docker run --rm --network host --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m -e TEST_DATABASE_URL=postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test oa-reliability:${{ github.sha }} node --test tools/nuochong-mcp/test/mcp.test.mjs
+      - name: Independently restore a real PostgreSQL schema backup
+        run: |
+          docker run --rm --network host --memory=384m --read-only --tmpfs /tmp:rw,exec,size=64m -e DATABASE_URL=postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test -e OA_DATABASE_SCHEMA=oa_recovery oa-reliability:${{ github.sha }} node apps/control-api/src/migrate.mjs
+          docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_test -v ON_ERROR_STOP=1 -c "INSERT INTO oa_recovery.principals(id,name,kind,role) VALUES ('synthetic-1','synthetic recovery','user','member')"
+          docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_test -v ON_ERROR_STOP=1 -c 'CREATE DATABASE oa_restore'
+          docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 pg_dump -h 127.0.0.1 -U oa -d oa_test --schema=oa_recovery --no-owner --no-privileges > /tmp/oa-recovery.sql
+          docker run --rm -i --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_restore -v ON_ERROR_STOP=1 < /tmp/oa-recovery.sql > /dev/null
+          source_count=$(docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_test -At -c "SELECT count(*) FROM oa_recovery.principals WHERE id='synthetic-1'")
+          restored_count=$(docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_restore -At -c "SELECT count(*) FROM oa_recovery.principals WHERE id='synthetic-1'")
+          test "$source_count" = 1 && test "$restored_count" = 1
+          rm /tmp/oa-recovery.sql
