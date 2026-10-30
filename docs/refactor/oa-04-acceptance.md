@@ -1,6 +1,6 @@
 # OA-04 公司访问基础验收
 
-2026-10-30；Issue #35，独立分支feature/oa-04-access。OA-01已获人工验收；复用OA-02正式API/持久身份底座，并独立完善角色变更、自助撤权和Native owner隔离验收。技术实现完成，整体人工验收待负责人确认。
+2026-10-30；Issue #35，独立分支feature/oa-04-access。OA-01已获人工验收；复用OA-02正式API/持久身份底座，并独立完善角色变更、自助撤权和Native owner隔离验收。技术实现完成，[PR #47](https://github.com/insanetoto/nuochong-page/pull/47)及远程检查通过；整体人工验收待负责人确认。
 
 ## 实际身份方案
 
@@ -23,6 +23,8 @@
 | CLI原生接口 | 22项共享commandId/schema/HTTP/CLI映射；auth me/logout、principal create/list/set-active/set-role、credential create/list/revoke，单独包离线安装与真实API联调通过 |
 
 本机正式API测试23/23通过，既有CLI协议18/18及独立离线安装包通过；使用真实PostgreSQL17.11、真实HTTP和CLI；角色/撤权场景使用合成主体，生产代码无fixture执行或身份开关。进程重启后的权限仍从数据库读取；实际API子进程重启、另一进程提交撤销后立即401已验证。
+
+[Linux CI](https://github.com/insanetoto/nuochong-page/actions/runs/40998085551)同样23/23通过，并通过真实无凭据SDK启动/关闭；[CLI双Node矩阵](https://github.com/insanetoto/nuochong-page/actions/runs/40998085656)、[官网双构建](https://github.com/insanetoto/nuochong-page/actions/runs/40998085588)、[Playwright E2E](https://github.com/insanetoto/nuochong-page/actions/runs/40998085608)、[架构契约](https://github.com/insanetoto/nuochong-page/actions/runs/40998085609)均通过。官网源码/资产/URL/SEO未改动；本次未重新运行专用Linux像素基线检查，不将macOS结果冒充该检查。
 
 真实模型与身份测试分别记录：OA-02最终模型验收矩阵为5个提交轮次；开发复验额外执行2轮和4轮，累计11个提交轮次，provider HTTP请求数（含工具续调用）未逐一计量，费用金额unknown。模型密钥仅本机使用，没有传入GitHub Actions；报告不含密钥、令牌或私有原始内容。
 

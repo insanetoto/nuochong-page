@@ -89,3 +89,5 @@ CI使用PostgreSQL17.11服务验证真实HTTP/CLI、权限、SSE、强杀/fencin
 本次未将新控制API发布到现有公网Native测试路径，未改main/test、Nginx或既有模型配置；现有原生页面继续原方式运行。公网控制面推广需实际数据库、独立入口/TLS/服务凭据配置与发布验收；MCP/外部AI集成和运营稳定性仍按OA-03/OA-05执行。
 
 OA-04补充：auth logout只撤销当前已认证凭据，不接受客户端指定目标；auth principals set-role仅管理员可用，角色变化递增主体epoch，使全部旧凭据失效，服务主体不能提升为admin，最后一个活跃管理员不能降级。重新启用同一状态不重复撤销新凭据。
+
+最终验收证据见[OA-02报告](../../docs/refactor/oa-02-acceptance.md)和[OA-04报告](../../docs/refactor/oa-04-acceptance.md)：Linux真实PostgreSQL23/23、CLI18/18与独立包通过；技术合并与整体人工验收分别记录。

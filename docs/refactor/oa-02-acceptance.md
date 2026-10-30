@@ -19,7 +19,7 @@
 
 真实默认模型单独验证，见[darwin-real-model.json](../../apps/control-api/results/darwin-real-model.json)：5个提交轮次，真实只读工具审计、不同SDK进程的会话恢复、真实流式取消、中断会话恢复、token经PostgreSQL进入正式SSE均通过。provider HTTP请求数未逐一计量（工具续调用可能更多），费用金额unknown；没有把合成故障或0凭据CI当成真实模型。
 
-Linux CI使用隔离PostgreSQL17.11服务，分别运行正式HTTP/CLI/Worker故障与真实无模型SDK启动；具体最终运行链接回填PR，不读取/传输本机DeepSeek密钥。
+[PR #46](https://github.com/insanetoto/nuochong-page/pull/46)已合入refactor/integration（da9498e）。[OA-02 Linux CI](https://github.com/insanetoto/nuochong-page/actions/runs/40996175827)使用隔离PostgreSQL17.11，19项正式HTTP/CLI/Worker测试及真实无模型SDK启动通过；OA-04后继[Linux复验](https://github.com/insanetoto/nuochong-page/actions/runs/40998085551)23/23通过，不读取/传输本机DeepSeek密钥。官网源码/资产/URL/SEO未改动；双构建/E2E已通过，本次未重跑专用Linux像素基线检查。
 
 ## 使用与发布边界
 
