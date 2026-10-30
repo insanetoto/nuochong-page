@@ -19,7 +19,7 @@ try {
     resolve(temporary, metadata.filename)], { env });
   const binary = resolve(temporary, 'installed/node_modules/@nuochong/cli/bin/nuochong.mjs');
   const discovery = await execute(process.execPath, [binary, 'capabilities', '--json'], { env: { PATH: process.env.PATH } });
-  assert.equal(JSON.parse(discovery.stdout).data.commands.length, 4);
+  assert.equal(JSON.parse(discovery.stdout).data.commands.length, 20);
   const preview = await execute(process.execPath, [binary, 'runs', 'get', '--run-id', 'fixture', '--dry-run'], { env: { PATH: process.env.PATH } });
   assert.equal(JSON.parse(preview.stdout).data.executed, false);
   console.log(JSON.stringify({ passed: true, scope: 'offline npm tarball install and executable smoke, no source-tree imports', version: metadata.version }));

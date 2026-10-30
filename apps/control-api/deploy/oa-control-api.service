@@ -1,0 +1,18 @@
+[Unit]
+Description=Nuochong OA control API
+After=network-online.target
+[Service]
+Type=simple
+WorkingDirectory=%h/.local/share/nuochong-oa-control/current
+EnvironmentFile=%h/.config/nuochong-oa-control/environment
+ExecStart=%h/.local/share/nuochong-oa-control/current/runtime/bin/node apps/control-api/src/server.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=15
+KillMode=control-group
+UMask=0077
+NoNewPrivileges=true
+MemoryMax=384M
+TasksMax=128
+[Install]
+WantedBy=default.target

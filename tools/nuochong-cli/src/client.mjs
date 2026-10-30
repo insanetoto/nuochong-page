@@ -29,18 +29,21 @@ function httpError(status, requestId) {
 }
 export function plan(command, input) {
   if (!valid(command.inputSchema, input)) throw invalid();
-  if (input.runId && (!/^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$/.test(input.runId) || ['.', '..'].includes(input.runId))) throw invalid();
-  if (input.after && /[\r\n]/.test(input.after)) throw invalid();
-  return { method: command.method, path: command.path.replace('{runId}', encodeURIComponent(input.runId)),
-    ...(command.id === 'runs.create' ? { body: input } : command.id === 'runs.cancel' ? { body: {} } : {}),
-    sideEffect: command.sideEffect, automaticRetry: false };
+  const body = {...input};
+  let path = command.path.replace(/\{([^}]+)\}/g, (_, key) => {
+    const value=input[key]; if(typeof value !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$/.test(value) || ['.','..'].includes(value)) throw invalid();
+    delete body[key]; return encodeURIComponent(value);
+  });
+  if(input.after && /[\r\n]/.test(input.after)) throw invalid();
+  if(command.method==='GET' && !command.streaming && input.after) path += '?after=' + encodeURIComponent(input.after);
+  return {method:command.method,path,...(command.method==='POST'?{body}:{}),sideEffect:command.sideEffect,automaticRetry:false};
 }
 export async function request(command, input, config, signal) {
   const operation = plan(command, input);
   let response;
   try { response = await fetch(config.origin + operation.path, { method: operation.method, redirect: 'manual', signal,
     headers: { authorization: `Bearer ${config.token}`, accept: command.streaming ? 'text/event-stream' : 'application/json',
-      ...(operation.body && { 'content-type': 'application/json' }), ...(input.after && { 'last-event-id': input.after }) },
+      ...(operation.body && { 'content-type': 'application/json' }), ...(command.streaming && input.after && { 'last-event-id': input.after }) },
     ...(operation.body && { body: JSON.stringify(operation.body) }) }); }
   catch { throw signal.aborted ? signal.reason : new CliError('NETWORK_ERROR', 10, 'Could not reach the configured Harness API. No automatic retry was attempted.'); }
   const candidate = response.headers.get('x-request-id');

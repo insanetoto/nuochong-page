@@ -1,14 +1,15 @@
-export const CLIENT_VERSION = '0.1.0';
-export const CONTRACT_VERSION = '1.0';
+import { coreCommands } from './core-commands.mjs';
+export const CLIENT_VERSION = '0.2.0';
+export const CONTRACT_VERSION = '1.1';
 const string = { type: 'string', minLength: 1, maxLength: 256 };
 const object = (properties, required = Object.keys(properties)) => ({
   $schema: 'http://json-schema.org/draft-07/schema#', type: 'object', additionalProperties: false, required, properties,
 });
-export const commands = [
+const runCommands = [
   { id: 'runs.create', argv: ['runs', 'create'], description: 'Submit one AI run; HTTP acceptance is not business completion.',
     method: 'POST', path: '/api/ai/runs', sideEffect: 'create-run', idempotency: 'required-client-key', success: [202],
     inputSchema: object({ prompt: { type: 'string', minLength: 1, maxLength: 20000 },
-      idempotencyKey: { type: 'string', minLength: 1, maxLength: 128 } }),
+      idempotencyKey: { type: 'string', minLength: 1, maxLength: 128 }, sessionId: string }, ['prompt','idempotencyKey']),
     outputSchema: object({ runId: string, requestId: string }, ['runId']) },
   { id: 'runs.get', argv: ['runs', 'get'], description: 'Read authorized durable run state.',
     method: 'GET', path: '/api/ai/runs/{runId}', sideEffect: 'none', idempotency: 'read', success: [200],
@@ -31,22 +32,27 @@ export const commands = [
       type: { enum: ['run.created', 'run.started', 'run.completed', 'run.failed', 'run.cancelled'] },
       time: { type: 'string', format: 'date-time' }, text: { type: 'string' } }, ['eventId', 'runId', 'sequence', 'type', 'time']),
   },
-].map((command) => ({ ...command, clientStatus: 'implemented', serverStatus: 'requires-compatible-harness-api',
+].map((command) => ({ ...command, clientStatus: 'implemented', scope: command.id === 'runs.create' || command.id === 'runs.cancel' ? 'runs:write' : 'runs:read', serverStatus: 'oa-control-api',
   authorization: 'server-identity-and-resource-policy', automaticRetry: false }));
+
+export const commands = [...runCommands, ...coreCommands];
 
 export function manifest() {
   return { contractVersion: CONTRACT_VERSION, clientVersion: CLIENT_VERSION, discovery: 'local-client-contracts; not live permission discovery',
-    commands, plannedDomains: ['auth', 'sessions', 'models', 'tools', 'permissions', 'runtime', 'audit', 'usage', 'settings', 'integrations'],
-    transportAdapters: { cli: 'implemented-foundation', http: 'harness-api-required', mcp: 'planned-adapter-of-same-contracts' } };
+    commands, plannedDomains: ['permissions', 'audit', 'usage', 'settings', 'integrations'],
+    transportAdapters: { cli: 'implemented-foundation', http: 'oa-control-api', mcp: 'planned-adapter-of-same-contracts' } };
 }
 
 // This package deliberately supports only the primitive schemas it publishes.
 // Refuse unsupported schema constructs instead of silently claiming full JSON Schema validation.
 export function valid(schema, value) {
-  const supported = ['$schema', 'type', 'additionalProperties', 'required', 'properties', 'minLength', 'maxLength', 'minimum', 'enum', 'const', 'format'];
+  const supported = ['$schema', 'type', 'additionalProperties', 'required', 'properties', 'minLength', 'maxLength', 'minimum', 'enum', 'const', 'format', 'items', 'minItems', 'maxItems'];
   if (Object.keys(schema).some((key) => !supported.includes(key))) throw new Error('unsupported client schema');
   if (schema.enum && !schema.enum.includes(value)) return false;
   if ('const' in schema && value !== schema.const) return false;
+  if (schema.type === 'array') {
+    return Array.isArray(value) && (schema.minItems === undefined || value.length >= schema.minItems) && (schema.maxItems === undefined || value.length <= schema.maxItems) && value.every((item) => valid(schema.items,item));
+  }
   if (schema.type === 'object') {
     if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
     if ((schema.required ?? []).some((key) => !Object.hasOwn(value, key))) return false;
