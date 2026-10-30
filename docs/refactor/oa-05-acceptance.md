@@ -10,4 +10,4 @@ Issue #36 / PR #51。OA-02、OA-04前置已验收；2026-10-30 OA-03也已人工
 - 官网16项基线哈希与双构建/E2E检查；Linux像素基线不存在，未声称像素比较通过。
 - 模型成本/用量未计量，unknown；没有加隐含费用上限或将unknown写成零。
 
-GitHub Actions 的 `OA required gate` 汇总7项实际检查；是否成为强制合并条件需以分支保护实查结果为准。模型密钥不进入CI。本次未向main/test推送，未发布公网控制API。复现与范围见[容器演练手册](../../apps/control-api/deploy/ci/README.md)。
+GitHub Actions 的 `OA required gate` 汇总7项实际检查；已追加到refactor/integration分支保护的必需检查，保留原有Build、E2E及strict设置；详见PR #51和仓库实际保护配置。模型密钥不进入CI。本次未向main/test推送，未发布公网控制API。复现与范围见[容器演练手册](../../apps/control-api/deploy/ci/README.md)。

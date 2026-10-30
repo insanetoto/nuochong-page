@@ -6,7 +6,7 @@
 
 独立 `pg_dump` 到新建数据库恢复合成表，并逐表比较 schema_versions、principals、credentials、sessions、runtime_config、runs、events、audit 的排序内容摘要。该小规模夹具不代表生产备份的 RPO/RTO、加密、保留周期或跨区域灾备。数据恢复与应用镜像切换分别执行。MCP 使用实际 stdio/API/数据库验证权限和幂等；模型计费未测量，记录为 unknown。
 
-每个指向集成分支的 PR 都运行官网双构建/E2E、CLI 双 Node、控制 API/MCP、容器演练和 `OA required gate`。后者读取 PR 源提交的七个 GitHub Actions 检查，缺失、跳过、失败或超时均失败；单独将它设为分支保护必需检查后，才可声称门禁强制合并。官网 16 项已批准源码/素材哈希与 E2E 验证，Linux 无批准的像素截图基线，不能声称像素检查通过。
+每个指向集成分支的 PR 都运行官网双构建/E2E、CLI 双 Node、控制 API/MCP、容器演练和 `OA required gate`。后者读取 PR 源提交的七个 GitHub Actions 检查，缺失、跳过、失败或超时均失败；已在refactor/integration分支保护中设为必需检查，保留原有必需检查与strict要求。官网 16 项已批准源码/素材哈希与 E2E 验证，Linux 无批准的像素截图基线，不能声称像素检查通过。
 
 ## 运维与复现
 
