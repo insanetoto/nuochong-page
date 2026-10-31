@@ -25,6 +25,7 @@ const copy = {
   en: {
     brand: "Nuochong Technology",
     languageLabel: "Switch language",
+    home: "Home",
     nav: ["Platform", "Value", "Use Cases", "About"],
     apply: "Request Access",
     hero: {
@@ -140,6 +141,7 @@ const copy = {
   zh: {
     brand: "诺崇科技",
     languageLabel: "切换语言",
+    home: "主页",
     nav: ["产品能力", "核心价值", "应用场景", "关于我们"],
     apply: "申请使用",
     hero: {
@@ -251,7 +253,7 @@ export function HomePage() {
             <span>{t.brand}</span>
           </a>
           <nav aria-label={language === "en" ? "Primary navigation" : "主要导航"}>
-            <a href="#product">{t.nav[0]}</a><a href="#value">{t.nav[1]}</a><a href="#scenes">{t.nav[2]}</a><a href="#about">{t.nav[3]}</a>
+            <a href="#top">{t.home}</a><a href="#product">{t.nav[0]}</a><a href="#value">{t.nav[1]}</a><a href="#scenes">{t.nav[2]}</a><a href="#about">{t.nav[3]}</a>
           </nav>
           <div className="nav-actions">
             <div className="language-switcher" role="group" aria-label={t.languageLabel}>
@@ -293,9 +295,9 @@ export function HomePage() {
         <div className="container platform-strip"><span>{t.flow.lead}</span><div>{t.flow.items.map((item, index) => <span className="flow-item" key={item}><b>{item}</b>{index < t.flow.items.length - 1 && <i>→</i>}</span>)}</div></div>
       </section>
 
-      <section className="section value-section" id="value"><div className="container"><div className="section-heading centered"><span>{t.value.kicker}</span><h2>{t.value.title}</h2><p>{t.value.intro}</p></div><div className="value-grid">{t.value.items.map((item, index) => <article className={index === 1 ? "featured" : ""} key={item.title}><div className="value-number">0{index + 1}</div><div className="value-icon">{item.icon}</div><h3>{item.title}</h3><p>{item.text}</p><ul>{item.tags.map(tag => <li key={tag}>{tag}</li>)}</ul></article>)}</div></div></section>
-
       <section className="section product-section" id="product"><div className="container"><div className="section-heading split-heading"><div><span>{t.product.kicker}</span><h2>{t.product.title}</h2></div><p>{t.product.intro}</p></div><div className="capability-grid">{t.product.items.map((item, index) => { const Icon = capabilityIcons[index]; return <article key={item.title}><div className={`cap-icon cap-icon-${index + 1}`} aria-hidden="true"><Icon size={24} strokeWidth={1.9} /></div><span className="cap-tag">{item.tag}</span><h3>{item.title}</h3><p>{item.text}</p><a href="#apply" aria-label={`${t.product.more}: ${item.title}`}>{t.product.more} <span>→</span></a></article>; })}</div></div></section>
+
+      <section className="section value-section" id="value"><div className="container"><div className="section-heading centered"><span>{t.value.kicker}</span><h2>{t.value.title}</h2><p>{t.value.intro}</p></div><div className="value-grid">{t.value.items.map((item, index) => <article className={index === 1 ? "featured" : ""} key={item.title}><div className="value-number">0{index + 1}</div><div className="value-icon">{item.icon}</div><h3>{item.title}</h3><p>{item.text}</p><ul>{item.tags.map(tag => <li key={tag}>{tag}</li>)}</ul></article>)}</div></div></section>
 
       <section className="section ai-section"><div className="container ai-grid"><div className="ai-visual"><div className="orbit orbit-one"/><div className="orbit orbit-two"/>{t.ai.chips.map((chip, index) => <div className={`knowledge-chip chip-${["one","two","three","four"][index]}`} key={chip}>{chip}</div>)}<div className="ai-core"><img src="/logo-mark.svg" alt="" /><b>{t.ai.core}</b><span>{t.ai.grounded}</span></div></div><div className="ai-copy"><div className="eyebrow light"><span>AI</span> {t.ai.eyebrow}</div><h2>{t.ai.title1}<br />{t.ai.title2}</h2><p>{t.ai.text}</p><div className="ai-list">{t.ai.items.map(([title, text], index) => <div key={title}><i>0{index + 1}</i><span><b>{title}</b><small>{text}</small></span></div>)}</div></div></div></section>
 
@@ -305,7 +307,7 @@ export function HomePage() {
 
       <section className="apply-section" id="apply"><div className="container apply-card"><div className="apply-copy"><span>{t.contact.kicker}</span><h2>{t.contact.title}</h2><p>{t.contact.text}</p></div><div className="contact-options"><div className="wechat-placeholder"><img className="qr-image" src="/contact_me_qr.png" alt={t.contact.qrAlt} width="76" height="76" /></div><div className="contact-detail"><span>{t.contact.phone}</span><b>0871-67200971</b><span>{t.contact.email}</span><a href={`mailto:marketing@nuochong.work?subject=${encodeURIComponent(t.contact.subject)}`}>marketing@nuochong.work</a></div></div></div></section>
 
-      <footer><div className="container footer-main"><div className="footer-brand"><a className="brand" href="#top"><img src="/logo-mark.svg" alt=""/><span>{t.brand}</span></a><p>{t.footer.tagline}</p></div><div><b>{t.footer.product}</b>{t.footer.productLinks.map(link => <a href="#product" key={link}>{link}</a>)}</div><div><b>{t.footer.company}</b><a href="#about">{t.footer.companyLinks[0]}</a><a href="#scenes">{t.footer.companyLinks[1]}</a><a href="#apply">{t.footer.companyLinks[2]}</a></div><div><b>{t.footer.request}</b><a href="#apply">{t.footer.wecom}</a><a href="mailto:marketing@nuochong.work">{t.footer.email}</a></div></div><div className="container copyright"><span>{t.footer.copyright}</span><a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">{t.footer.icp}</a></div></footer>
+      <footer><div className="container footer-main"><div className="footer-brand"><a className="brand" href="#top"><img src="/logo-mark.svg" alt=""/><span>{t.brand}</span></a><p>{t.footer.tagline}</p></div><div><b>{t.footer.product}</b>{t.footer.productLinks.map(link => <a href="https://www.nuochong.net/oa-test/" key={link}>{link}</a>)}</div><div><b>{t.footer.company}</b><a href="#about">{t.footer.companyLinks[0]}</a><a href="#scenes">{t.footer.companyLinks[1]}</a><a href="#apply">{t.footer.companyLinks[2]}</a></div><div><b>{t.footer.request}</b><a href="#apply">{t.footer.wecom}</a><a href="mailto:marketing@nuochong.work">{t.footer.email}</a></div></div><div className="container copyright"><span>{t.footer.copyright}</span><a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">{t.footer.icp}</a></div></footer>
     </main>
   );
 }
