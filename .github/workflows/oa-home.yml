@@ -27,6 +27,8 @@ jobs:
             apps/oa/package-lock.json
       - run: npm ci
       - run: npm ci --prefix apps/oa --ignore-scripts --no-audit --no-fund
+      - name: Verify account gateway and real Harness session
+        run: node --test apps/oa/test/gateway.test.mjs
       - run: npx playwright install --with-deps chromium
       - name: Start the real Web profile and verify isolated browser authentication and rendering
         run: node apps/oa/verify-home.mjs
