@@ -31,11 +31,15 @@ jobs:
             apps/oa/package-lock.json
       - run: npm ci --no-audit --no-fund
       - run: npm ci --prefix apps/oa --ignore-scripts --no-audit --no-fund
+      - name: Verify account gateway and real Harness session
+        run: node --test apps/oa/test/gateway.test.mjs
       - run: npx playwright install --with-deps chromium
       - name: Install test-only reverse proxy
         run: sudo apt-get update -qq && sudo apt-get install -y nginx
       - name: Verify native UI through real HTTPS Nginx prefix, cookies and WebSocket
-        run: OA_PROBE_NGINX=1 node apps/oa/verify-home.mjs
+        run: |
+          OA_PROBE_NGINX=1 node apps/oa/verify-home.mjs
+          OA_PROBE_NGINX=1 OA_PROBE_ACCOUNT=1 node apps/oa/verify-home.mjs
       - uses: actions/upload-artifact@v7
         if: always()
         with:

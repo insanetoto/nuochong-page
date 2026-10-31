@@ -15,41 +15,18 @@
   <main class="card">
     <a class="brand" href="/"><img src="/logo-mark.svg" alt="">诺崇科技</a>
     <h1>登录 OA 管理员页面</h1>
-    <p>请输入管理员提供的启动链接或启动凭据，登录原生 Harness 测试页面。</p>
-    <form id="login-form" novalidate>
-      <label for="credential">启动链接或凭据</label>
-      <input id="credential" type="password" autocomplete="off" spellcheck="false" required>
-      <p class="hint">启动链接由管理员获取。凭据仅用于本次登录，不会保存在此页面。</p>
-      <p id="error" class="error" role="alert" aria-live="polite"></p>
+    <p>使用管理员提供的测试账号登录原生 Harness 页面。</p>
+    <form id="login-form" method="post" action="https://www.nuochong.net/oa-test/__login">
+      <label for="username">账号</label>
+      <input id="username" name="username" autocomplete="username" required>
+      <label for="password" style="margin-top:16px">密码</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <p class="hint">账号仅用于管理员测试，请勿用于正式员工访问。</p>
       <button class="button" type="submit">登录 OA</button>
     </form>
-    <noscript>请启用 JavaScript 后使用此登录入口。</noscript>
     <a class="secondary" href="https://www.nuochong.net/oa-test/">已经登录？直接进入 OA</a>
     <p class="note">当前为管理员测试入口。公司员工登录与权限管理仍在规划中。</p>
   </main>
-  <script>
-    (() => {
-      const form = document.getElementById('login-form');
-      const input = document.getElementById('credential');
-      const error = document.getElementById('error');
-      form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const value = input.value.trim();
-        let token = value;
-        if (value.includes('://')) {
-          try {
-            const url = new URL(value);
-            if (url.origin !== 'https://www.nuochong.net' || url.pathname !== '/oa-test/' || url.username || url.password || url.hash || [...url.searchParams.keys()].some(key => key !== 'token') || url.searchParams.getAll('token').length !== 1) throw new Error();
-            token = url.searchParams.get('token') || '';
-          } catch { error.textContent = '请输入有效的管理员启动链接或凭据。'; return; }
-        }
-        if (!/^[A-Za-z0-9_-]{20,256}$/.test(token)) { error.textContent = '请输入有效的管理员启动链接或凭据。'; return; }
-        const destination = new URL('https://www.nuochong.net/oa-test/');
-        destination.searchParams.set('token', token);
-        input.value = '';
-        window.location.replace(destination.href);
-      });
-    })();
-  </script>
+
 </body>
 </html>
