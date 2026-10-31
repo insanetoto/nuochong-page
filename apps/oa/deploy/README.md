@@ -54,3 +54,13 @@ systemctl --user start nuochong-oa-test.service
 运行环境准备、管理员初始化、真实公网验收分别登记；Actions准备成功不等于已上线。
 
 源文件增量传输使用SSH内的rsync校验和检查；Node按版本复用，npm按完整锁文件及缓存安装，不从GitHub跨境上传整个依赖目录。当前symlink切换后，既有运行进程保持旧版本直至用户服务重启；保留旧版本供回滚。
+
+## 设置测试管理员账号
+
+测试服务器更新到包含账号网关的版本后，由服务器管理员运行：
+
+```sh
+sudo -u deploy bash /home/deploy/.local/share/nuochong-oa-test/current/apps/oa/deploy/setup-test-account.sh
+```
+
+按提示输入账号与密码，密码输入时不回显。脚本仅在服务器生成带随机盐的 scrypt 校验值，保存在隔离状态目录的 `test-login.json`（0600），并在本机请求网关确认可取得原生会话；不会输出密码或原生启动 token。配置可重新执行以更换账号密码。测试账号拥有原生 Harness 管理员权限，仅供测试，不等同普通员工身份；不要作为全员入口。连续错误请求有全局短期限制，因测试网关位于本机代理之后，并非按用户或IP独立限流。
