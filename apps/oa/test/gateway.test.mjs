@@ -46,3 +46,14 @@ test('gateway forwards WebSocket upgrades without bypassing upstream authenticat
  const handshake=cookie=>new Promise((resolve,reject)=>{let data='';const socket=connect(gateway.server.address().port,'127.0.0.1',()=>socket.write(`GET /socket HTTP/1.1\r\nHost: www.nuochong.net\r\nConnection: Upgrade\r\nUpgrade: websocket\r\n${cookie?'Cookie: '+cookie+'\r\n':''}\r\n`));socket.on('data',chunk=>{data+=chunk;});socket.on('end',()=>resolve(data));socket.on('error',reject);});
  assert.match(await handshake('synthetic-session=ok'),/HTTP\/1\.1 101/);assert.match(await handshake(''),/HTTP\/1\.1 401/);
 });
+
+test('one-time initialization stores a salted verifier and validates the real gateway without printing credentials',async(t)=>{
+ const {spawn}=await import('node:child_process');const {readFileSync}=await import('node:fs');
+ const home=mkdtempSync(join(tmpdir(),'oa-account-setup-'));const token='synthetic_native_token_123456789012345';
+ writeFileSync(join(home,'launch-url'),`https://www.nuochong.net/oa-test/?token=${token}`);
+ const upstream=createServer((req,res)=>{if(req.url===`/?token=${token}`){res.writeHead(303,{'set-cookie':['synthetic-session=ok; Path=/; HttpOnly']});res.end();}else{res.writeHead(401);res.end();}});
+ const port=await listen(upstream);const gateway=createGateway({home,upstream:`http://127.0.0.1:${port}`,port:0});await gateway.listen();
+ t.after(async()=>{await gateway.close();await new Promise(resolve=>upstream.close(resolve));rmSync(home,{recursive:true,force:true});});
+ const output=await new Promise((resolve,reject)=>{const child=spawn(process.execPath,['apps/oa/deploy/configure-login.mjs'],{env:{PATH:process.env.PATH,NUOCHONG_OA_HOME:home,OA_LOGIN_VERIFY:'1',OA_VERIFY_PORT:String(gateway.server.address().port)},stdio:['pipe','pipe','pipe']});let log='';child.stdout.on('data',x=>log+=x);child.stderr.on('data',x=>log+=x);child.on('error',reject);child.on('close',code=>code===0?resolve(log):reject(new Error('Setup failed')));child.stdin.end(JSON.stringify({username:'synthetic-user',password:'synthetic-password'}));});
+ const stored=readFileSync(join(home,'test-login.json'),'utf8');assert.ok(!stored.includes('synthetic-password'));assert.ok(!output.includes('synthetic-password'));assert.ok(!output.includes(token));assert.match(output,/验证通过/);
+});
