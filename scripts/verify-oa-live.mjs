@@ -22,10 +22,21 @@ try {
   assert.ok(frames > 0, 'Authenticated WebSocket must receive native frames.');
   assert.equal(errors.length, 0);
   assert.ok((await page.context().cookies()).some((cookie) => cookie.secure && cookie.httpOnly && cookie.path === '/oa-test/'));
+  if (process.env.OA_ENTRY_ORIGIN) {
+    const login = await browser.newPage();
+    await login.goto(new URL('/oa-login.html', process.env.OA_ENTRY_ORIGIN).href, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await login.getByLabel('启动链接或凭据').fill(url.href);
+    await login.getByRole('button', { name: '登录 OA' }).click();
+    await login.waitForFunction(() => document.querySelector('#root')?.children.length > 0, { timeout: 30000 });
+    assert.equal(await login.title(), 'DeepSeek Harness');
+    assert.equal(new URL(login.url()).search, '');
+    assert.ok((await login.context().cookies()).some(cookie => cookie.secure && cookie.httpOnly && cookie.path === '/oa-test/'));
+    await login.close();
+  }
   const entry = await fetch('https://nuochong-company-homepage-test.76gzwtk9sb.workers.dev/oa', { redirect: 'manual', signal: AbortSignal.timeout(15000) });
   assert.equal(entry.status, 307);
   assert.equal(entry.headers.get('location'), 'https://www.nuochong.net/oa-test/');
-  console.log(JSON.stringify({ passed: true, scope: 'Live HTTPS native UI and authenticated WebSocket', anonymousStatus: 401, tokenRemoved: true, secureScopedCookie: true, testEntryRedirect: 307, pageErrors: 0, modelCalls: 0 }));
+  console.log(JSON.stringify({ passed: true, scope: 'Live HTTPS native UI and authenticated WebSocket', anonymousStatus: 401, tokenRemoved: true, secureScopedCookie: true, testEntryRedirect: 307, entryLogin: Boolean(process.env.OA_ENTRY_ORIGIN), pageErrors: 0, modelCalls: 0 }));
 } catch {
   console.error('Live native UI verification failed; private credentials and browser diagnostics are omitted.'); process.exitCode = 1;
 } finally { await browser?.close(); }
