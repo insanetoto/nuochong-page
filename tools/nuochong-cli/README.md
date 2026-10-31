@@ -1,8 +1,8 @@
-# nuochong 产品 CLI 0.1
+# nuochong 产品 CLI 0.2
 
 OA/Harness能力的命令行入口；通过控制API使用服务端身份、资源授权和运行状态。独立于上游 `dsh`，不会暴露 Harness 宿主管理权限、数据库或模型凭据。
 
-当前交付**可执行客户端基础**；正式OA控制API/身份接入尚待OA-02/04实现。HTTP测试使用合成服务，不能当成真实Harness联调。会话、模型、工具等待实现能力标记planned；旧知识、培训、工单不属于当前清单。
+当前实现22项运行/会话/身份/模型与只读工具命令，与apps/control-api使用同一契约；已有真实PostgreSQL/HTTP/CLI及本机真实模型验收。新API尚未发布公网，不能把原生Web端口当作控制API。未来MCP、审计/用量等仍为planned；旧业务模块不属于当前清单。
 
 ## 直接运行与安装
 
@@ -21,7 +21,7 @@ npm install --global ./tools/nuochong-cli
 nuochong capabilities --json
 ```
 
-包目前 private，尚未发布到 npm，也未在本次修改全局环境。离线打包/独立安装测试验证其不依赖仓库外部路径。OA-03负责正式API接入与共享契约，不搬迁官网入口。
+包目前 private，尚未发布到 npm，也未在本次修改全局环境。离线打包/独立安装测试验证其不依赖仓库外部路径。OA-02/OA-04已提供正式API与共享契约，OA-03负责外部AI/MCP适配，不搬迁官网入口。
 
 ## 外部 AI 的使用顺序
 
@@ -76,7 +76,7 @@ JSON响应上限1MiB，stdin上限512KiB，SSE行/帧上限256KiB，每次最多
 
 输入/输出schema随客户端版本发布。create/event DTO与A-05冻结快照做一致性测试；get使用不强制企业tenant字段的OA运行契约；当前验证器只支持本清单使用的基础Draft-07子集，遇未知schema特性直接失败，不宣称通用JSON Schema实现。OA-02/03提取共享契约与生成流程后，服务端、CLI和未来MCP从同一能力定义生成。
 
-取消响应补充约定：200或202，JSON至少包含runId及cancelRequested:true；表示取消请求已记录，不表示已取消。OA-02需实现此兼容响应。A-09的部署探针API只是夹具，不是本CLI已通过联调的正式API。
+取消响应补充约定：200或202，JSON至少包含runId及cancelRequested:true；表示取消请求已记录，不表示已取消。OA-02已实现此兼容响应。A-09的部署探针API只是夹具，不是本CLI已通过联调的正式API。
 
 ```sh
 node --test tools/nuochong-cli/test/*.test.mjs
@@ -85,4 +85,8 @@ node tools/nuochong-cli/test/package-smoke.mjs
 
 本机macOS Node24验证；远程Linux Node22.13/24.21由product-cli.yml执行，结果以PR检查为准。Windows尚未验证。源码与规范见[产品CLI方案](../../docs/refactor/cli-native.md)。MCP适配为后续范围，本次没有部署MCP服务或连接外部AI账号。
 
-原生Harness Web的3080端口不是本客户端的控制API。当前API契约是后续适配目标，客户端测试不能替代真实服务联调。
+原生Harness Web的3080端口不是本客户端的控制API。当前兼容API位于apps/control-api，绑定实际服务地址与受限凭据后使用；合成测试、真实数据库与真实模型报告分别记录。
+
+22项命令列表通过capabilities/schema发现。新增示例：`nuochong auth me`、`nuochong sessions list`、`nuochong models config get`、`nuochong tools list`、`nuochong runtime status`。身份/凭据管理须admin用户且auth:manage；模型配置须config:write。成员只能访问自身运行/会话。列表/history可用JSON after游标，退出前查询终态而不是把stream退出0等同于模型成功。完整部署/身份边界见[控制API手册](../../apps/control-api/README.md)。
+
+OA-04补充：auth logout只撤销当前已认证凭据，不接受客户端指定目标；auth principals set-role仅管理员可用，角色变化递增主体epoch，使全部旧凭据失效，服务主体不能提升为admin，最后一个活跃管理员不能降级。重新启用同一状态不重复撤销新凭据。

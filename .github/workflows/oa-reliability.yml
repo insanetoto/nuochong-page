@@ -1,0 +1,84 @@
+name: OA reliability verification
+on:
+  pull_request:
+    branches: [refactor/integration]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-container:
+    name: OA container and recovery
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17.11
+        env:
+          POSTGRES_USER: oa
+          POSTGRES_PASSWORD: isolated-test-only
+          POSTGRES_DB: oa_test
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+      - name: Verify approved homepage source and asset hashes
+        run: node scripts/ci/check-homepage-baseline.mjs
+      - name: Build one immutable test image
+        run: |
+          docker build -f apps/control-api/deploy/ci/Dockerfile --build-arg OA_RELEASE=candidate -t oa-reliability:${{ github.sha }} .
+          docker build -f apps/control-api/deploy/ci/Dockerfile --build-arg OA_RELEASE=previous -t oa-reliability:previous .
+      - name: Verify actual SDK and native dependencies in bounded container
+        run: docker run --rm --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m oa-reliability:${{ github.sha }} node apps/control-api/src/probe-sdk.mjs
+      - name: Promote same image and roll back application independently
+        run: |
+          docker tag oa-reliability:${{ github.sha }} oa-reliability:candidate
+          docker tag oa-reliability:candidate oa-reliability:target
+          test "$(docker image inspect -f '{{.Id}}' oa-reliability:candidate)" = "$(docker image inspect -f '{{.Id}}' oa-reliability:target)"
+          test "$(docker image inspect -f '{{.Id}}' oa-reliability:target)" != "$(docker image inspect -f '{{.Id}}' oa-reliability:previous)"
+          docker run --rm --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m oa-reliability:target node apps/control-api/src/probe-sdk.mjs
+          docker run --rm --network host --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m -e TEST_DATABASE_URL=postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test oa-reliability:target node --test --test-name-pattern='actual API process restart' apps/control-api/test/control-api.test.mjs
+          docker tag oa-reliability:previous oa-reliability:target
+          test "$(docker image inspect -f '{{.Id}}' oa-reliability:target)" = "$(docker image inspect -f '{{.Id}}' oa-reliability:previous)"
+          docker run --rm --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m oa-reliability:target node apps/control-api/src/probe-sdk.mjs
+          docker run --rm --network host --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m -e TEST_DATABASE_URL=postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test oa-reliability:target node --test --test-name-pattern='actual API process restart' apps/control-api/test/control-api.test.mjs
+      - name: Kill and restart actual Harness host container three times
+        run: |
+          for attempt in 1 2 3; do
+            docker run --rm --network host --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m -e TEST_DATABASE_URL=postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test -e OA_TEST_SCHEMA=oa_host_${attempt} oa-reliability:candidate node apps/control-api/deploy/ci/host-cycle.mjs setup
+            docker run -d --name oa-host-${attempt} --network host --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m -e TEST_DATABASE_URL=postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test -e OA_TEST_SCHEMA=oa_host_${attempt} oa-reliability:candidate node apps/control-api/deploy/ci/host-cycle.mjs hold
+            ready=0
+            for second in $(seq 1 30); do
+              if docker logs oa-host-${attempt} 2>&1 | grep -q OA_HOST_READY; then ready=1; break; fi
+              test "$(docker inspect -f '{{.State.Running}}' oa-host-${attempt})" = true
+              sleep 1
+            done
+            test "$ready" = 1
+            docker kill --signal KILL oa-host-${attempt}
+            docker rm oa-host-${attempt}
+            docker run --rm --network host --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m -e TEST_DATABASE_URL=postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test -e OA_TEST_SCHEMA=oa_host_${attempt} oa-reliability:candidate node apps/control-api/deploy/ci/host-cycle.mjs verify
+          done
+          docker run --rm --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m oa-reliability:candidate node apps/control-api/src/probe-sdk.mjs
+      - name: Exercise API restart and killed worker three times
+        run: |
+          for attempt in 1 2 3; do
+            docker run --rm --network host --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m -e TEST_DATABASE_URL=postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test oa-reliability:${{ github.sha }} node --test --test-name-pattern='actual killed worker process|actual API process restart' apps/control-api/test/control-api.test.mjs
+          done
+      - name: Verify MCP access in the same image
+        run: docker run --rm --network host --memory=768m --cpus=1 --pids-limit=256 --read-only --tmpfs /tmp:rw,exec,size=64m -e TEST_DATABASE_URL=postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test oa-reliability:${{ github.sha }} node --test tools/nuochong-mcp/test/mcp.test.mjs
+      - name: Independently restore a real PostgreSQL schema backup
+        run: |
+          docker run --rm --network host --memory=384m --read-only --tmpfs /tmp:rw,exec,size=64m -e DATABASE_URL=postgresql://oa:isolated-test-only@127.0.0.1:5432/oa_test -e OA_DATABASE_SCHEMA=oa_recovery oa-reliability:${{ github.sha }} node apps/control-api/src/migrate.mjs
+          docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_test -v ON_ERROR_STOP=1 -c "INSERT INTO oa_recovery.principals(id,name,kind,role) VALUES ('synthetic-1','synthetic recovery','user','member'); INSERT INTO oa_recovery.credentials(id,principal_id,token_hash,principal_epoch,scopes,expires_at) VALUES ('synthetic-key','synthetic-1',repeat('a',64),1,ARRAY['runs:read'],clock_timestamp()+interval '1 day'); INSERT INTO oa_recovery.sessions(id,owner_id,name) VALUES ('synthetic-session','synthetic-1','test'); INSERT INTO oa_recovery.runs(id,owner_id,credential_id,session_id,idempotency_key,prompt,status,config,output) VALUES ('synthetic-run','synthetic-1','synthetic-key','synthetic-session','synthetic-idem','fixture','succeeded','{}','synthetic-result'); INSERT INTO oa_recovery.events(run_id,sequence,type,text) VALUES ('synthetic-run',1,'run.completed','synthetic-result'); INSERT INTO oa_recovery.audit(actor_id,action,resource_id,result) VALUES ('synthetic-1','runs.create','synthetic-run','allow');"
+          docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_test -v ON_ERROR_STOP=1 -c 'CREATE DATABASE oa_restore'
+          docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 pg_dump -h 127.0.0.1 -U oa -d oa_test --schema=oa_recovery --no-owner --no-privileges > /tmp/oa-recovery.sql
+          docker run --rm -i --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_restore -v ON_ERROR_STOP=1 < /tmp/oa-recovery.sql > /dev/null
+          source_count=$(docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_test -At -c "SELECT count(*) FROM oa_recovery.principals WHERE id='synthetic-1'")
+          restored_count=$(docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_restore -At -c "SELECT count(*) FROM oa_recovery.principals WHERE id='synthetic-1'")
+          test "$source_count" = 1 && test "$restored_count" = 1
+          for table in schema_versions principals credentials sessions runtime_config runs events audit; do
+            query="SELECT md5(coalesce(string_agg(row_to_json(t)::text, ',' ORDER BY row_to_json(t)::text), '')) FROM oa_recovery.$table t"
+            source_hash=$(docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_test -At -c "$query")
+            restored_hash=$(docker run --rm --network host -e PGPASSWORD=isolated-test-only postgres:17.11 psql -h 127.0.0.1 -U oa -d oa_restore -At -c "$query")
+            test "$source_hash" = "$restored_hash"
+          done
+          rm /tmp/oa-recovery.sql

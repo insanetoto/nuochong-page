@@ -10,6 +10,14 @@
 6. [范围决策ADR-010](../adr/ADR-010-oa-harness-product-scope.md)、[CLI决策ADR-009](../adr/ADR-009-cli-native-capabilities.md)。
 7. [团队协作](collaboration.md)、[个人开发指南](developer-onboarding.md)。
 
-官网保持独立。当前只交付源码清理、原生页面本机预览与客户端基础，正式公司身份/API/CLI/MCP联调按新任务执行；不宣称业务OA已经上线。本次不部署main/test或覆盖旧线上环境。
+官网保持独立。原生管理员测试首页、正式控制API/Worker、公司身份和22项CLI契约已交付；MCP与外部AI集成按OA-03推进，业务模块仍未规划。新控制API尚未公网发布，main未发布。
 
 A阶段10项已完成的验证与Go保留为历史技术证据；其旧业务范围和人日估算不再约束当前产品。[旧路线归档](archive/business-plan-2026-10-29/roadmap.md)、[历史A阶段评审](phase-a-review.md)可供复用技术结论，不作为继续迁入旧业务页面的授权。
+
+## 2026-10-30执行状态
+
+本段为早期审计快照：原生管理员测试环境已上线并通过公网登录/WS验证；当时OA-01尚待整体验收。当前OA-01已验收，OA-02/OA-04已整体验收，状态见下方最新实施记录。请以[完成情况审计](progress-2026-10-30.md)与[最新路线](roadmap.md)为准。此前“仅本机预览/本次不部署test”描述的是基础增量范围，后续用户已单独授权测试发布；main未发布。
+
+## OA-02 / OA-04当前实施
+
+[控制API与访问基础](../../apps/control-api/README.md)、[核心验收](oa-02-acceptance.md)、[访问验收](oa-04-acceptance.md)已形成。OA-01至OA-06均已验收，当前6/6完成；用户批准有限Go，进入知识库设计。历史“仅本机预览”或早期完成率以最新跟踪表为准，新控制API尚未新增公网发布。

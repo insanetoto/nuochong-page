@@ -39,24 +39,26 @@ const frame = (data) => `id: ${data.eventId}\nevent: ${data.type}\ndata: ${JSON.
 
 test('AI discovery exposes side effects, schemas and honest availability without credentials', async () => {
   const result = await cli(['capabilities', '--json']); assert.equal(result.code, 0); assert.equal(result.stderr, '');
-  const data = JSON.parse(result.stdout).data; assert.equal(data.commands.length, 4);
+  const data = JSON.parse(result.stdout).data; assert.equal(data.commands.length, 22);
   assert.ok(data.commands.every((c) => c.inputSchema.additionalProperties === false && c.authorization && !c.automaticRetry));
-  assert.ok(data.commands.every((c) => c.serverStatus === 'requires-compatible-harness-api'));
-  assert.equal(data.transportAdapters.mcp, 'planned-adapter-of-same-contracts');
-  assert.equal((await cli(['sessions', 'list'])).code, 14);
+  assert.ok(data.commands.every((c) => c.serverStatus === 'oa-control-api'));
+  assert.equal(data.transportAdapters.mcp, 'restricted-stdio-adapter-of-same-contracts');
+  assert.equal((await cli(['permissions', 'list'])).code, 14);
   assert.ok(!data.plannedDomains.some((d) => ['knowledge', 'training', 'workorders'].includes(d)));
   assert.equal((await cli(['knowledge', 'search'])).code, 2);
 });
 test('create/event DTOs preserve A-05 transport semantics; new Harness state has no enterprise dependency', () => {
   for (const [id, field, file] of [['runs.create', 'inputSchema', 'create-run'], ['runs.events', 'outputSchema', 'event']]) {
     const expected = JSON.parse(readFileSync(new URL(`../../../experiments/phase-a/contracts/${file}.schema.json`, import.meta.url)));
-    assert.deepEqual(commands.find((c) => c.id === id)[field], expected);
+    const actual = structuredClone(commands.find((c) => c.id === id)[field]);
+    if (id === 'runs.create') delete actual.properties.sessionId;
+    assert.deepEqual(actual, expected);
   }
   assert.ok(!Object.hasOwn(commands.find((c) => c.id === 'runs.get').outputSchema.properties, 'tenantId'));
 });
 test('schema/help/version and JSON stdin dry-run are offline and executable', async () => {
   assert.match((await cli(['--help'])).stdout, /nuochong/);
-  assert.equal(JSON.parse((await cli(['version'])).stdout).data.clientVersion, '0.1.0');
+  assert.equal(JSON.parse((await cli(['version'])).stdout).data.clientVersion, '0.2.0');
   assert.equal(JSON.parse((await cli(['schema', 'runs.create', '--json'])).stdout).data.method, 'POST');
   const result = await cli(['runs', 'create', '--input', '-', '--dry-run'], {}, JSON.stringify({ prompt: '合成输入', idempotencyKey: 'stable' }));
   assert.equal(result.code, 0); assert.equal(JSON.parse(result.stdout).data.executed, false);
