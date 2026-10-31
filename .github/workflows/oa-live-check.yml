@@ -4,6 +4,12 @@ on:
     branches: [feature/oa-test-native-deploy]
     paths: ['.github/workflows/oa-live-check.yml', 'scripts/verify-oa-live.mjs']
   workflow_dispatch:
+    inputs:
+      website:
+        description: 官网入口环境
+        type: choice
+        options: [test, production]
+        default: test
 permissions:
   contents: read
 jobs:
@@ -22,6 +28,7 @@ jobs:
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          OA_ENTRY_SITE: ${{ inputs.website || 'test' }}
         run: |
           install -d -m 700 ~/.ssh
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/oa_live_key
@@ -31,6 +38,11 @@ jobs:
           printf '::add-mask::%s\n' "$launch_url"
           export OA_PRIVATE_LAUNCH_URL="$launch_url"
           node --input-type=module -e 'for (const value of new URL(process.env.OA_PRIVATE_LAUNCH_URL).searchParams.values()) console.log("::add-mask::" + value)'
+          case "$OA_ENTRY_SITE" in
+            test) export OA_ENTRY_ORIGIN='https://nuochong-company-homepage-test.76gzwtk9sb.workers.dev' ;;
+            production) export OA_ENTRY_ORIGIN='https://www.nuochong.net' ;;
+            *) exit 1 ;;
+          esac
           node scripts/verify-oa-live.mjs
       - if: always()
         run: rm -f ~/.ssh/oa_live_key
