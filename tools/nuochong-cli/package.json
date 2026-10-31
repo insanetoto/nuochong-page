@@ -1,0 +1,23 @@
+{
+  "name": "@nuochong/cli",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "bin": {
+    "nuochong": "bin/nuochong.mjs"
+  },
+  "exports": {
+    "./manifest": "./src/registry.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  }
+}

@@ -1,141 +1,57 @@
-# 诺崇科技官网
+# 诺崇官网与公司OA（DeepSeek Harness基座）
 
-## 架构与环境
+当前方向：保留官网，以DeepSeek Harness建设公司OA，临时直接使用官方原生Web页面作OA首页。旧模拟登录、员工管理、业务浮动入口及/app路由已移除；具体OA业务以后再规划，不继续旧知识/培训/工单路线。
 
-- `app/HomePage.tsx`：中英文营销首页，共用于两种构建。
-- `app/app/`：业务后台，使用客户端模拟登录和员工数据，尚未接入真实认证或数据库。
-- `worker/index.ts`、`vite.config.ts`：vinext React 服务端渲染、API 与 Cloudflare Worker 构建。
-- `static-src/`、`vite.static.config.ts`：仅渲染营销首页的静态构建，不包含业务后台和服务端 API。
-- `.openai/hosting.json`：当前 D1、R2 绑定均未启用。
+- [当前产品路线图](docs/refactor/roadmap.md)
+- [OA任务与验收](docs/refactor/tasks.md)
+- [OA执行跟踪](docs/refactor/oa-tracking.md)
+- [原生OA首页运行说明](apps/oa/README.md)
+- [产品CLI基础](tools/nuochong-cli/README.md)
 
-| 分支 | 用途 | 部署目标 |
-| --- | --- | --- |
-| `dev` | 开发 | 不自动部署 |
-| `test` | 测试 | Cloudflare Worker：`https://nuochong-company-homepage-test.76gzwtk9sb.workers.dev/` |
-| `main` | 生产 | 腾讯云 Nginx：`https://www.nuochong.net/` |
+## 两个独立入口
 
-测试分支包含独立的业务功能更新，发布时需审查差异，不应直接以 `main` 覆盖 `test`。
+官网使用app/HomePage.tsx与static-src；文案、素材、语言和SEO保持原基线。Worker还提供官网国家/语言辅助API及可配置的/oa跳转，静态官网不内嵌服务端能力。
 
-## 持续集成与部署
+OA首页由apps/oa中的独立启动器运行官方 `dsh --profile web`，保留原生会话、模型、工具和配置页面。不是重新制作的业务控制台；目前是本机管理员预览，员工级身份/权限按新路线实现。
 
-- `ci.yml`：分开构建 Worker 和静态站点；Worker 构建后运行服务端渲染测试。非 PR 运行同时检查现有测试、生产环境，健康检查失败与构建失败分别展示。
-- `e2e.yml`：验证模拟登录、员工管理及匿名访问重定向。支持 `dev`、`test`、`main`、`ci/**` 分支推送和手动运行。
-- `deploy-test.yml`：`test` 推送或手动运行后部署 Worker，再检查测试首页与资源。
-- `deploy.yml`：`main` 推送或手动运行后将 `dist-static/` 同步至生产 Nginx，再检查生产首页与资源。
-
-部署所需 GitHub Actions Secrets：测试环境需要 `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID`；生产环境需要 `DEPLOY_SSH_KEY`、`DEPLOY_HOST`。Git 的 SSH 凭据与这些部署凭据、GitHub Actions API 的授权相互独立。
-
-本地验证：
-
-```bash
+```sh
+# 官网开发与构建：Node >=22.13
 npm ci
+npm run dev
 npm test
 npm run build:static
-npx playwright install chromium
-npm run test:e2e
-node scripts/check-environment.mjs test
-node scripts/check-environment.mjs production
+
+# 原生OA页面：已验证 Node24.21.0、Harness0.2.1-rc.2
+npm ci --prefix apps/oa --ignore-scripts --no-audit --no-fund
+npm run oa:start
+# 在终端打开官方打印的私有启动URL；也可加 -- --open
 ```
 
-环境检查验证 HTTP 200、首页品牌、同源 JS/CSS、Logo 和生产主域名跳转；不等同于完整浏览器交互测试。检查有超时与重试，本机网络超时仍需结合远程 Runner 的结果判断。
+OA默认仅监听127.0.0.1:3080。NUOCHONG_OA_HOME可指定隔离状态目录；模型凭据由管理员在原生设置或服务端环境配置，启动/页面测试不调用模型。
 
-## 原始框架说明
+需要从Worker官网 `/oa` 进入时，由管理员为官网服务配置不含token的 `NUOCHONG_OA_URL`（例如本机http://127.0.0.1:3080/）；首次认证仍使用原生启动流程。未配置返回503。静态生产站的/oa路由需实际Web服务/反向代理发布后才可用，不能仅靠静态构建获得。
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+## CLI与自动化
 
-## Prerequisites
-
-- Node.js `>=22.13.0`
-
-## Quick Start
-
-```bash
-npm install
-npm run dev
-npm run build
+```sh
+node tools/nuochong-cli/bin/nuochong.mjs capabilities --json
+node tools/nuochong-cli/bin/nuochong.mjs schema runs.create --json
+node tools/nuochong-cli/bin/nuochong.mjs runs get --run-id example --dry-run
+npm run test:cli
 ```
 
-This starter does not use `wrangler.jsonc`.
+当前CLI可离线发现/预检，任务HTTP客户端需后续OA控制API；不能把原生页面端口直接当作已实现的控制API。未来新增产品功能都须有CLI和版本化schema，MCP复用相同规则。
 
-## Included Shape
+## 验证与发布边界
 
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
+- ci.yml：Worker/静态构建、SSR/退役路由检查及现有线上健康观察。
+- e2e.yml：官网语言、业务入口移除和旧路由404；不再测试演示口令登录。
+- product-cli.yml：真实子进程/合成HTTP/SSE、Node兼容和离线安装包。
+- oa-home.yml：真实官方Web页面、认证cookie交换及浏览器渲染，无模型调用。
+- 官网macOS原像素基线继续保留；A阶段Harness实验在experiments/phase-a中作为历史技术证据，不是已交付OA业务。
 
-## Workspace Auth Headers
+重构集成目标为refactor/integration。main/test仍对应旧发布流程；本次源码清理不自动删除线上服务，不直接覆盖test分支独立历史。正式公司入口和生产发布按新路线另行验收、批准。
 
-Signed-in visitors receive both `oai-authenticated-user-id` and `oai-authenticated-user-email`. Private Sites require every visitor to sign in; public Sites may also have anonymous visitors, for whom neither header is present.
+## OA-02 / OA-04控制面与访问基础
 
-The user ID is stable for the same user on the same Site and different across Sites. Email and name are intended for display or contact purposes.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const userId = requestHeaders.get("oai-authenticated-user-id");
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
-```
-
-## Optional Dispatch-Owned ChatGPT Sign-In
-
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
-
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
-
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+正式API/Worker、PostgreSQL迁移、管理员初始化与20项CLI契约见[控制API手册](apps/control-api/README.md)。新控制面仍待单独配置数据库与入口后发布；已上线原生管理员页面不自动变为全员OA/SSO入口。

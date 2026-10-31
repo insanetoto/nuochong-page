@@ -1,0 +1,50 @@
+name: Deployment recovery prototype
+
+on:
+  pull_request:
+    branches: [refactor/integration]
+    paths:
+      - 'experiments/phase-a/deployment/**'
+      - 'experiments/phase-a/jobs/**'
+      - 'experiments/phase-a/runtime/**'
+      - 'experiments/phase-a/isolation/**'
+      - '.github/workflows/deployment-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deployment:
+    name: Docker Host fault isolation and restore
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            experiments/phase-a/runtime/package-lock.json
+            experiments/phase-a/jobs/package-lock.json
+            experiments/phase-a/deployment/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm ci --prefix experiments/phase-a/runtime --ignore-scripts --no-audit --no-fund
+      - run: npm ci --prefix experiments/phase-a/jobs --ignore-scripts --no-audit --no-fund
+      - run: npm ci --prefix experiments/phase-a/deployment --ignore-scripts --no-audit --no-fund
+      - run: npm run build:static
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install --with-deps chromium
+      - name: Real containers, proxy, resource limits, rollback and separate database restore
+        run: node experiments/phase-a/deployment/verify-deployment.mjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: deployment-recovery-probe
+          path: experiments/phase-a/deployment/outputs/*probe.json
+          if-no-files-found: ignore

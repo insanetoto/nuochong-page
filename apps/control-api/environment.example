@@ -1,0 +1,6 @@
+# Operator-managed server variables; never use a real key or password in this file.
+DATABASE_URL=postgresql://oa_app:REPLACE_ME@127.0.0.1:5432/oa
+OA_DATABASE_SCHEMA=oa_control
+OA_API_PORT=3081
+OA_RUNTIME_HOME=/var/lib/nuochong-oa-control
+DEEPSEEK_API_KEY=REPLACE_ON_SERVER_ONLY

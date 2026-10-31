@@ -1,0 +1,15 @@
+{
+  "time": "2026-10-29T07:16:22.929Z",
+  "node": "v24.21.0",
+  "platform": "darwin-arm64",
+  "results": [
+    {
+      "name": "real Harness Host process group killed; full approved macOS website suite",
+      "passed": true,
+      "tests": 5,
+      "baselineUpdated": false,
+      "scope": "2 viewports × 2 languages, pixel/content/SEO/links/interactions and language preference"
+    }
+  ],
+  "browser": "Google Chrome 156.0.8078.48"
+}

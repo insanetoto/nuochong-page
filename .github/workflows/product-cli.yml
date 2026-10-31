@@ -1,0 +1,27 @@
+name: Product CLI contracts
+
+on:
+  pull_request:
+    branches: [refactor/integration]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cli:
+    name: CLI contract and package (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        node: [22.13.0, 24.21.0]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Real CLI subprocess and synthetic HTTP/SSE integration
+        run: node --test tools/nuochong-cli/test/*.test.mjs
+      - name: Package installs and executes independently of the source tree (offline)
+        run: node tools/nuochong-cli/test/package-smoke.mjs

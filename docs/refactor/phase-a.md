@@ -1,0 +1,109 @@
+> 范围变更（2026-10-29）：本文保留为已验收A阶段的历史证据。用户现改为以DeepSeek Harness为基座的公司OA；旧业务迁移/旧B—E执行计划已撤销，当前以[新路线图](roadmap.md)和[ADR-010](../adr/ADR-010-oa-harness-product-scope.md)为准。
+
+# A 阶段：架构决策、目录、原型与验收
+
+状态：提案。A 阶段只允许隔离原型、基线采集与决策文档；不迁移生产、不替换真实认证、不导入客户数据。原型通过不代表产品功能完成。
+
+## 1. 架构决策登记
+
+决策由架构负责人维护 `docs/adr/ADR-NNN-title.md`，记录背景、备选、实测、决定、代价、迁移与撤回条件。A-10 前为 Proposed；评审后标为 Accepted/Rejected/Superseded，并链接 Issue/PR。
+
+| ADR | 推荐方向 | 备选与取舍 | A 阶段确认方式 |
+| --- | --- | --- | --- |
+| 001 产品边界 | 官网独立；业务后端模块化单体；Harness 独立进程 | 全部放 Host 会扩大升级影响；全面微服务增加运维 | 官网关闭 Host 后正常；画清模块与数据归属 |
+| 002 仓库与工具链 | 单仓库，候选 pnpm workspace；TypeScript；分别构建各应用 | 多仓库降低统一变更便利性；保留 npm workspace 也需评估 | 干净环境安装/构建 PoC；正式切换仅在 B-01 |
+| 003 前端与业务 API | 官网沿用现有 React/Vite；工作台候选 React/Vite；业务 API 使用 Node LTS HTTP 服务 | 保留 vinext 作为过渡可减少迁移，但业务与 Worker 耦合须消除 | 比较路由、登录、流式接口、打包和部署；HTTP 框架在 A-05 定案 |
+| 004 Harness 集成 | 官方支持的具名 Profile 启动，优先验证 SDK；通过自有适配层调用 | 直接暴露完整 Harness Web/Gateway 会扩大权限面；SDK 不满足则记录受支持服务协议方案 | 精确锁定版本/提交及 Node 要求；创建、跟踪、取消、重启实测；避免私有导入 |
+| 005 数据与检索 | 候选 PostgreSQL；文件使用 S3 兼容存储；向量检索优先评估 pgvector | SQLite 可用于原型，不能代表并发验收；独立向量库需容量证据 | 用样本测权限过滤、索引、备份恢复；确定迁移工具、Embedding 模型及版本 |
+| 006 任务执行 | 业务库持久任务表＋独立 Worker、租约及幂等键 | Redis/专用队列后续可替换；Harness 会话不承担业务恢复状态 | 双 Worker 竞争、崩溃、租约到期、重试、取消实验 |
+| 007 身份与企业隔离 | 服务端认证；每次访问校验企业/成员/资源；OIDC 优先评估 | 自建密码认证增加恢复与安全维护；不沿用演示登录 | 候选身份服务可用性、账号回收、会话失效、工具越权原型；必要时 DB RLS 追加防线 |
+| 008 部署与发布 | 同类 Node 运行环境；生产同产物推广；Host 单独资源与凭据 | 官网仍可静态托管；不预设 Worker 兼容完整 Host | 测试容器/进程启动、故障隔离、流式代理、资源限制和回滚演练 |
+
+没有实测结论的 ADR 不能写成“已选型”；若任一核心备选都不满足约束，A-10 为 No-Go，补做原型并更新路线图。
+
+## 2. 目标目录与依赖方向
+
+以下是 B 阶段实施目标。A 阶段不创建空应用或搬迁业务代码。
+
+```text
+apps/
+  website/                 # 官网，迁入 static-src、官网组件和公共素材
+  workspace/               # 工作台及管理 UI，迁入现有业务页面
+  api/                     # 模块化单体 HTTP 入口、认证、业务事务
+  worker/                  # 持久任务调度、解析/索引与执行适配
+  harness-host/            # 具名 Profile 启动、生命周期、独立健康检查
+  cli/                     # A-10后新增：产品CLI，共用业务契约，承接tools/nuochong-cli
+packages/
+  contracts/               # 请求、响应、事件 schema；不依赖 Harness/DB
+  domain/                  # identity / knowledge / training / workorders / ai-runs
+  persistence/             # 数据访问、迁移、企业过滤与任务租约
+  harness-adapter/         # 唯一导入 Harness SDK/协议的业务集成包
+  plugins/                 # 自有 Harness 工具/服务插件及生命周期测试
+  ui/                      # 有实际复用需求时提取 UI，避免搬迁时泛化
+profiles/nuochong/         # 组合包/Profile/patch，无密钥；格式以 ADR-004 为准
+tests/                     # contract / integration / e2e / visual / evals
+infra/                     # 环境模板、进程/容器、代理、发布与恢复脚本
+docs/adr/                  # 已审查架构决定
+docs/refactor/             # 本规划与任务清单
+experiments/phase-a/       # 隔离原型、fixture、结果；不进入生产构建
+```
+
+依赖：前端→contracts；API/Worker→domain→接口；persistence 实现领域存储接口；Worker→harness-adapter；Host→受控插件。domain 不导入 Host/SDK/前端；前端不持有模型或存储服务密钥。插件调用受授权业务服务，不能直接绕过领域规则写数据库。数据库迁移由单独部署步骤执行，不能由每个进程启动时竞争执行。
+
+`HomePage.tsx` 同时含文案、布局和行为，搬迁时先整体复用；组件拆分另做保持基线的 PR。已有 `app/app/` 逐模块迁移，`worker/index.ts` 及旧构建在新环境验收前保留。
+
+## 3. 最小业务契约草案
+
+- `ActorContext`：服务端验证的 userId、tenantId、角色/权限、requestId。忽略客户端/模型伪造的身份字段。
+- `AiRun`：runId、tenantId、actorId、业务用途、状态、幂等键、策略/提示词版本、Harness sessionId、用量与错误分类。
+- 运行接口：createRun、followRun、cancelRun、getRun；名称为自有契约草案，不声称上游已有同名 API。
+- 事件包含 eventId、runId、sequence、type、time；支持重连后按序补齐与重复去重。实时 token 可瞬态，最终结果与状态必须持久化。
+- 业务任务：queued→running→succeeded/failed/cancelled；running 可经租约失效转 retry_wait→queued；重试次数有限。取消请求与终态分开记录，终态由仲裁决定且只写一次。
+- 权威状态来自业务库；Harness 事件通过幂等映射更新，不能同时维护两个互相覆盖的权威状态机。
+- 业务写工具接受受限能力凭据或等价服务端上下文，绑定企业、资源、动作、有效期；执行时再次校验撤权、批准状态与幂等键。
+
+## 4. 原型验证矩阵
+
+每项输出可运行命令、输入夹具、依赖/版本、预期与实际、日志/trace、限制及结论。均使用合成数据；真实模型冒烟需负责人确认预算和可用凭据，未运行必须标记 blocked，不能用 mock 结果代替。
+
+| 验证项 | 实验 | 通过标准 | 任务 |
+| --- | --- | --- | --- |
+| 官网基线 | 中英文、URL 参数/本地语言偏好、导航、联系入口、备案、桌面/移动截图 | 文案/链接/SEO 无意外差异；固定浏览器与字体后关键区截图无未解释差异 | A-02 |
+| Harness 启动 | 干净安装锁定版本、Profile 加载、自有只读工具调用及卸载/重载 | 命令可复现；卸载不残留工具；不修改上游核心 | A-04/A-06 |
+| 流与取消 | 创建执行、消费流、断连重连、取消、上游超时/限流 | 最终状态明确；事件有序去重；取消后没有新工具调用；在冻结时限内停止或明确报错 | A-06 |
+| 任务恢复 | 执行中杀死 Worker/Host、重启，双 Worker 抢占同一任务 | 租约可回收；终态唯一；可重试任务不丢；副作用用模拟目标记录只发生一次 | A-07 |
+| 企业与工具隔离 | 两企业同名文档、伪造 tenantId、越权 runId、撤权后调用 | 无跨企业内容/会话/下载；被拒工具无副作用；服务端可追踪拒绝原因 | A-08 |
+| 基础部署 | API/Host 独立启动，停 Host，代理流式请求及回滚 | 官网持续可用；业务 AI 请求有明确失败；无凭据进入前端产物或日志；可还原上一版本 | A-09 |
+| 资源与预算 | 限定并发、超时、模型调用量；上传超大/错误格式 | 限额确实阻止继续接入；错误可解释；记录实测吞吐、延迟和费用范围 | A-05/A-09 |
+
+建议固定截图视口 1440×900 与 390×844；视觉差异不能通过更新截图自动放行。动态时间等可声明掩码，但不得掩盖正文和关键交互。
+
+## 5. 指标冻结
+
+A-05 输出 `docs/refactor/acceptance-targets.md`，由产品、架构、测试负责人批准；包含负载（建议先 5 个并发运行）、样本大小、模型、部署资源、首 token/总耗时 P95、请求超时、取消上限、恢复上限、单次费用及每日预算。数值为待验证目标，不是性能承诺。A-06—09 执行前必须冻结，修改需保留旧值、原因及重测记录。
+
+隔离违规、凭据泄露、重复业务副作用和官网内容回归的允许数量为 0。C 阶段业务指标在 C-01 冻结，不能以 A 阶段性能实验替代 RAG 质量验收。
+
+## 6. A 阶段出口清单
+
+- [ ] A-01：所有待保留功能和分支差异都有处置归属，无未确认覆盖。
+- [ ] A-02：官网内容/视觉/交互/SEO 基线可复现，已由产品确认。
+- [ ] A-03：协作规则、角色、任务入口与 PR 流程已试走一次。
+- [ ] A-04/A-05：依赖版本、8 项 ADR、运行与验收指标已审查并冻结。
+- [ ] A-06：真实 Harness 集成、只读工具、流、取消与失败用例有证据。
+- [ ] A-07：任务竞争、中断、恢复、取消竞争与幂等有证据。
+- [ ] A-08：两企业与越权测试通过，无默认 owner 权限直接暴露给终端用户。
+- [ ] A-09：官网故障隔离、部署和回滚原型通过，密钥未进入仓库。
+- [x] A-10：Go/No-Go 结论、遗留风险、B 阶段任务调整及负责人已记录。
+
+2026-10-29：A-01—A-09已按实测和用户验收回填；A-10已由用户明确批准Go，证据与原型限制见[阶段评审](phase-a-review.md)。勾选不表示B—E产品功能已交付。
+
+## 7. 依据
+
+- [Harness 架构](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/architecture.zh.md)：Profile、插件、Agent 与会话边界。
+- [Harness 工作流](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/workflow/workflow/README.zh.md)：原型须核实所锁版本的恢复与后台执行能力。
+- 本地曾检查的上游副本版本为 `86a4022`；它只是研究参考，不是本项目批准的依赖版本。A-04 必须重新核验。
+
+## A-10后的兼容增量：CLI
+
+用户要求后续产品业务功能CLI化；新增[ADR-009](../adr/ADR-009-cli-native-capabilities.md)和[CLI规范](cli-native.md)。目标增加apps/cli与共享能力契约，既有A阶段指标/验收不变；当前基础位于tools/nuochong-cli。

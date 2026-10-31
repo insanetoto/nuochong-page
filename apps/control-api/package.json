@@ -1,0 +1,24 @@
+{
+  "name": "@nuochong/oa-control-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.21.0"
+  },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "worker": "node src/worker-main.mjs",
+    "migrate": "node src/migrate.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "fastify": "5.12.7",
+    "pg": "8.23.1",
+    "@deepseek-ai/dsh": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-sdk-client": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-tools": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-sdk-jsonrpc-server": "0.2.1-rc.2",
+    "@deepseek-ai/dsh-sdk-protocol": "0.2.1-rc.2"
+  }
+}

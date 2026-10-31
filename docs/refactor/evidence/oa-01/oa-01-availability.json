@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "nativeStoppedStatus": 502,
+  "productionWebsite": 200,
+  "testWebsite": 200,
+  "retiredRoutes": 7,
+  "modelCalls": 0
+}

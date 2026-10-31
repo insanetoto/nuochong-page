@@ -1,0 +1,19 @@
+{
+  "time": "2026-10-30T02:39:39.426Z",
+  "node": "v24.21.0",
+  "platform": "darwin",
+  "provider": "deepseek-official",
+  "model": "deepseek-v4-flash",
+  "scope": "Real API + PostgreSQL + restricted official SDK, separate owned process per turn",
+  "cost": "unknown; no verified billing amount",
+  "submittedTurns": 5,
+  "passed": true,
+  "realTokenSSE": true,
+  "realDefaultModel": true,
+  "readonlyToolAudited": true,
+  "newHostSessionRestored": true,
+  "realCancellation": true,
+  "interruptedSessionRestored": true,
+  "sameActorPrivateHistory": true,
+  "providerRequestCount": "not individually metered; tool continuation requests may exceed submitted turns"
+}

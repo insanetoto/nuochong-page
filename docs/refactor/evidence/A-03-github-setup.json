@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-29",
+  "milestones": [
+    {
+      "phase": "A",
+      "milestoneNumber": 1,
+      "title": "A阶段：架构验证",
+      "issues": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "phase": "B",
+      "milestoneNumber": 2,
+      "title": "B阶段：真实业务与AI基础",
+      "issues": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ]
+    }
+  ],
+  "rulesets": {
+    "state": "readable-empty",
+    "reason": "user made repository public; GET rulesets returned [] on 2026-10-29"
+  },
+  "branchProtection": {
+    "state": "enabled-and-readback-verified",
+    "branches": {
+      "main": {
+        "contexts": [
+          "Build (worker)",
+          "Build (static)",
+          "Playwright E2E"
+        ],
+        "strict": true,
+        "requiredApprovals": 0,
+        "enforceAdmins": true,
+        "allowForcePush": false,
+        "allowDelete": false,
+        "conversationResolution": true
+      },
+      "test": {
+        "contexts": [
+          "Playwright E2E"
+        ],
+        "strict": true,
+        "requiredApprovals": 0,
+        "enforceAdmins": true,
+        "allowForcePush": false,
+        "allowDelete": false,
+        "conversationResolution": true
+      },
+      "refactor/integration": {
+        "contexts": [
+          "Build (worker)",
+          "Build (static)",
+          "Playwright E2E"
+        ],
+        "strict": true,
+        "requiredApprovals": 0,
+        "enforceAdmins": true,
+        "allowForcePush": false,
+        "allowDelete": false,
+        "conversationResolution": true
+      }
+    }
+  },
+  "project": {
+    "state": "not-created",
+    "reason": "personal Project授权与成员尚未落实，现用Issue总览"
+  },
+  "ownerRouting": [
+    "insanetoto"
+  ],
+  "enforcementClaim": "3个分支已启用强制保护；test暂只要求其实际存在的Playwright E2E，其余双构建门禁待B-06同步工作流",
+  "integrationBranch": {
+    "name": "refactor/integration",
+    "baseSha": "57ded3af9ec1d319471046a7e209185acce801d8"
+  },
+  "reviewPolicyOverride": {
+    "date": "2026-10-29",
+    "authority": "user explicitly instructed 不需要非作者审核",
+    "requiredApprovals": 0,
+    "retained": [
+      "PR required",
+      "required CI",
+      "strict branch freshness",
+      "conversation resolution",
+      "no force pushes/deletions",
+      "enforce admins"
+    ]
+  }
+}
