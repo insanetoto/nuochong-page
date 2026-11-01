@@ -32,9 +32,6 @@ try {
     assert.equal(await page.getByRole('dialog').count(), 0);
     assert.equal(await page.getByRole('textbox', { name: /API Key/i }).count(), 0);
     phase = 'model-composer';
-    const newChat = page.getByRole('button', { name: /^新会话$|^New chat$|^New session$/i }).first();
-    phase = 'new-conversation';
-    if (await newChat.count()) await newChat.click();
     const composer = page.locator('[data-composer-input][contenteditable="true"]:visible').first();
     await composer.waitFor({ state: 'visible', timeout: 60000 });
     phase = 'composer-fill';
@@ -42,7 +39,7 @@ try {
     phase = 'composer-submit';
     await page.getByRole('button', { name: /^发送消息$|^Send message$/i }).click();
     phase = 'model-response';
-    await page.getByText(/^DEMO_MODEL_READY[.!。]?$/).waitFor({ state: 'visible', timeout: 120000 });
+    await page.locator('[data-conversation-region="chat"]').getByText(/^DEMO_MODEL_READY[.!。]?$/).waitFor({ state: 'visible', timeout: 120000 });
   }
   phase = 'entry-form';
   if (process.env.OA_ENTRY_ORIGIN) {
