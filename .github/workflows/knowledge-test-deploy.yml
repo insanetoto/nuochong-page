@@ -16,7 +16,7 @@ jobs:
         id: pg-cache
         with:
           path: ${{ runner.temp }}/postgres-runtime.tgz
-          key: knowledge-pg17.11-ubuntu24-x64-v1
+          key: knowledge-pg17.11-ubuntu24-x64-v2
       - name: Build relocatable private PostgreSQL runtime
         if: steps.pg-cache.outputs.cache-hit != 'true'
         run: |
@@ -25,7 +25,7 @@ jobs:
           (cd "$RUNNER_TEMP" && sha256sum -c postgresql.sha256)
           tar -xjf "$RUNNER_TEMP/postgresql-17.11.tar.bz2" -C "$RUNNER_TEMP"
           cd "$RUNNER_TEMP/postgresql-17.11"
-          ./configure --prefix=/opt/nuochong-pg --without-readline --without-zlib --without-icu --without-lz4 --without-zstd > "$RUNNER_TEMP/pg-configure.log"
+          CFLAGS=-O2 ./configure --prefix=/opt/nuochong-pg --without-readline --without-zlib --without-icu --without-lz4 --without-zstd > "$RUNNER_TEMP/pg-configure.log"
           make -s -j4 > "$RUNNER_TEMP/pg-build.log"
           make -s install DESTDIR="$RUNNER_TEMP/pg-stage" > "$RUNNER_TEMP/pg-install.log"
           tar -czf "$RUNNER_TEMP/postgres-runtime.tgz" -C "$RUNNER_TEMP/pg-stage/opt/nuochong-pg" .
@@ -33,7 +33,7 @@ jobs:
         if: steps.pg-cache.outputs.cache-hit != 'true'
         with:
           path: ${{ runner.temp }}/postgres-runtime.tgz
-          key: knowledge-pg17.11-ubuntu24-x64-v1
+          key: knowledge-pg17.11-ubuntu24-x64-v2
       - name: Stage isolated service and initialize authorized demonstration account
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
