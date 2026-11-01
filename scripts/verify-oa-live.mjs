@@ -35,7 +35,8 @@ try {
     const newChat = page.getByRole('button', { name: /^新会话$|^New chat$|^New session$/i }).first();
     phase = 'new-conversation';
     if (await newChat.count()) await newChat.click();
-    const composer = page.locator('[data-composer-input]:visible').first();
+    const composer = page.locator('[data-composer-input][contenteditable="true"]:visible').first();
+    await composer.waitFor({ state: 'visible', timeout: 60000 });
     phase = 'composer-fill';
     await composer.fill('请不要使用任何工具，只回复 DEMO_MODEL_READY');
     phase = 'composer-submit';
