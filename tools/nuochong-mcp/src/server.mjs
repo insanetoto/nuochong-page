@@ -5,7 +5,7 @@ import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprot
 import { commands, CONTRACT_VERSION } from '../../nuochong-cli/src/registry.mjs';
 import { configuration, plan, request, jsonResult, CliError } from '../../nuochong-cli/src/client.mjs';
 // The local operator chooses exposure; the API remains the authorization authority.
-export const permitted=commands.filter(c=>!c.public && !c.streaming && !c.admin && c.scope!=='auth:manage' && (c.sideEffect==='none'||['runs.create','runs.cancel','sessions.create'].includes(c.id)));
+export const permitted=commands.filter(c=>!c.public && !c.streaming && !c.admin && c.scope!=='auth:manage' && (c.sideEffect==='none'||['runs.create','runs.cancel','sessions.create','knowledge.answers.ask.v1','knowledge.compilations.create.v1','knowledge.jobs.cancel.v1'].includes(c.id)));
 export function createMcp(env=process.env){
  const config=configuration({},env);
  const ids=env.NUOCHONG_MCP_COMMANDS?.split(',');
@@ -16,7 +16,7 @@ export function createMcp(env=process.env){
  server.setRequestHandler(ListToolsRequestSchema,async()=>({tools:exposed.map(c=>({name:c.id,title:c.argv.join(' '),
   description:`OA contract ${CONTRACT_VERSION}. ${c.sideEffect}. Calls the authorized company API; no automatic retry.`,
   inputSchema:c.inputSchema,outputSchema:c.outputSchema,
-  annotations:{readOnlyHint:c.sideEffect==='none',destructiveHint:c.id==='runs.cancel',idempotentHint:c.idempotency==='read'||c.idempotency==='server-idempotent'||c.id==='runs.create',openWorldHint:true},
+  annotations:{readOnlyHint:c.sideEffect==='none',destructiveHint:c.id==='runs.cancel',idempotentHint:c.idempotency==='read'||c.idempotency==='required-client-key'||c.idempotency==='server-idempotent'||c.id==='runs.create',openWorldHint:true},
   _meta:{commandId:c.id,contractVersion:CONTRACT_VERSION}}))}));
  server.setRequestHandler(CallToolRequestSchema,async(req,extra)=>{
   const command=exposed.find(c=>c.id===req.params.name);

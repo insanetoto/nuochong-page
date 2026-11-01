@@ -4,7 +4,7 @@ import { dirname,resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root=fileURLToPath(new URL('..',import.meta.url));
 export class HarnessExecution {
-  constructor(run,{stateRoot,apiKey,onDelta=()=>{},onTool=()=>{}}){
+  constructor(run,{stateRoot,apiKey,maxTokens=512,onDelta=()=>{},onTool=()=>{}}){
     this.toolCalls=[];this.run=run;this.onDelta=onDelta;this.onTool=onTool;
     const home=resolve(stateRoot,run.owner_id,run.session_id);
     for(const directory of ['workspace','tmp','native-cache'])mkdirSync(resolve(home,directory),{recursive:true,mode:0o700});
@@ -14,7 +14,7 @@ export class HarnessExecution {
       '- id: llm-deepseek\n  config:\n    apiKeyEnv: DEEPSEEK_API_KEY\n    retryPolicy:\n      mode: normal\n      maxRetries: 0\n'+
       `- insert:\n    - id: oa-stream-bridge\n      name: ${JSON.stringify(resolve(root,'src/stream-bridge.mjs'))}\n`+
       (run.config.clockTool?`    - id: oa-readonly-clock\n      name: ${JSON.stringify(resolve(root,'src/clock-tool.mjs'))}\n`:''),{mode:0o600});
-    this.harness=new DeepSeekHarness({profile:'sdk-minimal',patches:[patch],provider:'deepseek-official',model:run.config.model,maxTokens:512,
+    this.harness=new DeepSeekHarness({profile:'sdk-minimal',patches:[patch],provider:'deepseek-official',model:run.config.model,maxTokens,
       dshHome:resolve(home,'dsh'),cwd:resolve(home,'workspace'),processCwd:root,
       env:{PATH:dirname(process.execPath)+':'+(process.env.PATH??''),HOME:home,TMPDIR:resolve(home,'native-cache'),LANG:'en_US.UTF-8',TERM:'dumb',
         DEEPSEEK_API_KEY:apiKey??'',DSH_SYSTEM_PROMPT:'You are the company OA assistant. Only the explicitly registered read-only tools are permitted.'},
