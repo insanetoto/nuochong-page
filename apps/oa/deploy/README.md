@@ -64,3 +64,12 @@ sudo -u deploy bash /home/deploy/.local/share/nuochong-oa-test/current/apps/oa/d
 ```
 
 按提示输入账号与密码，密码输入时不回显。脚本仅在服务器生成带随机盐的 scrypt 校验值，保存在隔离状态目录的 `test-login.json`（0600），并在本机请求网关确认可取得原生会话；不会输出密码或原生启动 token。配置可重新执行以更换账号密码。测试账号拥有原生 Harness 管理员权限，仅供测试，不等同普通员工身份；不要作为全员入口。连续错误请求有全局短期限制，因测试网关位于本机代理之后，并非按用户或IP独立限流。
+
+
+## 公司模型演示配置（2026-11-01）
+
+`configure-demo.mjs` 是管理员部署工具，从 stdin 接收私有 JSON `apiKey`，按官方格式写入状态目录 `.credentials.yaml`（0600），在官方 web Profile patch 禁用账号、模型 Key、搜索 Key 和插件安装界面，以及非公司模型 provider。不修改上游核心，不影响账号网关。
+
+通过 `Verify live native OA` 的 `setup_demo=true` 调用，临时 Repository Secret 为 `OA_DEMO_API_KEY`；服务器配置并重启后，工作流检查空浏览器无引导、原生认证和 WebSocket，并发送一次合成提示验证公司模型。完成后删除该临时 Secret，凭据仅在服务器私有持久状态保留。Profile 更改随状态保留，不依赖官网版本。
+
+这些是封闭管理员演示的 UI/模型选择，**不是员工权限沙箱**。原生 owner/本地同 OS 用户可能访问运行配置和凭据，不能把该账号开放给不可信公众。未来员工产品壳通过受限控制 API 接入。缺失模型凭据时不提供个人 Key 引导，恢复由管理员处理；现有原生错误文案仍由上游定义。
