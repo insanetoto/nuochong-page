@@ -1,4 +1,5 @@
 import {registerProduct} from './product.mjs';
+import {registerProductWeb} from './product-web.mjs';
 import Fastify from 'fastify';
 import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
@@ -106,6 +107,7 @@ export function createApp(pool,options={}){
       return reply.code(command.success[0]).send(data);
     }});
   }
+  registerProductWeb(app);
   const product=registerProduct(app,{pool,identity,...options.product});
   return {app,store,identity,product};
 }

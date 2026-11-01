@@ -1,7 +1,7 @@
 import {randomUUID} from 'node:crypto';
 import {requireThat} from '../../apps/control-api/src/errors.mjs';
 const department=r=>({id:r.id,name:r.name,parentId:r.parent_id??'',active:r.active,revision:r.revision});
-export async function memberDTO(db,id){const p=(await db.query('SELECT p.*,m.revision FROM product_members m JOIN principals p ON p.id=m.principal_id WHERE p.id=$1',[id])).rows[0];requireThat(p,404,'NOT_FOUND');return {principalId:p.id,name:p.name,active:p.active,departmentIds:(await db.query('SELECT department_id FROM product_memberships WHERE principal_id=$1 ORDER BY department_id',[id])).rows.map(r=>r.department_id),revision:p.revision};}
+export async function memberDTO(db,id){const p=(await db.query('SELECT p.*,m.revision FROM product_members m JOIN principals p ON p.id=m.principal_id WHERE p.id=$1',[id])).rows[0];requireThat(p,404,'NOT_FOUND');return {principalId:p.id,name:p.name,kind:p.kind,active:p.active,departmentIds:(await db.query('SELECT department_id FROM product_memberships WHERE principal_id=$1 ORDER BY department_id',[id])).rows.map(r=>r.department_id),revision:p.revision};}
 export class OrganizationService {
  constructor(kernel){this.kernel=kernel;}
  async memberships(db,id,departments){
