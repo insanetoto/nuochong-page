@@ -8,6 +8,12 @@ on:
     branches: [test]
     paths: ['apps/oa/**', '.github/workflows/oa-server-prepare.yml']
   workflow_dispatch:
+    inputs:
+      target:
+        type: choice
+        description: Test service to deploy
+        default: native
+        options: [native, knowledge]
 
 permissions:
   contents: read
@@ -17,7 +23,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  knowledge:
+    if: github.event_name == 'workflow_dispatch' && inputs.target == 'knowledge'
+    uses: ./.github/workflows/knowledge-test-deploy.yml
+    secrets: inherit
   prepare:
+    if: github.event_name != 'workflow_dispatch' || inputs.target != 'knowledge'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:

@@ -1,0 +1,5 @@
+import {readFileSync,writeFileSync} from 'node:fs';import {join} from 'node:path';import {createRequire} from 'node:module';
+const native=process.env.NUOCHONG_NATIVE_STATE,target=process.env.NUOCHONG_KB_STATE;if(!native||!target)throw new Error('Private server state required');
+let key;try{const env=readFileSync(join(native,'model.env'),'utf8');key=/^DEEPSEEK_API_KEY=(.+)$/m.exec(env)?.[1]?.trim().replace(/^['"]|['"]$/g,'');}catch{ /* The native profile may persist its model reference instead. */ }
+if(!key){const require=createRequire(join(process.env.HOME,'.local/share/nuochong-oa-test/current/apps/oa/package.json'));const yaml=require('yaml');const refs=yaml.parse(readFileSync(join(native,'.credentials.yaml'),'utf8'))?.refs;key=refs?.DEEPSEEK_API_KEY;}
+if(typeof key!=='string'||!key||/[\r\n\s'"\\]/.test(key))throw new Error('Existing server model credential is unavailable');writeFileSync(join(target,'model.env'),'DEEPSEEK_API_KEY='+key+'\n',{mode:0o600});console.log('Existing server model credential configured privately.');

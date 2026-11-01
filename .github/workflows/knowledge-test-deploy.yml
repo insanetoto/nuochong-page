@@ -1,0 +1,75 @@
+name: Knowledge isolated test deployment
+on:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    concurrency:
+      group: oa-test-server-deploy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.21.0
+      - uses: actions/cache@v5
+        id: pg-cache
+        with:
+          path: ${{ runner.temp }}/postgres-runtime.tgz
+          key: knowledge-pg17.11-ubuntu24-x64-v1
+      - name: Build relocatable private PostgreSQL runtime
+        if: steps.pg-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -fsSL --retry 3 https://ftp.postgresql.org/pub/source/v17.11/postgresql-17.11.tar.bz2 -o "$RUNNER_TEMP/postgresql-17.11.tar.bz2"
+          curl -fsSL --retry 3 https://ftp.postgresql.org/pub/source/v17.11/postgresql-17.11.tar.bz2.sha256 -o "$RUNNER_TEMP/postgresql.sha256"
+          (cd "$RUNNER_TEMP" && sha256sum -c postgresql.sha256)
+          tar -xjf "$RUNNER_TEMP/postgresql-17.11.tar.bz2" -C "$RUNNER_TEMP"
+          cd "$RUNNER_TEMP/postgresql-17.11"
+          ./configure --prefix=/opt/nuochong-pg --without-readline --without-zlib --without-icu --without-lz4 --without-zstd --without-ssl > "$RUNNER_TEMP/pg-configure.log"
+          make -s -j4 > "$RUNNER_TEMP/pg-build.log"
+          make -s install DESTDIR="$RUNNER_TEMP/pg-stage" > "$RUNNER_TEMP/pg-install.log"
+          tar -czf "$RUNNER_TEMP/postgres-runtime.tgz" -C "$RUNNER_TEMP/pg-stage/opt/nuochong-pg" .
+      - name: Stage isolated service and initialize authorized demonstration account
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          KBV0_BOOTSTRAP_JSON: ${{ secrets.KBV0_BOOTSTRAP_JSON }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/oa_deploy_key
+          chmod 600 ~/.ssh/oa_deploy_key
+          ssh-keyscan -T 10 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+          remote_base=.local/share/nuochong-knowledge-test
+          ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "mkdir -p $remote_base/releases/$GITHUB_SHA $remote_base/postgres/17.11 .local/state/nuochong-knowledge-test && chmod 700 .local/state/nuochong-knowledge-test"
+          tar -czf "$RUNNER_TEMP/knowledge-source.tgz" apps/control-api/src apps/control-api/package.json apps/control-api/package-lock.json apps/control-api/deploy/product apps/product-web packages/platform plugins tools/nuochong-cli/src public/logo-mark.svg apps/oa/deploy/gateway.mjs apps/oa/deploy/service.mjs
+          scp -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes "$RUNNER_TEMP/knowledge-source.tgz" "$RUNNER_TEMP/postgres-runtime.tgz" deploy@"$DEPLOY_HOST":"$remote_base/"
+          printf '%s' "$KBV0_BOOTSTRAP_JSON" | ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes deploy@"$DEPLOY_HOST" 'umask 077; cat > .local/state/nuochong-knowledge-test/bootstrap-input.json'
+          ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "bash -s -- $GITHUB_SHA" <<'REMOTE'
+          set -euo pipefail
+          base="$HOME/.local/share/nuochong-knowledge-test"
+          if ! test -x "$base/postgres/17.11/bin/postgres"; then tar -xzf "$base/postgres-runtime.tgz" -C "$base/postgres/17.11"; fi
+          tar -xzf "$base/knowledge-source.tgz" -C "$base/releases/$1"
+          bash "$base/releases/$1/apps/control-api/deploy/product/install-user.sh" "$1"
+          REMOTE
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Real public test browser, server worker and model smoke
+        env:
+          KBV0_BOOTSTRAP_JSON: ${{ secrets.KBV0_BOOTSTRAP_JSON }}
+        run: node apps/control-api/deploy/product/verify-live.mjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: knowledge-test-live-evidence
+          path: apps/control-api/outputs/knowledge-live*
+          retention-days: 14
+      - name: Cleanup temporary credentials and SSH identity
+        if: always()
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          if test -s ~/.ssh/oa_deploy_key; then ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" 'rm -f .local/state/nuochong-knowledge-test/bootstrap-input.json .local/state/nuochong-knowledge-test/product-bootstrap-access.json' || true; fi
+          rm -f ~/.ssh/oa_deploy_key
