@@ -79,3 +79,15 @@ test("OA login submits the administrator test account to the native gateway", as
   await page.getByRole("button", { name: "登录 OA" }).click();
   await expect(page.getByRole("heading", { name: "Synthetic native OA" })).toBeVisible();
 });
+
+test('AI-native homepage distinguishes the available knowledge trial from planned products in both languages',async({page})=>{
+ for(const lang of ['zh','en']){
+  await page.setViewportSize({width:390,height:844});await page.goto('/?lang='+lang,{waitUntil:'networkidle'});
+  const cards=page.locator('#product .m-product-card');await expect(cards).toHaveCount(3);
+  await expect(cards.nth(0).locator('a')).toHaveAttribute('href','/product/kb');await expect(cards.nth(0).locator('.m-state')).toHaveText(lang==='zh'?'测试版可体验':'Test release available');
+  await expect(cards.nth(1).locator('a')).toHaveAttribute('href','/product/ai-assistant');await expect(cards.nth(2).locator('a')).toHaveAttribute('href','/product/te');for(const index of [1,2])await expect(cards.nth(index).locator('.m-state')).toHaveText(lang==='zh'?'规划建设中':'Planned');
+  await expect(page.locator('.m-architecture')).toContainText('DeepSeek Harness');await expect(page.locator('.m-architecture')).toContainText('MCP');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(await page.locator('img').evaluateAll(images=>images.every(image=>(image as HTMLImageElement).naturalWidth>0))).toBe(true);
+ }
+ await page.getByRole('button',{name:'中文',exact:true}).click();await expect(page.locator('main')).toHaveAttribute('data-language','zh');await page.reload();await expect(page.locator('main')).toHaveAttribute('data-language','zh');await page.getByRole('button',{name:'EN',exact:true}).click();await expect(page.locator('main')).toHaveAttribute('data-language','en');await expect(page.locator('html')).toHaveAttribute('lang','en');
+});

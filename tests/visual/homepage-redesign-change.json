@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-01",
+  "authorization": {
+    "issue": 90,
+    "userRequest": "基于公司的三个产品，重新设计官网主页，重点体现三个产品、产品价值、试用入口，AI原生以及可插拔的插件式"
+  },
+  "scope": "Homepage content/layout and matching SEO; brand assets/contact identity unchanged",
+  "visualAcceptance": "Human visual acceptance pending; historical A-02 images retained, no approved Linux pixel baseline claimed",
+  "sha256": {
+    "app/HomePage.tsx": "1db4a92b9740072493b910af8f1199445c596c365fb2a3b8d9ccd79d1b6ea610",
+    "app/layout.tsx": "5659a75ea2be7fa437f7e81fc0c24ab6fa64ccbe5117072953809bc6ee61546f",
+    "app/page.tsx": "2eb8d5eb8e7bf123fcb099fedfc58941ff46ba59cc3b9de13342fdd33151a5a0",
+    "static-src/index.html": "063f9eb1140e619179b6a9cf86617319f211990143a95747efecb9275d2c406e",
+    "app/marketing.css": "db394bd44817f241ce1192fee5e4f590dc9b894caa303a882eaf6f9652af2a7f"
+  }
+}
