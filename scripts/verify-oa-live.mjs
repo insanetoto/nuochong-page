@@ -63,7 +63,7 @@ try {
   const entry = await fetch('https://nuochong-company-homepage-test.76gzwtk9sb.workers.dev/oa', { redirect: 'manual', signal: AbortSignal.timeout(15000) });
   assert.equal(entry.status, 307);
   assert.equal(entry.headers.get('location'), 'https://www.nuochong.net/oa-test/');
-  console.log(JSON.stringify({ passed: true, scope: 'Live HTTPS native UI and authenticated WebSocket', anonymousStatus: 401, tokenRemoved: true, secureScopedCookie: true, testEntryRedirect: 307, entryForm: Boolean(process.env.OA_ENTRY_ORIGIN), managedDemoNoOnboarding: process.env.OA_SETUP_DEMO === 'true', accountLogin: process.env.OA_SETUP_ACCOUNT === 'true', pageErrors: 0, modelCalls: process.env.OA_SETUP_DEMO === 'true' ? 1 : 0 }));
+  console.log(JSON.stringify({ passed: true, scope: 'Live HTTPS native UI and authenticated WebSocket', anonymousStatus: 401, tokenRemoved: true, secureScopedCookie: true, testEntryRedirect: 307, entryForm: Boolean(process.env.OA_ENTRY_ORIGIN), managedDemoNoOnboarding: process.env.OA_SETUP_DEMO === 'true', accountLogin: process.env.OA_SETUP_ACCOUNT === 'true', pageErrors: 0, modelSmokePrompts: process.env.OA_SETUP_DEMO === 'true' ? 1 : 0, modelCalls: process.env.OA_SETUP_DEMO === 'true' ? 'not-measured' : 0 }));
 } catch (error) {
   if (page && process.env.OA_SETUP_DEMO === 'true') {
     try { console.error(JSON.stringify({ diagnostic: 'managed-demo', phase, errorType: error.name,
