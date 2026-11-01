@@ -38,6 +38,8 @@ jobs:
         run: npm test --prefix apps/control-api
       - name: Real restricted SDK initialization, no model credential or call
         run: node apps/control-api/src/probe-sdk.mjs
+      - name: First-party plugin composition
+        run: node --test packages/platform/test/*.test.mjs
       - name: Existing CLI protocol regressions and independent package
         run: |
           node --test tools/nuochong-cli/test/*.test.mjs
