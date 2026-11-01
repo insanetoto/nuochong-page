@@ -6,11 +6,14 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { createServer } from 'node:net';
+import { randomBytes, scryptSync } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 import { chromium } from '@playwright/test';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const state = mkdtempSync(resolve(tmpdir(), 'nuochong-oa-preview-'));
+const accountMode = process.env.OA_PROBE_ACCOUNT === '1';
+if (accountMode && process.env.OA_PROBE_NGINX !== '1') throw new Error('Account probe requires the isolated HTTPS proxy.');
 const probe = createServer(); await new Promise((done) => probe.listen(0, '127.0.0.1', done));
 const port = probe.address().port; await new Promise((done) => probe.close(done));
 let nginx; let publicUrl;
@@ -27,9 +30,17 @@ if (process.env.OA_PROBE_NGINX === '1') {
   writeFileSync(resolve(state, 'nginx.conf'), `pid ${state}/nginx.pid; error_log ${state}/error.log crit; events {} http { access_log off; server { listen 127.0.0.1:${proxyPort} ssl; server_name localhost; ssl_certificate ${state}/tls.crt; ssl_certificate_key ${state}/tls.key; ${location} } }`);
   nginx = spawn('nginx', ['-p', state, '-c', resolve(state, 'nginx.conf'), '-g', 'daemon off;'], { stdio: 'ignore' });
 }
-const child = spawn(process.execPath, [resolve(root, 'start.mjs'), '--port', String(port)], {
+let nativePort;
+if (accountMode) {
+  await new Promise((done) => probe.listen(0, '127.0.0.1', done));
+  nativePort = probe.address().port; await new Promise((done) => probe.close(done));
+  const salt = randomBytes(16);
+  writeFileSync(resolve(state, 'test-login.json'), JSON.stringify({ username: 'synthetic-user', salt: salt.toString('hex'), hash: scryptSync('synthetic-password', salt, 64).toString('hex') }), { mode: 0o600 });
+}
+const child = spawn(process.execPath, accountMode ? [resolve(root, 'deploy/service.mjs')] : [resolve(root, 'start.mjs'), '--port', String(port)], {
   detached: true, stdio: ['ignore', 'pipe', 'pipe'], env: { PATH: process.env.PATH, NUOCHONG_OA_HOME: state,
-    ...(publicUrl && { NUOCHONG_OA_PUBLIC_URL: publicUrl.href }) },
+    ...(publicUrl && { NUOCHONG_OA_PUBLIC_URL: publicUrl.href }),
+    ...(accountMode && { NUOCHONG_OA_LISTEN_PORT: String(port), NUOCHONG_OA_INTERNAL_PORT: String(nativePort) }) },
 });
 let log = ''; let browser; let failure;
 const capture = (bytes) => { log = (log + bytes.toString()).slice(-100_000); };
@@ -42,6 +53,10 @@ try {
     // Startup output may contain terminal escape sequences.
     // eslint-disable-next-line no-control-regex
     const matches = log.match(/https?:\/\/[^\s\u001b]+/g) ?? [];
+    if (accountMode && existsSync(resolve(state, 'launch-url'))) {
+      const { readFileSync } = await import('node:fs');
+      matches.push(readFileSync(resolve(state, 'launch-url'), 'utf8').trim());
+    }
     startup = matches.map((value) => { try { return new URL(value); } catch { return null; } })
       .find((url) => url?.origin === (publicUrl?.origin ?? `http://127.0.0.1:${port}`) && url.search);
     if (startup) break;
@@ -55,7 +70,11 @@ try {
   let receivedFrames = 0;
   page.on('websocket', (socket) => socket.on('framereceived', () => receivedFrames++));
   const errors = []; page.on('pageerror', (error) => errors.push(error.name));
-  await page.goto(startup.href, { waitUntil: 'domcontentloaded' });
+  if (accountMode) {
+    const response = await page.context().request.post(new URL('__login', publicUrl).href, { form: { username: 'synthetic-user', password: 'synthetic-password' }, maxRedirects: 0 });
+    assert.equal(response.status(), 303);
+    await page.goto(publicUrl.href, { waitUntil: 'domcontentloaded' });
+  } else await page.goto(startup.href, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => document.querySelector('#root')?.children.length > 0);
   assert.match(await page.title(), /DeepSeek Harness/);
   await page.waitForFunction(() => (document.body.textContent ?? '').trim().length > 20);
@@ -74,7 +93,7 @@ try {
   mkdirSync(resolve(root, 'outputs'), { recursive: true });
   await page.screenshot({ path: resolve(root, 'outputs/oa-home.png'), fullPage: true });
   Object.assign(report, { passed: true, title: await page.title(), browser: browser.version(), launchTokenRemoved: true,
-    rendered: true, pageErrors: 0, modelCalls: 0 });
+    rendered: true, accountLogin: accountMode, pageErrors: 0, modelCalls: 0 });
 } catch (error) {
   failure = String(error.message).replace(/https?:\/\/[^\s]+/g, '<redacted-url>');
   Object.assign(report, { passed: false, failure, startupDiagnostic: log.replace(/https?:\/\/[^\s]+/g, '<redacted-url>').slice(-4000) });

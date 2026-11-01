@@ -59,16 +59,17 @@ test.describe("homepage navigation and OA links", () => {
 });
 
 
-test("OA login validates a private launch link and forwards only to the native endpoint", async ({ page }) => {
+test("OA login submits the administrator test account to the native gateway", async ({ page }) => {
   await page.goto("/oa-login.html");
-  const input = page.getByLabel("启动链接或凭据");
-  await input.fill("https://example.com/oa-test/?token=synthetic_token_123456789012345");
+  await page.route("https://www.nuochong.net/oa-test/__login", async route => {
+    expect(route.request().method()).toBe("POST");
+    const form = new URLSearchParams(route.request().postData() ?? "");
+    expect(form.get("username")).toBe("synthetic-user");
+    expect(form.get("password")).toBe("synthetic-password");
+    await route.fulfill({ status: 200, contentType: "text/html", body: "<h1>Synthetic native OA</h1>" });
+  });
+  await page.getByLabel("账号").fill("synthetic-user");
+  await page.getByLabel("密码").fill("synthetic-password");
   await page.getByRole("button", { name: "登录 OA" }).click();
-  await expect(page.getByRole("alert")).toContainText("有效");
-  await expect(page).toHaveURL(/\/oa-login\.html$/);
-  await page.route("https://www.nuochong.net/oa-test/**", route => route.fulfill({ status: 200, contentType: "text/html", body: "<h1>Synthetic native OA</h1>" }));
-  await input.fill("https://www.nuochong.net/oa-test/?token=synthetic_token_123456789012345");
-  await page.getByRole("button", { name: "登录 OA" }).click();
-  await expect(page).toHaveURL("https://www.nuochong.net/oa-test/?token=synthetic_token_123456789012345");
   await expect(page.getByRole("heading", { name: "Synthetic native OA" })).toBeVisible();
 });

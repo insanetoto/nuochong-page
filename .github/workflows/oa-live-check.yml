@@ -10,6 +10,10 @@ on:
         type: choice
         options: [test, production]
         default: test
+      setup_account:
+        description: 使用临时 Actions Secrets 初始化测试管理员账号
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -29,11 +33,18 @@ jobs:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           OA_ENTRY_SITE: ${{ inputs.website || 'test' }}
+          OA_SETUP_ACCOUNT: ${{ inputs.setup_account || false }}
+          OA_TEST_LOGIN_USER: ${{ secrets.OA_TEST_LOGIN_USER }}
+          OA_TEST_LOGIN_PASSWORD: ${{ secrets.OA_TEST_LOGIN_PASSWORD }}
         run: |
           install -d -m 700 ~/.ssh
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/oa_live_key
           chmod 600 ~/.ssh/oa_live_key
           ssh-keyscan -T 10 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+          if [ "$OA_SETUP_ACCOUNT" = "true" ]; then
+            test -n "$OA_TEST_LOGIN_USER" && test -n "$OA_TEST_LOGIN_PASSWORD"
+            node -e 'process.stdout.write(JSON.stringify({username:process.env.OA_TEST_LOGIN_USER,password:process.env.OA_TEST_LOGIN_PASSWORD}))' | ssh -i ~/.ssh/oa_live_key -o BatchMode=yes -o IdentitiesOnly=yes deploy@"$DEPLOY_HOST" 'NUOCHONG_OA_HOME="$HOME/.local/state/nuochong-oa-test" OA_LOGIN_VERIFY=1 "$HOME/.local/share/nuochong-oa-test/current/runtime/bin/node" "$HOME/.local/share/nuochong-oa-test/current/apps/oa/deploy/configure-login.mjs"'
+          fi
           launch_url=$(ssh -i ~/.ssh/oa_live_key -o BatchMode=yes -o IdentitiesOnly=yes deploy@"$DEPLOY_HOST" 'cat "$HOME/.local/state/nuochong-oa-test/launch-url"')
           printf '::add-mask::%s\n' "$launch_url"
           export OA_PRIVATE_LAUNCH_URL="$launch_url"
