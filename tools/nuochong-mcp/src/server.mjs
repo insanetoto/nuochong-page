@@ -5,7 +5,7 @@ import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprot
 import { commands, CONTRACT_VERSION } from '../../nuochong-cli/src/registry.mjs';
 import { configuration, plan, request, jsonResult, CliError } from '../../nuochong-cli/src/client.mjs';
 // The local operator chooses exposure; the API remains the authorization authority.
-export const permitted=commands.filter(c=>!c.streaming && !c.admin && c.scope!=='auth:manage' && (c.sideEffect==='none'||['runs.create','runs.cancel','sessions.create'].includes(c.id)));
+export const permitted=commands.filter(c=>!c.public && !c.streaming && !c.admin && c.scope!=='auth:manage' && (c.sideEffect==='none'||['runs.create','runs.cancel','sessions.create'].includes(c.id)));
 export function createMcp(env=process.env){
  const config=configuration({},env);
  const ids=env.NUOCHONG_MCP_COMMANDS?.split(',');

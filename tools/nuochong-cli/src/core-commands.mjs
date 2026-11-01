@@ -1,16 +1,16 @@
 const text={type:'string',minLength:1,maxLength:256};
 const object=(properties,required=Object.keys(properties))=>({type:'object',additionalProperties:false,properties,required});
 const array=(items,maxItems=100)=>({type:'array',items,maxItems});
-export const ACCESS_SCOPES=['runs:write','runs:read','sessions:write','sessions:read','config:read','config:write','auth:manage'];
+export const ACCESS_SCOPES=['runs:write','runs:read','sessions:write','sessions:read','config:read','config:write','auth:manage','product:read','product:write','product:approve'];
 export const HISTORY_PAGE_SIZE=4;
 const principal=object({principalId:text,name:text,kind:{enum:['user','service']},role:{enum:['admin','member']},active:{type:'boolean'}});
-const credential=object({credentialId:text,principalId:text,scopes:array(text,7),expiresAt:{type:'string',format:'date-time'},revoked:{type:'boolean'}});
+const credential=object({credentialId:text,principalId:text,scopes:array(text,ACCESS_SCOPES.length),expiresAt:{type:'string',format:'date-time'},revoked:{type:'boolean'}});
 const session=object({sessionId:text,name:text,createdAt:{type:'string',format:'date-time'}});
 const config=object({provider:{const:'deepseek-official'},model:{const:'deepseek-v4-flash'},clockTool:{type:'boolean'},version:{type:'integer',minimum:1}});
 const command=(id,method,path,inputSchema,outputSchema,scope,admin=false)=>({id,argv:id.split('.'),description:id,method,path,inputSchema,outputSchema,scope,admin,
   sideEffect:method==='GET'?'none':'server-controlled-write',idempotency:method==='GET'?'read':'explicit-operation',success:[200],clientStatus:'implemented',serverStatus:'oa-control-api',authorization:'server-identity-and-resource-policy',automaticRetry:false});
 export const coreCommands=[
- command('auth.me','GET','/api/auth/me',object({}),object({...principal.properties,scopes:array(text,7)}),'authenticated'),
+ command('auth.me','GET','/api/auth/me',object({}),object({...principal.properties,scopes:array(text,ACCESS_SCOPES.length)}),'authenticated'),
  command('auth.logout','POST','/api/auth/logout',object({}),object({credentialId:text,revoked:{const:true}}),'authenticated'),
  command('auth.principals.list','GET','/api/auth/principals',object({after:text},[]),object({items:array(principal),nextCursor:text},['items']),'auth:manage',true),
  command('auth.principals.create','POST','/api/auth/principals',object({name:text,kind:{enum:['user','service']},role:{enum:['admin','member']}}),principal,'auth:manage',true),

@@ -17,7 +17,7 @@
     "accept": "跨产品不串权、自授权拒绝、停用/调岗新请求生效、部门循环/版本冲突/幂等、Cookie/CSRF 负例；不接原生 owner。",
     "url": "https://github.com/insanetoto/nuochong-page/issues/72",
     "number": 72,
-    "status": "Backlog"
+    "status": "Implemented; 7 PostgreSQL access tests and 23 existing API tests passed; human acceptance pending"
   },
   {
     "id": "KBV0-03",

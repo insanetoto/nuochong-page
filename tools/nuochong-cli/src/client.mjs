@@ -7,7 +7,7 @@ export class CliError extends Error {
 export const invalid = () => new CliError('INVALID_INPUT', 2, 'Arguments or input do not match the command schema.');
 const protocol = () => new CliError('PROTOCOL_ERROR', 12, 'The server response does not match the versioned client contract.');
 
-export function configuration(options, env) {
+export function configuration(options, env, publicCommand = false) {
   let url;
   try { url = new URL(options['api-url'] ?? env.NUOCHONG_API_URL); } catch {
     throw new CliError('CONFIG_REQUIRED', 3, 'Set NUOCHONG_API_URL to the Harness API origin.');
@@ -17,8 +17,10 @@ export function configuration(options, env) {
     throw new CliError('CONFIG_INVALID', 3, 'Remote API origins require HTTPS; HTTP is supported for loopback development.');
   }
   const token = env.NUOCHONG_ACCESS_TOKEN;
-  if (!token || /[\r\n]/.test(token)) throw new CliError('AUTH_REQUIRED', 4, 'Set NUOCHONG_ACCESS_TOKEN to a user or scoped service credential.');
-  return { origin: url.origin, token };
+  if (!publicCommand && (!token || /[\r\n]/.test(token))) throw new CliError('AUTH_REQUIRED', 4, 'Set NUOCHONG_ACCESS_TOKEN to a user or scoped service credential.');
+  const pathPrefix=env.NUOCHONG_API_PREFIX;
+  if(pathPrefix && !/^\/(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-]+$/.test(pathPrefix))throw invalid();
+  return { origin: url.origin, token: publicCommand ? undefined : token,...(pathPrefix&&{pathPrefix}) };
 }
 function httpError(status, requestId) {
   const mapping = { 401: ['UNAUTHORIZED', 4], 403: ['FORBIDDEN', 5], 404: ['NOT_FOUND', 6], 409: ['CONFLICT', 7],
@@ -41,8 +43,8 @@ export function plan(command, input) {
 export async function request(command, input, config, signal) {
   const operation = plan(command, input);
   let response;
-  try { response = await fetch(config.origin + operation.path, { method: operation.method, redirect: 'manual', signal,
-    headers: { authorization: `Bearer ${config.token}`, accept: command.streaming ? 'text/event-stream' : 'application/json',
+  try { response = await fetch(config.origin + (config.pathPrefix??'') + operation.path, { method: operation.method, redirect: 'manual', signal,
+    headers: { ...(config.token && {authorization: `Bearer ${config.token}`}), accept: command.streaming ? 'text/event-stream' : 'application/json',
       ...(operation.body && { 'content-type': 'application/json' }), ...(command.streaming && input.after && { 'last-event-id': input.after }) },
     ...(operation.body && { body: JSON.stringify(operation.body) }) }); }
   catch { throw signal.aborted ? signal.reason : new CliError('NETWORK_ERROR', 10, 'Could not reach the configured Harness API. No automatic retry was attempted.'); }

@@ -22,6 +22,7 @@ async function write(value) {
     });
   });
 }
+const safePreview=value=>Array.isArray(value)?value.map(safePreview):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,['password','token','apiKey'].includes(key)?'<redacted>':safePreview(item)])):value;
 async function inputValue(raw) {
   if (raw !== '-') { try { return JSON.parse(raw); } catch { throw invalid(); } }
   let text = ''; let bytes = 0;
@@ -55,7 +56,7 @@ try {
     commandId = 'version'; await write({ ok: true, data: { clientVersion: CLIENT_VERSION, contractVersion: CONTRACT_VERSION } });
   } else if (options.help || args.length === 0 || args[0] === 'help') {
     if (options.json) { await write({ ok: true, data: manifest() }); }
-    else process.stdout.write(`nuochong ${CLIENT_VERSION}\n\nCommands (use capabilities/schema for all 22 mappings):\n  auth me|logout | auth principals list|create|set-active|set-role | auth credentials list|create|revoke\n  sessions create|list|get|history\n  models list | models config get|update | tools list | runtime status\n  capabilities --json\n  schema <command-id> --json\n  runs create --input - [--dry-run]\n  runs get|cancel|events --run-id <id> [--after <event-id>]\n\nAll network commands use NUOCHONG_API_URL and NUOCHONG_ACCESS_TOKEN.\nUse --input - for JSON stdin, --timeout-ms 1..180000 for a bounded operation.\nTask clients require a compatible Harness API; future domains are planned.\n`);
+    else process.stdout.write(`nuochong ${CLIENT_VERSION}\n\nCommands (use capabilities/schema for all mappings):\n  auth me|logout | auth principals list|create|set-active|set-role | auth credentials list|create|revoke\n  sessions create|list|get|history\n  models list | models config get|update | tools list | runtime status\n  capabilities --json\n  schema <command-id> --json\n  runs create --input - [--dry-run]\n  runs get|cancel|events --run-id <id> [--after <event-id>]\n\nAll network commands use NUOCHONG_API_URL and NUOCHONG_ACCESS_TOKEN.\nUse --input - for JSON stdin, --timeout-ms 1..180000 for a bounded operation.\nTask clients require a compatible Harness API; future domains are planned.\n`);
   } else if (args[0] === 'capabilities' && args.length === 1) {
     commandId = 'capabilities'; await write({ ok: true, data: manifest() });
   } else if (args[0] === 'schema' && args.length === 2) {
@@ -74,9 +75,9 @@ try {
     const input = options.input !== undefined ? await inputValue(options.input)
       : { ...(options['run-id'] !== undefined && { runId: options['run-id'] }), ...(options.after !== undefined && { after: options.after }) };
     const operation = plan(command, input);
-    if (options['dry-run']) await write({ ok: true, data: { ...operation, executed: false } });
+    if (options['dry-run']) await write({ ok: true, data: { ...safePreview(operation), executed: false } });
     else {
-      const config = configuration(options, process.env);
+      const config = configuration(options, process.env, command.public);
       const { response, requestId } = await request(command, input, config, controller.signal);
       if (command.streaming) {
         const summary = await follow(command, input, response, (record) => write(record));
