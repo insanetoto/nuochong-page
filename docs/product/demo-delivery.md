@@ -13,7 +13,10 @@
 - 通过官方界面注册服务器已有隔离 workspace，解决 Linux 没有默认工作区时编辑器锁定的问题；未直接修改内部数据库。
 - 实际账号登录后发送合成提示，收到精确的 `DEMO_MODEL_READY` 回答；编辑器可用、对话框 0。
 - DeepSeek 官方模型目录接口鉴权返回 200，不输出 Key。
-- 远程浏览器验证与 Linux 首次初始化回归继续以 PR #70 最新 CI/运行记录为准；早期失败已明确记录为工作区/编辑器状态问题，不记作通过。
+- [最终公网完整验证](https://github.com/insanetoto/nuochong-page/actions/runs/41290916955)通过：managedDemoNoOnboarding=true、真实模型回复、HTTPS Cookie、认证 WebSocket、官网表单/跳转及页面异常 0。
+- Linux 独立浏览器首次初始化、编辑器可用性及完整必需 CI 门禁通过；配置显式指定隔离工作区目录，避免依赖操作系统 Documents 目录。早期失败保留，不冒充一次通过。
+- 临时 OA_DEMO_API_KEY Secret 已删除，核对仓库只剩原部署 Secrets；公司模型凭据保留在服务器官方私有存储。
+- 上述早期报告 modelCalls=1 表示一次合成提示的测试路径，未测量自动标题等底层请求次数；当前脚本已分离 modelSmokePrompts 与 modelCalls=not-measured，模型费用仍未测量。
 
 ## 边界
 
