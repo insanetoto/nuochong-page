@@ -7,7 +7,8 @@
     "accept": "插件组合/缺依赖/不兼容版本/命令冲突/禁用依赖负例通过；方案、实际能力和后续待办分开记录。",
     "url": "https://github.com/insanetoto/nuochong-page/issues/71",
     "number": 71,
-    "status": "Implemented; local composition 3/3, CI pending; human acceptance pending"
+    "status": "Implemented; local/Linux CI passed; PR #78 merged into refactor/integration; human product acceptance pending",
+    "evidence": "composition 3/3"
   },
   {
     "id": "KBV0-02",
@@ -17,7 +18,8 @@
     "accept": "跨产品不串权、自授权拒绝、停用/调岗新请求生效、部门循环/版本冲突/幂等、Cookie/CSRF 负例；不接原生 owner。",
     "url": "https://github.com/insanetoto/nuochong-page/issues/72",
     "number": 72,
-    "status": "Implemented; 7 PostgreSQL access tests and 23 existing API tests passed; human acceptance pending"
+    "status": "Implemented; local/Linux CI passed; PR #79 merged into refactor/integration; human product acceptance pending",
+    "evidence": "PostgreSQL shared access 7/7 and core API 23/23"
   },
   {
     "id": "KBV0-03",
@@ -27,7 +29,8 @@
     "accept": "重复提交/并发发布/审批 hash 失效/撤回/有效期/跨权限下载负例；仅实现明确支持的格式，其他返回未实现。",
     "url": "https://github.com/insanetoto/nuochong-page/issues/73",
     "number": 73,
-    "status": "Implemented; immutable sources, citation/review/publication tests passed; human acceptance pending"
+    "status": "Implemented; local/Linux CI passed; PR #80 merged into refactor/integration; human product acceptance pending",
+    "evidence": "immutable source/review/publication tests passed"
   },
   {
     "id": "KBV0-04",
@@ -37,7 +40,8 @@
     "accept": "真实模型编译/问答证据独立；无依据/来源变化拒绝；失效权限不返回结果；任务租约和终态测试；不自动发布。",
     "url": "https://github.com/insanetoto/nuochong-page/issues/74",
     "number": 74,
-    "status": "Implemented; 9 queue tests, 9 knowledge tests and 2 real Harness tasks passed; human acceptance pending"
+    "status": "Implemented; local/Linux CI passed; PR #81 merged into refactor/integration; human product acceptance pending",
+    "evidence": "queue and real Harness compile/answer passed"
   },
   {
     "id": "KBV0-05",
@@ -47,7 +51,8 @@
     "accept": "原型替换为真实数据；浏览器登录至发布/引用问答端到端；390px/键盘、无 Key 引导、不同角色负例；planned 产品不返回假成功。",
     "url": "https://github.com/insanetoto/nuochong-page/issues/75",
     "number": 75,
-    "status": "Implemented; browser upload/compile/review/publish/cited-answer/shared department flow passed at 390px and desktop; CI/human acceptance pending"
+    "status": "Implemented; local/Linux CI passed; PR #82 merged into refactor/integration; human product acceptance pending",
+    "evidence": "Chrome/Chromium workbench and role denial passed"
   },
   {
     "id": "KBV0-06",
@@ -57,7 +62,8 @@
     "accept": "本地和 Linux 门禁通过；真实模型与合成故障分开；官网基线不变；标明未实现的原任务验收项，不冒充 KB-17 全部质量目标。",
     "url": "https://github.com/insanetoto/nuochong-page/issues/76",
     "number": 76,
-    "status": "Implemented; local API 51/51, browser 1/1, MCP 3/3, CLI 19/19 and package passed; Linux CI and human acceptance pending"
+    "status": "Implemented; local/Linux CI passed; PR #83 merged into refactor/integration; human product acceptance pending",
+    "evidence": "API 51/51, browser 1/1, MCP 3/3, CLI 19/19 and package passed"
   },
   {
     "id": "KBV0-07",
@@ -67,6 +73,6 @@
     "accept": "真实测试环境登录/导入/发布/查询链路可验证，既有官网及原生演示不回归；版本和数据备份可追溯；人工验收待负责人下一轮确认。",
     "url": "https://github.com/insanetoto/nuochong-page/issues/77",
     "number": 77,
-    "status": "Backlog"
+    "status": "In progress; PR #84; isolated test installation and public real-model verification underway"
   }
 ]

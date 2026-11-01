@@ -2,7 +2,7 @@
 
 入口：`https://www.nuochong.net/oa-test/product/`。公司测试账号由操作者授权的一次性 Secret 初始化（登录账号沿用已指定演示账号）；不会为访客公开 owner 能力或模型 Key。普通 CI 不需要模型凭据。手动派发 `oa-server-prepare.yml`，`target=knowledge`，使用已有部署 SSH Secrets；工作流不会发布 main 或官网。
 
-服务：用户级 `nuochong-knowledge-db/api/worker.service`；数据库仅回环 55437，实际应用使用私有 Unix socket，TCP 未设可用口令；API 仅回环 3081，Native 网关仅将 `/product/` 代理给它。原生会话不转换为公司身份。公网前缀仍由既有 Nginx 提供，无新增 root 配置。官网内容未改。
+服务：用户级 `nuochong-knowledge-db/api/worker.service`；数据库仅回环 55437，实际应用使用私有 Unix socket，TCP 未设可用口令；API 仅回环 3081，Native 网关仅将 `/product/` 代理给它。原生会话不转换为公司身份。公网前缀仍由既有 Nginx 提供，无新增 root 配置。该代理会改写 Cookie path，因此服务端显式设置 `PRODUCT_COOKIE_PATH=/product/`，公网最终路径为 `/oa-test/product/`；公网继承 Nginx 的 Secure/HttpOnly/SameSite=Lax，写请求仍强制同源 Origin，不能靠 Cookie 绕过 CSRF。官网内容未改。
 
 代码：`~/.local/share/nuochong-knowledge-test/releases/<sha>`、原子 `current`，PostgreSQL 17.11 独立运行时；数据/对象/模型环境：`~/.local/state/nuochong-knowledge-test`，仅 deploy 可读。Worker 从既有服务器私有模型配置取 Key，不将 Key 传到 Actions。Linux 24.04 编译 PG 运行时与服务器同平台；不依赖服务器 sudo 或 Docker。
 
@@ -17,3 +17,5 @@
 CLI：`NUOCHONG_API_URL=https://www.nuochong.net NUOCHONG_API_PREFIX=/oa-test`，先通过 `identity login --input -` 获得个人受限 Bearer，后续设置 `NUOCHONG_ACCESS_TOKEN`。密码 JSON 用 stdin，勿写入 shell 历史。MCP 使用同样配置，仅显式启用实际实现命令。公司身份不能用于原生 Harness owner 管理。
 
 测试数据仅有标为“合成演示制度”的样本，不能当作公司正式制度。`verify-live.mjs` 真实执行两项模型任务，明确用授权演示身份做工程审校，不代表负责人产品验收。无 API Key 表单。
+
+公网仅代理知识库 `/product/` 路径；22 项基座 API 不通过该路径开放。外部 MCP 请显式配置知识库命令白名单，不将原生 Web 作为 API。`verify-knowledge-live.mjs` 在真实公网验证 API/CLI/MCP 同一发布内容和身份伪造拒绝，不调用模型。

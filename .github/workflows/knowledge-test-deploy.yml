@@ -65,6 +65,11 @@ jobs:
         env:
           KBV0_BOOTSTRAP_JSON: ${{ secrets.KBV0_BOOTSTRAP_JSON }}
         run: node apps/control-api/deploy/product/verify-live.mjs
+      - run: npm ci --prefix tools/nuochong-mcp --ignore-scripts --no-audit --no-fund
+      - name: Real public CLI and MCP company knowledge access
+        env:
+          KBV0_BOOTSTRAP_JSON: ${{ secrets.KBV0_BOOTSTRAP_JSON }}
+        run: node tools/nuochong-mcp/test/verify-knowledge-live.mjs
       - name: Paired private backup and service state
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
