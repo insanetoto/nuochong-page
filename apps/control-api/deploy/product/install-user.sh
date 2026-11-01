@@ -41,7 +41,7 @@ systemctl --user daemon-reload
 systemctl --user enable --now nuochong-knowledge-db.service >/dev/null
 for attempt in {1..30}; do pg_isready -h "$state" -p 55437 -q && break; sleep 1; done
 # Use the private Unix socket; TCP requires a password and is never used by the application.
-printf 'DATABASE_URL=postgresql:///postgres?host=%s&port=55437&user=%s\nOA_DATABASE_SCHEMA=oa_knowledge_test\nOA_RUNTIME_HOME=%s\nPRODUCT_OBJECT_ROOT=%s/objects\nPRODUCT_PUBLIC_URL=https://www.nuochong.net/oa-test/product/\nOA_API_PORT=3081\n' "$state" "$(id -un)" "$state" "$state" > "$state/runtime.env"
+printf 'DATABASE_URL="postgresql:///postgres?host=%s&port=55437&user=%s"\nOA_DATABASE_SCHEMA=oa_knowledge_test\nOA_RUNTIME_HOME=%s\nPRODUCT_OBJECT_ROOT=%s/objects\nPRODUCT_PUBLIC_URL=https://www.nuochong.net/oa-test/product/\nOA_API_PORT=3081\n' "$state" "$(id -un)" "$state" "$state" > "$state/runtime.env"
 chmod 600 "$state/runtime.env"
 export npm_config_cache="$base/npm-cache"
 npm ci --prefix "$release/apps/control-api" --ignore-scripts --no-audit --no-fund --registry=https://registry.npmmirror.com --fetch-retries=1 --fetch-timeout=30000 >/dev/null
