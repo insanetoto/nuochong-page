@@ -22,6 +22,15 @@ try {
   assert.ok(frames > 0, 'Authenticated WebSocket must receive native frames.');
   assert.equal(errors.length, 0);
   assert.ok((await page.context().cookies()).some((cookie) => cookie.secure && cookie.httpOnly && cookie.path === '/oa-test/'));
+  if (process.env.OA_SETUP_DEMO === 'true') {
+    await page.waitForTimeout(2000);
+    assert.equal(await page.getByRole('dialog').count(), 0);
+    assert.equal(await page.getByRole('textbox', { name: /API Key/i }).count(), 0);
+    const composer = page.locator('textarea, [contenteditable="true"]').first();
+    await composer.fill('请不要使用任何工具，只回复 DEMO_MODEL_READY');
+    await composer.press('Enter');
+    await page.getByText('DEMO_MODEL_READY', { exact: true }).waitFor({ state: 'visible', timeout: 120000 });
+  }
   if (process.env.OA_ENTRY_ORIGIN) {
     const login = await browser.newPage();
     await login.goto(new URL('/oa-login.html', process.env.OA_ENTRY_ORIGIN).href, { waitUntil: 'domcontentloaded', timeout: 60000 });
@@ -42,7 +51,7 @@ try {
   const entry = await fetch('https://nuochong-company-homepage-test.76gzwtk9sb.workers.dev/oa', { redirect: 'manual', signal: AbortSignal.timeout(15000) });
   assert.equal(entry.status, 307);
   assert.equal(entry.headers.get('location'), 'https://www.nuochong.net/oa-test/');
-  console.log(JSON.stringify({ passed: true, scope: 'Live HTTPS native UI and authenticated WebSocket', anonymousStatus: 401, tokenRemoved: true, secureScopedCookie: true, testEntryRedirect: 307, entryForm: Boolean(process.env.OA_ENTRY_ORIGIN), accountLogin: process.env.OA_SETUP_ACCOUNT === 'true', pageErrors: 0, modelCalls: 0 }));
+  console.log(JSON.stringify({ passed: true, scope: 'Live HTTPS native UI and authenticated WebSocket', anonymousStatus: 401, tokenRemoved: true, secureScopedCookie: true, testEntryRedirect: 307, entryForm: Boolean(process.env.OA_ENTRY_ORIGIN), managedDemoNoOnboarding: process.env.OA_SETUP_DEMO === 'true', accountLogin: process.env.OA_SETUP_ACCOUNT === 'true', pageErrors: 0, modelCalls: process.env.OA_SETUP_DEMO === 'true' ? 1 : 0 }));
 } catch {
   console.error('Live native UI verification failed; private credentials and browser diagnostics are omitted.'); process.exitCode = 1;
 } finally { await browser?.close(); }

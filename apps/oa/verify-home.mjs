@@ -12,6 +12,11 @@ import { chromium } from '@playwright/test';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const state = mkdtempSync(resolve(tmpdir(), 'nuochong-oa-preview-'));
+const demoMode = process.env.OA_PROBE_DEMO === '1';
+if (demoMode) {
+  const { configureDemo } = await import('./deploy/configure-demo.mjs');
+  configureDemo(state, 'sk-synthetic-demo-key-not-real');
+}
 const accountMode = process.env.OA_PROBE_ACCOUNT === '1';
 if (accountMode && process.env.OA_PROBE_NGINX !== '1') throw new Error('Account probe requires the isolated HTTPS proxy.');
 const probe = createServer(); await new Promise((done) => probe.listen(0, '127.0.0.1', done));
@@ -80,6 +85,13 @@ try {
   await page.waitForFunction(() => (document.body.textContent ?? '').trim().length > 20);
   assert.equal(new URL(page.url()).search, '', 'Launch credential must be stripped after cookie exchange.');
   assert.equal(errors.length, 0);
+  if (demoMode) {
+    await delay(1500);
+    assert.equal(await page.getByRole('dialog').count(), 0, 'Managed demo must not open account or credential onboarding.');
+    assert.equal(await page.getByRole('textbox', { name: /API Key/i }).count(), 0);
+    assert.ok(!await page.getByText(/添加一个 API Key 开始使用|Add an API key to get started/).count());
+    report.managedDemoNoOnboarding = true;
+  }
   await page.getByRole('button').first().waitFor({ state: 'visible', timeout: 15000 });
   assert.equal((await page.locator('body').innerText()).includes('员工账号'), false);
   if (publicUrl) {
