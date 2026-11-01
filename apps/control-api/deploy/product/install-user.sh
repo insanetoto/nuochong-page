@@ -96,5 +96,7 @@ mkdir -p "$HOME/.config/systemd/user/nuochong-oa-test.service.d"
 printf '[Service]\nEnvironment=NUOCHONG_PRODUCT_UPSTREAM=http://127.0.0.1:3081\n' > "$HOME/.config/systemd/user/nuochong-oa-test.service.d/knowledge.conf"
 systemctl --user daemon-reload
 systemctl --user restart nuochong-oa-test.service
+for attempt in {1..30}; do curl -fsS http://127.0.0.1:3080/product/ -o /dev/null && break; sleep 1; done
+curl -fsS http://127.0.0.1:3080/product/ -o /dev/null
 printf '%s\n' "$sha" > "$state/release-sha"
 printf 'Isolated knowledge test services installed.\n'

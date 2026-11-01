@@ -25,7 +25,7 @@ jobs:
           (cd "$RUNNER_TEMP" && sha256sum -c postgresql.sha256)
           tar -xjf "$RUNNER_TEMP/postgresql-17.11.tar.bz2" -C "$RUNNER_TEMP"
           cd "$RUNNER_TEMP/postgresql-17.11"
-          ./configure --prefix=/opt/nuochong-pg --without-readline --without-zlib --without-icu --without-lz4 --without-zstd --without-ssl > "$RUNNER_TEMP/pg-configure.log"
+          ./configure --prefix=/opt/nuochong-pg --without-readline --without-zlib --without-icu --without-lz4 --without-zstd > "$RUNNER_TEMP/pg-configure.log"
           make -s -j4 > "$RUNNER_TEMP/pg-build.log"
           make -s install DESTDIR="$RUNNER_TEMP/pg-stage" > "$RUNNER_TEMP/pg-install.log"
           tar -czf "$RUNNER_TEMP/postgres-runtime.tgz" -C "$RUNNER_TEMP/pg-stage/opt/nuochong-pg" .
