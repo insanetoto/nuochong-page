@@ -3,7 +3,7 @@ import { transaction } from './db.mjs';
 import { requireThat } from './errors.mjs';
 import { ACCESS_SCOPES } from '../../../tools/nuochong-cli/src/core-commands.mjs';
 export const SCOPES = ACCESS_SCOPES;
-export const MEMBER_SCOPES = SCOPES.filter((scope) => !['config:write','auth:manage'].includes(scope));
+export const MEMBER_SCOPES = SCOPES.filter((scope) => !['config:write','auth:manage','product:approve'].includes(scope));
 const hash = (value) => createHash('sha256').update(value).digest('hex');
 export const principalDTO = (row) => ({ principalId: row.id, name: row.name, kind: row.kind, role: row.role, active: row.active });
 export const credentialDTO = (row) => ({ credentialId: row.id, principalId: row.principal_id, scopes: row.scopes, expiresAt: row.expires_at.toISOString(), revoked: row.revoked });

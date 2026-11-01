@@ -1,3 +1,4 @@
+import {registerProduct} from './product.mjs';
 import Fastify from 'fastify';
 import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
@@ -5,7 +6,7 @@ import { commands,valid } from '../../../tools/nuochong-cli/src/registry.mjs';
 import { Identity,principalDTO,credentialDTO } from './identity.mjs';
 import { Store,sessionDTO,runDTO } from './store.mjs';
 import { ApiError,requireThat } from './errors.mjs';
-export function createApp(pool){
+export function createApp(pool,options={}){
   const app=Fastify({logger:false,bodyLimit:128*1024,genReqId:()=>randomUUID()});
   const identity=new Identity(pool);const store=new Store(pool);const connections=new Set();
   app.addHook('onRequest',async(req,reply)=>{reply.header('cache-control','no-store');reply.header('x-request-id',req.id);});
@@ -55,7 +56,7 @@ export function createApp(pool){
     'tools.list':async()=>({items:[{name:'current_time',readonly:true,enabled:(await config()).clockTool}]}),
     'runtime.status':async()=>({provider:'deepseek-official',model:(await config()).model,profile:'sdk-minimal',tools:'readonly',apiVersion:'1.1'}),
   };
-  for(const command of commands){
+  for(const command of commands.filter(c=>!c.product)){
     const path=command.path.replace(/\{([^}]+)\}/g,':$1');
     app.route({method:command.method,url:path,handler:async(req,reply)=>{
       const token=/^Bearer (.+)$/.exec(req.headers.authorization??'')?.[1];
@@ -105,5 +106,6 @@ export function createApp(pool){
       return reply.code(command.success[0]).send(data);
     }});
   }
-  return {app,store,identity};
+  const product=registerProduct(app,{pool,identity,...options.product});
+  return {app,store,identity,product};
 }

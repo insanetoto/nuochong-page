@@ -39,7 +39,7 @@ const frame = (data) => `id: ${data.eventId}\nevent: ${data.type}\ndata: ${JSON.
 
 test('AI discovery exposes side effects, schemas and honest availability without credentials', async () => {
   const result = await cli(['capabilities', '--json']); assert.equal(result.code, 0); assert.equal(result.stderr, '');
-  const data = JSON.parse(result.stdout).data; assert.equal(data.commands.length, 22);
+  const data = JSON.parse(result.stdout).data; assert.equal(data.commands.length, commands.length);
   assert.ok(data.commands.every((c) => c.inputSchema.additionalProperties === false && c.authorization && !c.automaticRetry));
   assert.ok(data.commands.every((c) => c.serverStatus === 'oa-control-api'));
   assert.equal(data.transportAdapters.mcp, 'restricted-stdio-adapter-of-same-contracts');
@@ -58,7 +58,7 @@ test('create/event DTOs preserve A-05 transport semantics; new Harness state has
 });
 test('schema/help/version and JSON stdin dry-run are offline and executable', async () => {
   assert.match((await cli(['--help'])).stdout, /nuochong/);
-  assert.equal(JSON.parse((await cli(['version'])).stdout).data.clientVersion, '0.2.0');
+  assert.equal(JSON.parse((await cli(['version'])).stdout).data.clientVersion, '0.3.0');
   assert.equal(JSON.parse((await cli(['schema', 'runs.create', '--json'])).stdout).data.method, 'POST');
   const result = await cli(['runs', 'create', '--input', '-', '--dry-run'], {}, JSON.stringify({ prompt: '合成输入', idempotencyKey: 'stable' }));
   assert.equal(result.code, 0); assert.equal(JSON.parse(result.stdout).data.executed, false);
@@ -194,3 +194,8 @@ test('SIGINT stops following without a remote cancellation and preserves the dur
 test('unsupported schema features do not silently pass a partial validator',()=>{
   assert.throws(()=>valid({type:'string',pattern:'.*'},'x'),/unsupported/);
 });
+
+ test('company login dry-run does not expose credential-bearing input',async()=>{
+  const result=await cli(['identity','login','--input',JSON.stringify({username:'synthetic-user',password:'synthetic-private-pass',delivery:'bearer'}),'--dry-run']);
+  assert.equal(result.code,0);assert.ok(!result.stdout.includes('synthetic-private-pass'));assert.match(result.stdout,/redacted/);
+ });

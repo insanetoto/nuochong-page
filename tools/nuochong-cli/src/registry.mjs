@@ -1,6 +1,7 @@
+import { productCommands } from './product-commands.mjs';
 import { coreCommands } from './core-commands.mjs';
-export const CLIENT_VERSION = '0.2.0';
-export const CONTRACT_VERSION = '1.1';
+export const CLIENT_VERSION = '0.3.0';
+export const CONTRACT_VERSION = '1.2';
 const string = { type: 'string', minLength: 1, maxLength: 256 };
 const object = (properties, required = Object.keys(properties)) => ({
   $schema: 'http://json-schema.org/draft-07/schema#', type: 'object', additionalProperties: false, required, properties,
@@ -35,7 +36,7 @@ const runCommands = [
 ].map((command) => ({ ...command, clientStatus: 'implemented', scope: command.id === 'runs.create' || command.id === 'runs.cancel' ? 'runs:write' : 'runs:read', serverStatus: 'oa-control-api',
   authorization: 'server-identity-and-resource-policy', automaticRetry: false }));
 
-export const commands = [...runCommands, ...coreCommands];
+export const commands = [...runCommands, ...coreCommands,...productCommands];
 
 export function manifest() {
   return { contractVersion: CONTRACT_VERSION, clientVersion: CLIENT_VERSION, discovery: 'local-client-contracts; not live permission discovery',
