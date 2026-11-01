@@ -1,6 +1,6 @@
 import { chromium } from '@playwright/test';
 import assert from 'node:assert/strict';
-let browser; let phase = 'startup';
+let browser; let page; let phase = 'startup';
 try {
   const url = new URL(process.env.OA_PRIVATE_LAUNCH_URL);
   assert.equal(url.origin, 'https://www.nuochong.net');
@@ -11,7 +11,7 @@ try {
   assert.equal(anonymous.status, 401);
   phase = 'browser-launch';
   browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage();
+  page = await browser.newPage();
   let frames = 0; const errors = [];
   page.on('websocket', (socket) => socket.on('framereceived', () => frames++));
   page.on('pageerror', (error) => errors.push(error.name));
@@ -33,9 +33,12 @@ try {
     assert.equal(await page.getByRole('textbox', { name: /API Key/i }).count(), 0);
     phase = 'model-composer';
     const newChat = page.getByRole('button', { name: /^新会话$|^New chat$|^New session$/i }).first();
+    phase = 'new-conversation';
     if (await newChat.count()) await newChat.click();
     const composer = page.locator('[data-composer-input]:visible').first();
+    phase = 'composer-fill';
     await composer.fill('请不要使用任何工具，只回复 DEMO_MODEL_READY');
+    phase = 'composer-submit';
     await composer.press('Enter');
     phase = 'model-response';
     await page.getByText('DEMO_MODEL_READY', { exact: true }).waitFor({ state: 'visible', timeout: 120000 });
@@ -63,6 +66,12 @@ try {
   assert.equal(entry.status, 307);
   assert.equal(entry.headers.get('location'), 'https://www.nuochong.net/oa-test/');
   console.log(JSON.stringify({ passed: true, scope: 'Live HTTPS native UI and authenticated WebSocket', anonymousStatus: 401, tokenRemoved: true, secureScopedCookie: true, testEntryRedirect: 307, entryForm: Boolean(process.env.OA_ENTRY_ORIGIN), managedDemoNoOnboarding: process.env.OA_SETUP_DEMO === 'true', accountLogin: process.env.OA_SETUP_ACCOUNT === 'true', pageErrors: 0, modelCalls: process.env.OA_SETUP_DEMO === 'true' ? 1 : 0 }));
-} catch {
+} catch (error) {
+  if (page && process.env.OA_SETUP_DEMO === 'true') {
+    try { console.error(JSON.stringify({ diagnostic: 'managed-demo', phase, errorType: error.name,
+      composerCount: await page.locator('[data-composer-input]').count(),
+      editableComposerCount: await page.locator('[data-composer-input][contenteditable="true"]').count(),
+      visibleDialogCount: await page.getByRole('dialog').count() })); } catch { /* No private diagnostics. */ }
+  }
   console.error('Live native UI verification failed at ' + phase + '; private credentials and browser diagnostics are omitted.'); process.exitCode = 1;
 } finally { await browser?.close(); }
