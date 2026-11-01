@@ -1,0 +1,72 @@
+[
+  {
+    "id": "KBV0-01",
+    "title": "首版范围、默认决策与插件运行骨架",
+    "parents": "PLAT-01/02、IAM-01、KB-01",
+    "scope": "冻结首版边界、需求待办；可执行插件 manifest、依赖/命名空间/生命周期校验；不能关闭可信授权执行。",
+    "accept": "插件组合/缺依赖/不兼容版本/命令冲突/禁用依赖负例通过；方案、实际能力和后续待办分开记录。",
+    "url": "https://github.com/insanetoto/nuochong-page/issues/71",
+    "number": 71,
+    "status": "Implemented; local composition 3/3, CI pending; human acceptance pending"
+  },
+  {
+    "id": "KBV0-02",
+    "title": "共享组织、角色与公司登录",
+    "parents": "PLAT-03、IAM-02/03/04",
+    "scope": "真实 PostgreSQL 组织成员、固定产品角色与范围绑定、公司账号登录/撤销、共享管理 API/CLI。",
+    "accept": "跨产品不串权、自授权拒绝、停用/调岗新请求生效、部门循环/版本冲突/幂等、Cookie/CSRF 负例；不接原生 owner。",
+    "url": "https://github.com/insanetoto/nuochong-page/issues/72",
+    "number": 72,
+    "status": "Backlog"
+  },
+  {
+    "id": "KBV0-03",
+    "title": "制度来源、不可变修订与审核发布底座",
+    "parents": "KB-02/03/04/07",
+    "scope": "Markdown/TXT 私有内容寻址存储、数据库 manifest、空间授权、来源有效期、知识草稿/审校/发布/撤回。",
+    "accept": "重复提交/并发发布/审批 hash 失效/撤回/有效期/跨权限下载负例；仅实现明确支持的格式，其他返回未实现。",
+    "url": "https://github.com/insanetoto/nuochong-page/issues/73",
+    "number": 73,
+    "status": "Backlog"
+  },
+  {
+    "id": "KBV0-04",
+    "title": "Harness Wiki 编译、问答与持久任务",
+    "parents": "KB-05/06/08/09/10",
+    "scope": "受限官方 Harness 编译候选 Wiki、带版本引用问答、中文检索初版、确定性质量校验、持久队列/取消/恢复。",
+    "accept": "真实模型编译/问答证据独立；无依据/来源变化拒绝；失效权限不返回结果；任务租约和终态测试；不自动发布。",
+    "url": "https://github.com/insanetoto/nuochong-page/issues/74",
+    "number": 74,
+    "status": "Backlog"
+  },
+  {
+    "id": "KBV0-05",
+    "title": "官网主题知识库工作台与跨入口闭环",
+    "parents": "PLAT-03、IAM-04、KB-11/12/13/14/16",
+    "scope": "真实 API 的公司登录、知识首页/搜索/原文/问答、来源/审校/发布、统一组织与权限页面；CLI/MCP 共享授权。",
+    "accept": "原型替换为真实数据；浏览器登录至发布/引用问答端到端；390px/键盘、无 Key 引导、不同角色负例；planned 产品不返回假成功。",
+    "url": "https://github.com/insanetoto/nuochong-page/issues/75",
+    "number": 75,
+    "status": "Backlog"
+  },
+  {
+    "id": "KBV0-06",
+    "title": "初版回归、远程 CI 与交付证据",
+    "parents": "KB-17、KB-14",
+    "scope": "真实 PostgreSQL/对象文件/API/CLI/浏览器/受限模型的初版回归、故障和负例、复核需求待办及路线图。",
+    "accept": "本地和 Linux 门禁通过；真实模型与合成故障分开；官网基线不变；标明未实现的原任务验收项，不冒充 KB-17 全部质量目标。",
+    "url": "https://github.com/insanetoto/nuochong-page/issues/76",
+    "number": 76,
+    "status": "Backlog"
+  },
+  {
+    "id": "KBV0-07",
+    "title": "隔离测试部署与初版运行验收材料",
+    "parents": "KB-18（工程部分）",
+    "scope": "独立数据/端口/服务部署初版，提供入口、运维/恢复/回滚和下一轮澄清清单；不替代人工产品验收。",
+    "accept": "真实测试环境登录/导入/发布/查询链路可验证，既有官网及原生演示不回归；版本和数据备份可追溯；人工验收待负责人下一轮确认。",
+    "url": "https://github.com/insanetoto/nuochong-page/issues/77",
+    "number": 77,
+    "status": "Backlog"
+  }
+]
