@@ -10,7 +10,7 @@ export const knowledgeCommands=[
  command('knowledge.spaces.list.v1','knowledge spaces list',obj({after:str()},[]),pageOf(spaceSchema)),
  command('knowledge.spaces.create.v1','knowledge spaces create',obj({...approved,title:str(),departmentIds:arr(str())}),spaceSchema,{write:true,approval:true,permission:'knowledge:publish'}),
  command('knowledge.sources.import.v1','knowledge sources import',obj({...key,...scope,title:str(),policyCode:str(),version:str(),filename:str(),content:str(20000),validFrom:str(64),validUntil:str(64,0)}),sourceSchema,edit),
- command('knowledge.sources.list.v1','knowledge sources list',obj({...scope,after:str()},['spaceId']),pageOf(sourceSchema),{permission:'knowledge:edit',scopeField:'spaceId'}),
+ command('knowledge.sources.list.v1','knowledge sources list',obj({...scope,after:str()},['spaceId']),pageOf(sourceSchema),{permission:'knowledge:read',scopeField:'spaceId'}),
  command('knowledge.sources.get.v1','knowledge sources get',obj({...scope,sourceId:str()}),obj({source:sourceSchema,content:str(20000)}),read),
  command('knowledge.sources.withdraw.v1','knowledge sources withdraw',obj({...approved,...scope,sourceId:str()}),obj({withdrawn:{const:true}}),publish),
  command('knowledge.changes.create.v1','knowledge changes create',obj({...key,...scope,pageId:str(128,0),expectedRevision:{type:'integer',minimum:0},title:str(),body:str(12000),citations:arr(citationSchema)}),detailSchema,edit),

@@ -6,7 +6,7 @@ export const bool={type:'boolean'};export const revision={type:'integer',minimum
 const write={idempotencyKey:str(128,16)};
 const approved={...write,approvalId:str(128)};
 export const departmentSchema=obj({id:str(),name:str(),parentId:str(128,0),active:bool,revision});
-export const memberSchema=obj({principalId:str(),name:str(),active:bool,departmentIds:arr(str()),revision});
+export const memberSchema=obj({principalId:str(),name:str(),kind:{enum:['user','service']},active:bool,departmentIds:arr(str()),revision});
 export const bindingSchema=obj({id:str(),principalId:str(),roleId:str(),scopeId:str(),revision});
 export const roleSchema=obj({id:str(),productId:str(),permissions:arr(str())});
 export const pageOf=schema=>obj({items:arr(schema),nextCursor:str()},['items']);

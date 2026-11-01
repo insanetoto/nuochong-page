@@ -47,7 +47,7 @@
     "accept": "原型替换为真实数据；浏览器登录至发布/引用问答端到端；390px/键盘、无 Key 引导、不同角色负例；planned 产品不返回假成功。",
     "url": "https://github.com/insanetoto/nuochong-page/issues/75",
     "number": 75,
-    "status": "Backlog"
+    "status": "Implemented; browser upload/compile/review/publish/cited-answer/shared department flow passed at 390px and desktop; CI/human acceptance pending"
   },
   {
     "id": "KBV0-06",

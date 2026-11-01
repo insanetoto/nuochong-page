@@ -10,6 +10,7 @@ export class KnowledgeService {
  visible(ctx,space){return ctx.has('knowledge:read',space.id)&&(this.steward(ctx,space.id)||!space.department_ids.length||space.department_ids.some(id=>ctx.departments.includes(id)));}
  async authorize(db,ctx,command,i){
   if(i.spaceId){const space=(await db.query('SELECT * FROM knowledge_spaces WHERE id=$1',[i.spaceId])).rows[0];requireThat(space&&this.visible(ctx,space),404,'NOT_FOUND');}
+  if(command.id==='knowledge.sources.list.v1')requireThat(this.steward(ctx,i.spaceId));
   if(i.view==='manage')requireThat(this.steward(ctx,i.spaceId));
  }
  async source(db,spaceId,id){const row=(await db.query('SELECT s.*,d.current_source_id,d.policy_code FROM knowledge_sources s JOIN knowledge_documents d ON d.id=s.document_id WHERE s.space_id=$1 AND s.id=$2',[spaceId,id])).rows[0];requireThat(row,404,'NOT_FOUND');return row;}
