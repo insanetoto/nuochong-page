@@ -73,6 +73,8 @@
     "accept": "真实测试环境登录/导入/发布/查询链路可验证，既有官网及原生演示不回归；版本和数据备份可追溯；人工验收待负责人下一轮确认。",
     "url": "https://github.com/insanetoto/nuochong-page/issues/77",
     "number": 77,
-    "status": "In progress; PR #84; isolated test installation and public real-model verification underway"
+    "status": "Implemented; public real model/browser/API/CLI/MCP passed and paired private backup completed; test deployed; human product review tracked separately",
+    "pullRequest": "https://github.com/insanetoto/nuochong-page/pull/84",
+    "deploymentEvidence": "https://github.com/insanetoto/nuochong-page/actions/runs/41314069131"
   }
 ]
