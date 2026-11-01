@@ -1,0 +1,1453 @@
+{
+  "version": 1,
+  "status": "planned",
+  "note": "Design-only candidate envelopes. Not registered in runtime capability discovery; not complete or executable API contracts. Review decisions create approvals and do not require prior approval. Import approval authorizes source use, publication requires separate approval.",
+  "commands": [
+    {
+      "commandId": "knowledge.spaces.list.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge spaces list",
+      "sideEffect": "read",
+      "scope": "knowledge:space:read",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.spaces.get.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge spaces get",
+      "sideEffect": "read",
+      "scope": "knowledge:space:read",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.sources.import.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge sources import",
+      "sideEffect": "write",
+      "scope": "knowledge:source:write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uploadId": {
+            "type": "string"
+          },
+          "policyCode": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "approvalId",
+          "uploadId",
+          "policyCode",
+          "version",
+          "validFrom"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.sources.list.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge sources list",
+      "sideEffect": "read",
+      "scope": "knowledge:source:read",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.sources.get.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge sources get",
+      "sideEffect": "read",
+      "scope": "knowledge:source:read",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.sources.download.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge sources download",
+      "sideEffect": "read",
+      "scope": "knowledge:source:read",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.sources.withdraw.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge sources withdraw",
+      "sideEffect": "write",
+      "scope": "knowledge:source:write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId",
+          "idempotencyKey",
+          "expectedRevision",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.compilations.create.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge compile",
+      "sideEffect": "write",
+      "scope": "knowledge:compile:write",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId",
+          "idempotencyKey"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.changes.get.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge changes get",
+      "sideEffect": "read",
+      "scope": "knowledge:change:read",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.changes.update.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge changes update",
+      "sideEffect": "write",
+      "scope": "knowledge:change:write",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId",
+          "idempotencyKey",
+          "expectedRevision"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.changes.review.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge changes review",
+      "sideEffect": "write",
+      "scope": "knowledge:change:write",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "changeHash": {
+            "type": "string",
+            "minLength": 1
+          },
+          "decision": {
+            "enum": [
+              "approve",
+              "reject"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId",
+          "idempotencyKey",
+          "expectedRevision",
+          "changeHash",
+          "decision",
+          "reason"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.publications.publish.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge publications publish",
+      "sideEffect": "write",
+      "scope": "knowledge:publication:write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId",
+          "idempotencyKey",
+          "expectedRevision",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.publications.withdraw.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge publications withdraw",
+      "sideEffect": "write",
+      "scope": "knowledge:publication:write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId",
+          "idempotencyKey",
+          "expectedRevision",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.publications.rollback.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge publications rollback",
+      "sideEffect": "write",
+      "scope": "knowledge:publication:write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId",
+          "idempotencyKey",
+          "expectedRevision",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.pages.list.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge pages list",
+      "sideEffect": "read",
+      "scope": "knowledge:page:read",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.pages.get.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge pages get",
+      "sideEffect": "read",
+      "scope": "knowledge:page:read",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.search.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge search",
+      "sideEffect": "read",
+      "scope": "knowledge:page:read",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          }
+        },
+        "required": [
+          "spaceId",
+          "query"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.answers.ask.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge ask",
+      "sideEffect": "write",
+      "scope": "knowledge:answer:write",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "query"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.answers.get.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge answers get",
+      "sideEffect": "read",
+      "scope": "knowledge:answer:read",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.feedback.create.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge feedback create",
+      "sideEffect": "write",
+      "scope": "knowledge:feedback:write",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId",
+          "idempotencyKey"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.answers.promote.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge answers promote",
+      "sideEffect": "write",
+      "scope": "knowledge:change:write",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId",
+          "idempotencyKey"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.lint.create.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge lint",
+      "sideEffect": "write",
+      "scope": "knowledge:quality:write",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.lint.get.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge lint get",
+      "sideEffect": "read",
+      "scope": "knowledge:quality:read",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.exports.create.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge export",
+      "sideEffect": "write",
+      "scope": "knowledge:export:write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.connectors.sync.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge connectors sync",
+      "sideEffect": "write",
+      "scope": "knowledge:connector:write",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId",
+          "idempotencyKey"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "knowledge.events.replay.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; resource DTO and domain fields required before implementation",
+      "cli": "nuochong knowledge events replay",
+      "sideEffect": "write",
+      "scope": "knowledge:event:write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "resourceId",
+          "idempotencyKey",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "resourceRef": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    }
+  ]
+}
