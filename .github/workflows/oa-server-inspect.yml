@@ -59,6 +59,9 @@ jobs:
           printf '\nOA USER SERVICE\n'
           systemctl --user show nuochong-oa-test.service -p LoadState -p ActiveState -p SubState -p Result -p ExecMainStatus 2>&1 || true
           journalctl --user -u nuochong-oa-test.service -n 25 --no-pager 2>&1 | sed -E 's#https?://[^[:space:]]+#<redacted-url>#g' || true
+          printf '\nKNOWLEDGE ISOLATED SERVICES\n'
+          systemctl --user show nuochong-knowledge-db.service nuochong-knowledge-api.service nuochong-knowledge-worker.service -p Id -p ActiveState -p SubState -p Result -p ExecMainStatus -p MemoryCurrent 2>&1 || true
+          du -sh "$HOME/.local/share/nuochong-knowledge-test" "$HOME/.local/state/nuochong-knowledge-test" 2>/dev/null || true
           printf '\nLISTENING PORTS\n'
           ss -ltnH | awk '{n=split($4,a,":"); print a[n]}' | sort -nu
           printf '\nNGINX PUBLIC ROUTING\n'
