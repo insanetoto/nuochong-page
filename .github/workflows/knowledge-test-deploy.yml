@@ -29,6 +29,11 @@ jobs:
           make -s -j4 > "$RUNNER_TEMP/pg-build.log"
           make -s install DESTDIR="$RUNNER_TEMP/pg-stage" > "$RUNNER_TEMP/pg-install.log"
           tar -czf "$RUNNER_TEMP/postgres-runtime.tgz" -C "$RUNNER_TEMP/pg-stage/opt/nuochong-pg" .
+      - uses: actions/cache/save@v5
+        if: steps.pg-cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ runner.temp }}/postgres-runtime.tgz
+          key: knowledge-pg17.11-ubuntu24-x64-v1
       - name: Stage isolated service and initialize authorized demonstration account
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
@@ -57,6 +62,16 @@ jobs:
         env:
           KBV0_BOOTSTRAP_JSON: ${{ secrets.KBV0_BOOTSTRAP_JSON }}
         run: node apps/control-api/deploy/product/verify-live.mjs
+      - name: Paired private backup and service state
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+          bash "$HOME/.local/share/nuochong-knowledge-test/current/apps/control-api/deploy/product/backup.sh"
+          systemctl --user is-active nuochong-knowledge-db.service nuochong-knowledge-api.service nuochong-knowledge-worker.service nuochong-oa-test.service
+          REMOTE
       - uses: actions/upload-artifact@v7
         if: always()
         with:
