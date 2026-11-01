@@ -57,3 +57,10 @@ test('model timeout settles one failed terminal state and does not overwrite it 
  await f.work(()=>({execute:()=>new Promise(r=>finish=r),close:async()=>finish?.({status:'succeeded',text:JSON.stringify(f.compilation)})}),{timeoutMs:80});
  const state=await f.get(job.jobId);assert.equal(state.status,'failed');assert.equal(state.errorCode,'MODEL_TIMEOUT');await delay(20);assert.equal((await f.get(job.jobId)).status,'failed');
 });
+test('actual SIGKILL recovers pre-dispatch knowledge work and refuses replay after model dispatch',async t=>{
+ const {fork}=await import('node:child_process');const {once}=await import('node:events');const f=await fixture(t);
+ for(const dispatched of [false,true]){const queued=await f.enqueue(),child=fork(new URL('./knowledge-crash-child.mjs',import.meta.url),[],{env:{...process.env,TEST_SCHEMA:f.schema,TEST_OBJECT_ROOT:f.root,TEST_DISPATCH:dispatched?'yes':'no'},stdio:['ignore','ignore','ignore','ipc']});t.after(()=>child.kill('SIGKILL'));const message=await Promise.race([once(child,'message'),delay(5000).then(()=>{throw new Error('Worker claim timeout');})]);assert.equal(message[0].claimed,true);const exited=once(child,'exit');child.kill('SIGKILL');await exited;await delay(550);
+ if(dispatched){assert.equal(await f.work(),false);assert.equal((await f.get(queued.jobId)).errorCode,'UNCERTAIN_DISPATCH');}else{assert.equal(await f.work(),true);assert.equal((await f.get(queued.jobId)).status,'succeeded');}
+ const terminal=await f.pool.query("SELECT count(*)::int n FROM product_job_events WHERE job_id=$1 AND type IN ('job.completed','job.failed','job.cancelled')",[queued.jobId]);assert.equal(terminal.rows[0].n,1);
+ }
+});

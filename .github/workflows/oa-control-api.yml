@@ -38,6 +38,16 @@ jobs:
         run: npm test --prefix apps/control-api
       - name: Real restricted SDK initialization, no model credential or call
         run: node apps/control-api/src/probe-sdk.mjs
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Knowledge workbench browser against real PostgreSQL
+        run: node --test apps/control-api/test/product-web.browser.mjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: knowledge-workbench-browser
+          path: apps/control-api/results/browser/*
+          retention-days: 14
       - name: First-party plugin composition
         run: node --test packages/platform/test/*.test.mjs
       - name: Existing CLI protocol regressions and independent package
