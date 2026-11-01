@@ -24,6 +24,13 @@ export function configureDemo(home, key) {
     const found = entries.find(e => e?.id === id);
     if (found) found.disabled = true; else entries.push({ id, disabled: true });
   }
+  // Headless Linux hosts often have no OS Documents directory. Use the isolated
+  // demo directory for the official first-use workspace initializer.
+  const documentsDirectory = resolve(home, 'workspace');
+  mkdirSync(documentsDirectory, { recursive: true, mode: 0o700 });
+  const workspace = entries.find(e => e?.id === 'workspace-controller');
+  if (workspace) workspace.config = { ...workspace.config, documentsDirectory };
+  else entries.push({ id: 'workspace-controller', config: { documentsDirectory } });
   const model = entries.find(e => e?.id === 'llm-deepseek');
   if (model) { model.disabled = false; model.config = { ...model.config, apiKeyEnv: 'DEEPSEEK_API_KEY' }; }
   else entries.push({ id: 'llm-deepseek', disabled: false, config: { apiKeyEnv: 'DEEPSEEK_API_KEY' } });

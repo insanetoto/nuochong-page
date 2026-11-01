@@ -40,9 +40,9 @@ try {
     phase = 'composer-fill';
     await composer.fill('请不要使用任何工具，只回复 DEMO_MODEL_READY');
     phase = 'composer-submit';
-    await composer.press('Enter');
+    await page.getByRole('button', { name: /^发送消息$|^Send message$/i }).click();
     phase = 'model-response';
-    await page.getByText('DEMO_MODEL_READY', { exact: true }).waitFor({ state: 'visible', timeout: 120000 });
+    await page.getByText(/^DEMO_MODEL_READY[.!。]?$/).waitFor({ state: 'visible', timeout: 120000 });
   }
   phase = 'entry-form';
   if (process.env.OA_ENTRY_ORIGIN) {
@@ -72,7 +72,8 @@ try {
     try { console.error(JSON.stringify({ diagnostic: 'managed-demo', phase, errorType: error.name,
       composerCount: await page.locator('[data-composer-input]').count(),
       editableComposerCount: await page.locator('[data-composer-input][contenteditable="true"]').count(),
-      visibleDialogCount: await page.getByRole('dialog').count() })); } catch { /* No private diagnostics. */ }
+      visibleDialogCount: await page.getByRole('dialog').count(),
+      composerEmpty: (await page.locator('[data-composer-input]').first().innerText()).trim().length === 0 })); } catch { /* No private diagnostics. */ }
   }
   console.error('Live native UI verification failed at ' + phase + '; private credentials and browser diagnostics are omitted.'); process.exitCode = 1;
 } finally { await browser?.close(); }

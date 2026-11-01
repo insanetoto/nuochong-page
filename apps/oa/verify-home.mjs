@@ -90,7 +90,7 @@ try {
     assert.equal(await page.getByRole('dialog').count(), 0, 'Managed demo must not open account or credential onboarding.');
     assert.equal(await page.getByRole('textbox', { name: /API Key/i }).count(), 0);
     assert.ok(!await page.getByText(/添加一个 API Key 开始使用|Add an API key to get started/).count());
-    const composer = page.locator('[data-composer-input]:visible').first();
+    const composer = page.locator('[data-composer-input][contenteditable="true"]:visible').first();
     await composer.fill('synthetic composer input; do not send');
     await composer.fill('');
     report.managedDemoNoOnboarding = true;
