@@ -1,3 +1,4 @@
+import { knowledgeCommands } from './knowledge-commands.mjs';
 import { productCommands } from './product-commands.mjs';
 import { coreCommands } from './core-commands.mjs';
 export const CLIENT_VERSION = '0.3.0';
@@ -36,7 +37,7 @@ const runCommands = [
 ].map((command) => ({ ...command, clientStatus: 'implemented', scope: command.id === 'runs.create' || command.id === 'runs.cancel' ? 'runs:write' : 'runs:read', serverStatus: 'oa-control-api',
   authorization: 'server-identity-and-resource-policy', automaticRetry: false }));
 
-export const commands = [...runCommands, ...coreCommands,...productCommands];
+export const commands = [...runCommands, ...coreCommands,...productCommands,...knowledgeCommands];
 
 export function manifest() {
   return { contractVersion: CONTRACT_VERSION, clientVersion: CLIENT_VERSION, discovery: 'local-client-contracts; not live permission discovery',
