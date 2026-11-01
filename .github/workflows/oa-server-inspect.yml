@@ -62,6 +62,8 @@ jobs:
           printf '\nKNOWLEDGE ISOLATED SERVICES\n'
           systemctl --user show nuochong-knowledge-db.service nuochong-knowledge-api.service nuochong-knowledge-worker.service -p Id -p ActiveState -p SubState -p Result -p ExecMainStatus -p MemoryCurrent 2>&1 || true
           du -sh "$HOME/.local/share/nuochong-knowledge-test" "$HOME/.local/state/nuochong-knowledge-test" 2>/dev/null || true
+          ls -lh "$HOME/.local/share/nuochong-knowledge-test/"*.tgz 2>/dev/null || true
+          ps -u "$(id -un)" -o comm,etimes,rss | tail -20
           printf '\nLISTENING PORTS\n'
           ss -ltnH | awk '{n=split($4,a,":"); print a[n]}' | sort -nu
           printf '\nNGINX PUBLIC ROUTING\n'
