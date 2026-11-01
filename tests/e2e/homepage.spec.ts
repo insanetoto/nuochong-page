@@ -44,6 +44,12 @@ test.describe("homepage navigation and OA links", () => {
     });
   }
   test("product footer links use separate product entries and knowledge goes to the company workbench", async ({ page }) => {
+    // Verify the real Worker 307, then use the static-entry meta navigation so external
+    // redirect following cannot bypass Playwright interception and call the live server.
+    await page.route("**/product/kb", async route => {
+      const response=await route.fetch({maxRedirects:0});expect(response.status()).toBe(307);expect(response.headers().location).toBe("https://www.nuochong.net/oa-test/product/");
+      await route.fulfill({status:200,contentType:"text/html",body:'<meta http-equiv="refresh" content="0;url=https://www.nuochong.net/oa-test/product/">'});
+    });
     await page.route("https://www.nuochong.net/oa-test/product/", route => route.fulfill({status:200,contentType:"text/html",body:"<h1>Synthetic company knowledge login</h1>"}));
     for (const lang of ["zh", "en"]) {
       const names = lang === "zh" ? ["企业知识库", "培训与考试", "企业 AI 助手"] : ["Enterprise Knowledge Base", "Training & Assessments", "Enterprise AI Assistant"];
