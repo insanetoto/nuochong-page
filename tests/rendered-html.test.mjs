@@ -21,7 +21,7 @@ test("server-renders the English homepage by default", async () => {
 
   const html = await response.text();
   assert.match(html, /Nuochong Technology/);
-  assert.match(html, /Enterprise Knowledge &amp; Intelligent Training Platform/);
+  assert.match(html, /AI-Native Enterprise Products/);
   assert.match(html, /Request Access/);
   assert.match(html, /Enterprise Knowledge Base/);
   assert.match(html, /Yunnan Nuochong Technology Co\., Ltd\./);
@@ -66,9 +66,9 @@ test("supports English and Chinese with the current Material brand assets", asyn
 
   assert.match(homePage, /\/logo-mark\.svg/);
   assert.match(homePage, /nuochong-language/);
-  assert.match(homePage, /企业知识与智能培训平台/);
-  assert.match(homePage, /Enterprise Knowledge & Intelligent Training Platform/);
-  assert.match(page, /Enterprise Knowledge & Intelligent Training Platform/);
+  assert.match(homePage, /AI 原生 · 可插拔架构/);
+  assert.match(homePage, /AI-NATIVE · PLUGGABLE BY DESIGN/);
+  assert.match(page, /AI-Native Enterprise Products/);
   assert.match(layout, /lang="en"/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
 });
