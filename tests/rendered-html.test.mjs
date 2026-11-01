@@ -21,7 +21,7 @@ test("server-renders the English homepage by default", async () => {
 
   const html = await response.text();
   assert.match(html, /Nuochong Technology/);
-  assert.match(html, /Enterprise Knowledge &amp; Intelligent Training Platform/);
+  assert.match(html, /AI-Native Enterprise Products/);
   assert.match(html, /Request Access/);
   assert.match(html, /Enterprise Knowledge Base/);
   assert.match(html, /Yunnan Nuochong Technology Co\., Ltd\./);
@@ -66,9 +66,16 @@ test("supports English and Chinese with the current Material brand assets", asyn
 
   assert.match(homePage, /\/logo-mark\.svg/);
   assert.match(homePage, /nuochong-language/);
-  assert.match(homePage, /企业知识与智能培训平台/);
-  assert.match(homePage, /Enterprise Knowledge & Intelligent Training Platform/);
-  assert.match(page, /Enterprise Knowledge & Intelligent Training Platform/);
+  assert.match(homePage, /AI 原生 · 可插拔架构/);
+  assert.match(homePage, /AI-NATIVE · PLUGGABLE BY DESIGN/);
+  assert.match(page, /AI-Native Enterprise Products/);
   assert.match(layout, /lang="en"/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
+});
+
+test('fixed product entries route knowledge to its company workbench and keep planned products explicit',async()=>{
+ const kb=await render('/product/kb?return_to=https://attacker.invalid&token=untrusted');assert.equal(kb.status,307);assert.equal(kb.headers.get('location'),'https://www.nuochong.net/oa-test/product/');
+ for(const slug of ['te','ai-assistant']){const response=await render('/product/'+slug);assert.equal(response.status,200);assert.match(await response.text(),/规划中 · 尚未上线/);}
+ assert.equal((await render('/product/unknown')).status,404);
+
 });

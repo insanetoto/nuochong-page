@@ -38,3 +38,11 @@ PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH='/Applications/Google Chrome.app/Contents/Ma
 ## 2026-11-01 OA 管理员登录入口修复
 
 用户反馈直接进入原生OA地址只显示401提示；底部产品链接改为登录引导页，由管理员输入原生启动凭据，保留服务端认证及原有owner边界。再次更新同一受保护首页源码摘要，不改A-02历史截图。员工账号登录仍未实现。
+
+## 2026-11-01 三产品入口 URL 调整
+
+负责人本次明确要求企业知识库、培训考试和 AI 助手使用 `/product/kb`、`/product/te`、`/product/ai-assistant`。本次仅变更底部链接目标并增加独立入口页面，官网文字、区块顺序、CSS、素材与 SEO 不变；不更新历史像素截图冒充新视觉验收。入口行为见 docs/product/product-entry-routing.md 与 Issue #86。
+
+## 2026-11-01 AI 原生三产品首页重新设计
+
+负责人在 Issue #90 对应会话中明确要求重设计首页，突出三产品、产品价值、试用入口及 AI 原生/插件式架构。此次是获授权的新内容与布局，不再声称匹配历史 A-02 页面像素；历史基线保留。新设计以浏览器功能/响应式检查和实现截图作 QA，人工视觉验收另记，不能将 macOS 截图冒充已批准 Linux 基线。详见 docs/product/ai-native-homepage.md。
