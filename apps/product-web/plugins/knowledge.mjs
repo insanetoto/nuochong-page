@@ -1,4 +1,4 @@
-import {h,field,textField,button,heading,table,empty,section,tag,date,today,pagination,bindForm} from '../ui.mjs';
+import {h,field,selectField,textField,button,heading,table,empty,section,tag,date,today,pagination,bindForm} from '../ui.mjs';
 const scoped=(ctx,input={})=>({spaceId:ctx.spaceId,...input});
 const form=(ctx,fields,run,label='提交',success)=>bindForm(ctx,h('form',{class:'panel form-grid'},fields.map(f=>f.node??f),h('button',{type:'submit',class:'primary'},label)),run,success);
 const link=(ctx,title,route)=>button(title,()=>ctx.navigate(route),{class:'text-link'});
@@ -6,7 +6,7 @@ const citations=(ctx,items)=>section('可核验依据',items.length?items.map(c=
 const dateInput=value=>value?new Date(value+'T00:00:00+08:00').toISOString():'';
 async function home(ctx){
  const content=h('div',{},heading('让制度成为可核验的知识','从来源到知识，再到有据可查的回答。所有内容须经人工审校后发布。'));
- if(ctx.can('knowledge:publish-global')){const title=field('空间名称',{required:true,maxlength:256});content.append(section('新建知识空间',form(ctx,[title],()=>ctx.approve('knowledge.spaces.create.v1',{title:title.input.value,departmentIds:[]},'创建公司公共知识空间'),'创建空间')));}
+ if(ctx.can('knowledge:publish-global')){const title=field('空间名称',{required:true,maxlength:256});const departments=ctx.can('organization:read')?(await ctx.api('organization.departments.list.v1')).items.filter(d=>d.active):[];const scope=selectField('可见部门（不选为公司公共空间）',departments.map(d=>({value:d.id,label:d.name})),{multiple:true});content.append(section('新建知识空间',form(ctx,[title,...(departments.length?[scope]:[])],()=>ctx.approve('knowledge.spaces.create.v1',{title:title.input.value,departmentIds:[...scope.input.selectedOptions].map(o=>o.value)},'创建知识空间并设置部门范围'),'创建空间')));}
  if(!ctx.spaceId){content.append(empty('尚无可访问的知识空间。请由管理员创建空间并分配权限。'));return {node:content};}
  const data=await ctx.api('knowledge.pages.list.v1',scoped(ctx,{view:'published'}));content.append(section('现行知识',data.items.length?h('div',{class:'cards'},data.items.map(p=>h('article',{class:'panel'},tag(p.pageState),h('h2',{},link(ctx,p.title,'read/'+p.pageId)),h('p',{class:'muted'},'版本 '+p.revision+' · '+p.sourceIds.length+' 项来源')))):empty('还没有发布的知识。管理员可导入来源、编译草稿、审校并发布。')));return {node:content};
 }

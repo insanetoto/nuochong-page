@@ -1,0 +1,18 @@
+{
+  "time": "2026-11-01T14:03:12.046Z",
+  "revision": "51ed85e09c3bb56b2aba53156876f194851681a9",
+  "scope": "Isolated public test, real worker and Harness model; synthetic policy only",
+  "passed": true,
+  "submittedModelTasks": 2,
+  "providerRequests": "not-measured",
+  "cost": "unknown",
+  "websites200": true,
+  "companyLogin": true,
+  "sourceImport": true,
+  "compiledDraft": true,
+  "syntheticReviewPublication": true,
+  "answerCitesRawRevision": true,
+  "mobileNoHorizontalOverflow": true,
+  "nativeAccountStillWorks": true,
+  "logout": true
+}

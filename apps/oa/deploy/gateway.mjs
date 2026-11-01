@@ -6,11 +6,12 @@ import {resolve} from 'node:path';
 import httpProxy from 'http-proxy';
 const scrypt=promisify(callbackScrypt);
 const digest=value=>createHash('sha256').update(value).digest();
-export function createGateway({home,upstream,port,publicOrigin='https://www.nuochong.net'}){
+export function createGateway({home,upstream,port,publicOrigin='https://www.nuochong.net',productUpstream}){
  const publicHost=new URL(publicOrigin).host;
  const proxy=httpProxy.createProxyServer({target:upstream,ws:true,xfwd:false});let failures=0,reset=Date.now()+900000;
  const server=createServer(async(req,res)=>{
   const path=(req.url??'').split('?')[0];
+  if(productUpstream&&(path==='/product'||path.startsWith('/product/'))){proxy.web(req,res,{target:productUpstream});return;}
   if(path!=='/__login'){proxy.web(req,res);return;}
   const deny=(status,message)=>{res.writeHead(status,{'content-type':'text/html; charset=utf-8','cache-control':'no-store','referrer-policy':'no-referrer','x-content-type-options':'nosniff'});res.end(`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>OA 登录</title><p>${message}</p><a href="/oa-login.html">返回登录页</a></html>`);};
   if(req.method!=='POST'||req.headers.host!==publicHost||!/^application\/x-www-form-urlencoded(?:;|$)/i.test(req.headers['content-type']??'')){deny(400,'登录请求无效。');return;}
@@ -31,6 +32,6 @@ export function createGateway({home,upstream,port,publicOrigin='https://www.nuoc
   }catch{deny(503,'登录服务暂不可用，请联系管理员。');}
  });
  proxy.on('error',(_error,_req,res)=>{if(res?.writeHead&&!res.headersSent){res.writeHead(502,{'content-type':'text/plain'});res.end('OA service unavailable');}else res?.destroy?.();});
- server.on('upgrade',(req,socket,head)=>proxy.ws(req,socket,head));
+ server.on('upgrade',(req,socket,head)=>{if((req.url??'').startsWith('/product')){socket.end('HTTP/1.1 404 Not Found\r\n\r\n');return;}proxy.ws(req,socket,head);});
  return {server,listen:()=>new Promise((ok,fail)=>server.once('error',fail).listen(port,'127.0.0.1',ok)),close:()=>new Promise(ok=>{proxy.close();server.close(ok);})};
 }

@@ -72,3 +72,8 @@ test('knowledge CLI reads the same authorized publication and denies unpublished
  const result=JSON.parse((await cli(['knowledge','search'],{spaceId:f.spaceId,query:'出差'})).stdout);assert.equal(result.data.items[0].pageId,p.pageId);
  await assert.rejects(cli(['knowledge','sources','list'],{spaceId:f.spaceId}),e=>{assert.ok(e.stderr.includes('FORBIDDEN'));assert.ok(!e.stderr.includes(reader.token));return true;});
 });
+test('draining knowledge remains readable while new writes fail; an incompatible installed plugin fails closed',async t=>{
+ const f=await fixture(t),s=await f.ingest(),p=await f.draft(s);await f.review(p);await f.publish(p);const reader=await f.reader();
+ await f.pool.query("UPDATE product_plugins SET state='draining' WHERE id='knowledge'");assert.equal((await f.call('knowledge.pages.get.v1',{spaceId:f.spaceId,pageId:p.pageId,view:'published'},reader.token)).status,200);assert.equal((await f.call('knowledge.answers.ask.v1',{spaceId:f.spaceId,query:'出差',idempotencyKey:randomUUID()},reader.token)).status,503);
+ await f.pool.query("UPDATE product_plugins SET version='2.0.0' WHERE id='knowledge'");assert.equal((await f.call('knowledge.pages.list.v1',{spaceId:f.spaceId,view:'published'},reader.token)).status,503);
+});

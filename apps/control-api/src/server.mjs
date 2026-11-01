@@ -1,7 +1,7 @@
 import { environment } from './config.mjs';
 import { poolFor } from './db.mjs';
 import { createApp } from './app.mjs';
-const config=environment();const pool=poolFor(config.databaseURL,config.schema);const {app}=createApp(pool,{product:{objectRoot:config.objectRoot,publicOrigin:config.productPublicURL}});
+const config=environment();const pool=poolFor(config.databaseURL,config.schema);const {app}=createApp(pool,{product:{cookiePath:config.productCookiePath,objectRoot:config.objectRoot,publicOrigin:config.productPublicURL}});
 await app.listen({host:'127.0.0.1',port:config.port});
 console.log(JSON.stringify({service:'oa-control-api',port:config.port}));
 let closing;const close=()=>closing??=(async()=>{await app.close();await pool.end();})();

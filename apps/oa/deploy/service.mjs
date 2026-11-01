@@ -32,7 +32,7 @@ for (const output of [child.stdout, child.stderr]) {
     console.log(line.replace(/https?:\/\/[^\s\u001b]+/g, '<redacted-url>'));
   });
 }
-const gateway=createGateway({home,upstream:`http://127.0.0.1:${internalPort}`,port:listenPort,publicOrigin});
+const gateway=createGateway({home,upstream:`http://127.0.0.1:${internalPort}`,port:listenPort,publicOrigin,productUpstream:process.env.NUOCHONG_PRODUCT_UPSTREAM});
 await gateway.listen();
 const stop = () => child.kill('SIGTERM');
 process.on('SIGTERM', stop); process.on('SIGINT', stop);

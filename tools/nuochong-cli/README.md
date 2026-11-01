@@ -2,7 +2,7 @@
 
 OA/Harness能力的命令行入口；通过控制API使用服务端身份、资源授权和运行状态。独立于上游 `dsh`，不会暴露 Harness 宿主管理权限、数据库或模型凭据。
 
-当前实现22项运行/会话/身份/模型与只读工具命令，与apps/control-api使用同一契约；已有真实PostgreSQL/HTTP/CLI及本机真实模型验收。新API尚未发布公网，不能把原生Web端口当作控制API。未来MCP、审计/用量等仍为planned；旧业务模块不属于当前清单。
+当前可执行契约共 59 项：22 项基座能力、17 项共享身份/组织/权限/插件能力、14 项知识来源与审校发布能力、6 项知识任务能力。CLI 与 apps/control-api 使用同一契约；MCP 可受限公开已实现命令。知识库初版工程验证见 docs/product/v0/validation.md，部署状态见 docs/refactor/roadmap.md。旧业务演示不属于当前清单。
 
 ## 直接运行与安装
 
@@ -83,10 +83,16 @@ node --test tools/nuochong-cli/test/*.test.mjs
 node tools/nuochong-cli/test/package-smoke.mjs
 ```
 
-本机macOS Node24验证；远程Linux Node22.13/24.21由product-cli.yml执行，结果以PR检查为准。Windows尚未验证。源码与规范见[产品CLI方案](../../docs/refactor/cli-native.md)。MCP适配为后续范围，本次没有部署MCP服务或连接外部AI账号。
+本机macOS Node24验证；远程Linux Node22.13/24.21由product-cli.yml执行，结果以PR检查为准。Windows尚未验证。源码与规范见[产品CLI方案](../../docs/refactor/cli-native.md)。MCP 以受限 stdio 适配复用同一 API；不是直接连接原生 owner 或个人模型 Key。
 
 原生Harness Web的3080端口不是本客户端的控制API。当前兼容API位于apps/control-api，绑定实际服务地址与受限凭据后使用；合成测试、真实数据库与真实模型报告分别记录。
 
-22项命令列表通过capabilities/schema发现。新增示例：`nuochong auth me`、`nuochong sessions list`、`nuochong models config get`、`nuochong tools list`、`nuochong runtime status`。身份/凭据管理须admin用户且auth:manage；模型配置须config:write。成员只能访问自身运行/会话。列表/history可用JSON after游标，退出前查询终态而不是把stream退出0等同于模型成功。完整部署/身份边界见[控制API手册](../../apps/control-api/README.md)。
+基座与产品命令列表通过 capabilities/schema 发现。新增示例：`nuochong auth me`、`nuochong sessions list`、`nuochong models config get`、`nuochong tools list`、`nuochong runtime status`。身份/凭据管理须admin用户且auth:manage；模型配置须config:write。成员只能访问自身运行/会话。列表/history可用JSON after游标，退出前查询终态而不是把stream退出0等同于模型成功。完整部署/身份边界见[控制API手册](../../apps/control-api/README.md)。
 
 OA-04补充：auth logout只撤销当前已认证凭据，不接受客户端指定目标；auth principals set-role仅管理员可用，角色变化递增主体epoch，使全部旧凭据失效，服务主体不能提升为admin，最后一个活跃管理员不能降级。重新启用同一状态不重复撤销新凭据。
+
+## 知识库初版
+
+测试产品 API 需配置 `NUOCHONG_API_URL=https://www.nuochong.net` 和 `NUOCHONG_API_PREFIX=/oa-test`。通过 `identity login --input -` 发送 `{"username":"公司账号","password":"私有密码","delivery":"bearer"}`，将返回的个人凭据保存在私有环境 `NUOCHONG_ACCESS_TOKEN`；不要把密码写入 shell 历史。`identity me` 用于公司身份；不能把管理员原生 Cookie 或模型 Key 当成 Bearer。
+
+`knowledge spaces list`、`knowledge pages list --input -`、`knowledge search --input -` 共用资源权限。编译与问答先返回持久任务，再查询 `knowledge jobs get/events`；初版不提供知识任务 SSE follow，不能直接套用基座 runs events。发布、来源撤回、组织授权等写入须先 `access approvals create` 绑定精确 target，再带 approvalId/idempotencyKey 执行；dry-run 不能绕过。所有输入/输出字段用 `schema <commandId> --json` 查看；没有实现的格式/连接器不返回假成功。

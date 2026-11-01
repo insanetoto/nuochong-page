@@ -65,3 +65,8 @@ test('new member accounts and CLI use the exact same versioned server authorizat
  assert.equal(JSON.parse(result.stdout).data.principalId,m.principalId);
  await assert.rejects(exec(process.execPath,['tools/nuochong-cli/bin/nuochong.mjs','org','members','list','--input','{}','--json'],{cwd:new URL('../../..',import.meta.url),env:{PATH:process.env.PATH,NUOCHONG_API_URL:f.app.listeningOrigin,NUOCHONG_ACCESS_TOKEN:login.data.token}}),e=>e.code===5);
 });
+test('an explicitly configured proxy cookie path is applied to login and logout without trusting the client',async t=>{
+ const f=await productFixture(t,{product:{publicOrigin:'https://www.nuochong.net/oa-test/product/',cookiePath:'/product/'}});
+ const login=await f.call('identity.login.v1',{username:'synthetic-admin',password:'synthetic-test-pass',delivery:'cookie'},null,{origin:'https://www.nuochong.net'});assert.equal(login.status,200);const set=login.headers.get('set-cookie');assert.match(set,/Path=\/product\//);assert.match(set,/Secure/);assert.equal(/Path=([^;]+)/.exec(set.replace('Path=/','Path=/oa-test/'))[1],'/oa-test/product/');
+ const cookie=set.split(';')[0];assert.equal((await f.call('identity.me.v1',{},null,{cookie})).status,200);assert.equal((await f.call('identity.logout.v1',{idempotencyKey:randomUUID()},null,{cookie})).status,403);const logout=await f.call('identity.logout.v1',{idempotencyKey:randomUUID()},null,{cookie,origin:'https://www.nuochong.net'});assert.equal(logout.status,200);assert.match(logout.headers.get('set-cookie'),/Path=\/product\//);assert.match(logout.headers.get('set-cookie'),/Max-Age=0/);
+});

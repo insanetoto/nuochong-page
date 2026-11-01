@@ -12,12 +12,12 @@ export const targetOf=input=>Object.fromEntries(Object.entries(input).filter(([k
 export const bindingDTO=r=>({id:r.id,principalId:r.principal_id,roleId:r.role_id,scopeId:r.scope_id,revision:r.revision});
 export class AccessKernel {
  constructor(pool,identity){this.pool=pool;this.identity=identity;}
- async registry(db){const rows=(await db.query('SELECT * FROM product_plugins')).rows;return new PluginRegistry(foundationManifests.map(m=>({...m,state:rows.find(r=>r.id===m.id)?.state??'disabled'})));}
+ async registry(db){const rows=(await db.query('SELECT * FROM product_plugins')).rows;return new PluginRegistry(foundationManifests.map(m=>{const row=rows.find(r=>r.id===m.id);if(row&&row.version!==m.version)throw new Error('INCOMPATIBLE_PLUGIN');const namespace=m.id==='identity-company'?'identity':m.id==='access-management'?'access':m.id;return {...m,state:row?.state??'disabled',commands:commands.filter(c=>c.product&&c.id.startsWith(namespace+'.')).map(c=>c.id)};}));}
  async context(db,actor){
   const live=(await db.query(`SELECT p.id,p.kind FROM credentials c JOIN principals p ON p.id=c.principal_id JOIN product_members m ON m.principal_id=p.id
     WHERE c.id=$1 AND c.principal_id=$2 AND NOT c.revoked AND c.expires_at>clock_timestamp() AND p.active AND c.principal_epoch=p.epoch FOR SHARE OF c,p`,[actor.credential_id,actor.id])).rows[0];
   requireThat(live,401,'UNAUTHORIZED');
-  const bindings=(await db.query("SELECT b.*,r.permissions FROM product_bindings b JOIN product_roles r ON r.id=b.role_id JOIN product_plugins pp ON pp.id=r.product_id AND pp.state='enabled' WHERE principal_id=$1",[actor.id])).rows;
+  const bindings=(await db.query("SELECT b.*,r.permissions FROM product_bindings b JOIN product_roles r ON r.id=b.role_id JOIN product_plugins pp ON pp.id=r.product_id AND pp.state IN ('enabled','draining') WHERE principal_id=$1",[actor.id])).rows;
   const departments=(await db.query('SELECT m.department_id FROM product_memberships m JOIN product_departments d ON d.id=m.department_id WHERE m.principal_id=$1 AND d.active',[actor.id])).rows.map(r=>r.department_id);
   return {actor,bindings,departments,has:(permission,scope='*')=>bindings.some(b=>b.permissions.includes(permission)&&(b.scope_id==='*'||b.scope_id===scope))};
  }

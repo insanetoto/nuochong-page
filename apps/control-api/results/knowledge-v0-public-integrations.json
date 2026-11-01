@@ -1,0 +1,9 @@
+{
+  "time": "2026-11-01T14:04:06.569Z",
+  "revision": "51ed85e09c3bb56b2aba53156876f194851681a9",
+  "scope": "Real public company API, CLI and MCP, no model call",
+  "passed": true,
+  "cliPublicPrefix": true,
+  "mcpSamePublication": true,
+  "forgedIdentityDenied": true
+}
