@@ -1,6 +1,6 @@
 # 公司产品体系：一个 AI 基座、三个产品插件
 
-2026-11-01 · 设计 v1 · planned，非既有实现清单。
+2026-11-01 · 设计 v1.1 · planned，非既有实现清单。
 
 ## 定位与产品边界
 
@@ -30,12 +30,19 @@ flowchart TB
  K --> H[Harness 窄适配与持久 Worker]
  T --> H
  L --> H
- API --> P[公共身份 / 命令注册 / 审批 / 审计 / 事件]
+ API --> P[可信身份验证 / 授权执行 / 审批 / 审计 / 事件]
+ P --> O[共享身份 / 组织人员 / 角色管理插件]
  K --> DB[PostgreSQL 与私有对象存储]
  T --> DB
  L --> DB
  H --> D[公司 DeepSeek 凭据与模型服务]
 ```
+
+## 共享组织与授权插件
+
+部门、人员目录、公司身份和角色授权由三产品共用，拆为 `identity-company`、`organization`、`access-management` 与可选 `directory-connectors`。可组合为独立知识库或任意产品套件；使用部门策略就必须安装组织插件，不能缺失后退为全员可见。
+
+组织/角色管理页面、数据和变更流程可以插件化；身份验证和最终授权强制执行仍在可信核心。各产品仅登记自己的权限点/资源/角色模板，不复制人员主库，也不读取其他插件表。详细模型、组合矩阵、撤权一致性及统一管理页面见 [共享组织与权限设计](shared-access/design.md)。
 
 ## 插件究竟是什么
 
@@ -54,7 +61,11 @@ flowchart TB
 ```text
 apps/product-web/                 # 员工工作台，与 apps/oa 原生管理员页面分离
 apps/control-api/                 # 复用现有控制 API
-packages/platform/               # 身份、能力注册、审批、事件与插件生命周期
+packages/platform/               # 身份验证/授权执行、能力注册、审批、事件与插件生命周期
+plugins/identity-company/         # 公司 principal/person 绑定与认证适配
+plugins/organization/             # 统一部门、人员目录和成员关系
+plugins/access-management/        # 角色/权限目录/范围绑定及共享管理页面
+plugins/directory-connectors/     # 可选外部企业目录同步
 plugins/knowledge/               # domain / application / api / worker / harness / web / contracts
 plugins/enterprise-tools/        # 工具目录、执行与产物
 plugins/learning/                # 课程、题库、考试与成绩
@@ -67,7 +78,7 @@ contracts/product/              # 能力元数据、JSON Schema、OpenAPI、事�
 | 波次 | 知识库 | 企业 AI 工具 | 培训和考试 | 共同依赖与出口 |
 | --- | --- | --- | --- | --- |
 | P0 | 设计与产品评审 | 工具卡/权限技术设计 | 知识引用/考试领域设计 | 本轮成果；下轮确认规则，不同时开三个 MVP |
-| P1 | 来源、编译、审校发布和浏览 | 只保留平台扩展契约 | 只保留引用契约 | 插件骨架、员工身份、公司模型、统一命令 |
+| P1 | 来源、编译、审校发布和浏览 | 只保留平台扩展契约 | 只保留引用契约 | 插件骨架、共享身份/组织/授权、公司模型、统一命令 |
 | P2 | 引用问答、维护、API/CLI/MCP 试点 | 选择首个真实办公痛点，再做工具目录/输入 schema/受控运行/产物下载 | 做课程/题库设计验证，不发布正式成绩 | 知识库通过试点验收后，产品线可并行 |
 | P3 | 首个厂商连接器、知识域扩展 | 工具审批、失败补偿、业务连接器 | 课程发布、学习分配、考试规则、评分与申诉审计 | 各产品独立验收，不用知识库的 Go 代替 |
 | P4 | 持续质量及容量优化 | 工具组合和运营 | 学习路径/补考及外部 LMS | 数据规模、效果和业务需求驱动 |

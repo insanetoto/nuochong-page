@@ -1,17 +1,18 @@
 # 诺崇产品体系与企业知识库设计
 
-2026-11-01 · 规划 v1 · 状态：设计已形成，待下一轮产品评审。用户已授权本轮自主形成整体成果；这不等于逐项人工验收或所有业务功能已实现。
+2026-11-01 · 规划 v1.1 · 状态：设计已形成，待下一轮产品评审。用户已授权本轮自主形成整体成果；这不等于逐项人工验收或所有业务功能已实现。
 
 推荐阅读顺序：
 
 1. [公司产品体系与三条技术路线](portfolio.md)
-2. [插件架构决策 ADR-011](../adr/ADR-011-product-plugins-llm-wiki.md)
-3. [知识库产品与技术设计](knowledge/design.md)
-4. [知识库页面与交互设计](knowledge/pages.md)
-5. [可点击页面原型](prototypes/knowledge.html)（合成数据、界面评审专用，没有连接业务 API）
-6. [任务、依赖及验收](tasks.md)
-7. [演示模型交付记录](demo-delivery.md)
-8. [整体产品路线图](../refactor/roadmap.md)
+2. [共享组织、人员与角色权限插件](shared-access/design.md)
+3. [插件架构决策 ADR-011](../adr/ADR-011-product-plugins-llm-wiki.md)
+4. [知识库产品与技术设计](knowledge/design.md)
+5. [知识库页面与交互设计](knowledge/pages.md)
+6. [可点击页面原型](prototypes/knowledge.html)（合成数据、界面评审专用，没有连接业务 API）
+7. [任务、依赖及验收](tasks.md)
+8. [演示模型交付记录](demo-delivery.md)
+9. [整体产品路线图](../refactor/roadmap.md)
 
 ## 本轮范围和依据
 

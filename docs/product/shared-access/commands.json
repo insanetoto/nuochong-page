@@ -1,0 +1,755 @@
+{
+  "version": 1,
+  "status": "planned",
+  "note": "Design-only candidate envelopes, not runtime contracts. IAM-01 defines target IDs, scopes, pagination and complete DTO; creation uses expectedRevision=absent. permissions.check is current caller only. No ready capability is added. Sensitive-write default approval is reviewed by operation in IAM-01.",
+  "commands": [
+    {
+      "commandId": "organization.departments.list.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; complete domain DTO in IAM-01",
+      "cli": "nuochong org departments list",
+      "sideEffect": "read",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": []
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "organization.departments.create.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; complete domain DTO in IAM-01",
+      "cli": "nuochong org departments create",
+      "sideEffect": "write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "expectedRevision",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "organization.departments.update.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; complete domain DTO in IAM-01",
+      "cli": "nuochong org departments update",
+      "sideEffect": "write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "expectedRevision",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "organization.departments.archive.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; complete domain DTO in IAM-01",
+      "cli": "nuochong org departments archive",
+      "sideEffect": "write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "expectedRevision",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "organization.members.list.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; complete domain DTO in IAM-01",
+      "cli": "nuochong org members list",
+      "sideEffect": "read",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": []
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "organization.members.upsert.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; complete domain DTO in IAM-01",
+      "cli": "nuochong org members upsert",
+      "sideEffect": "write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "expectedRevision",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "organization.members.memberships.update.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; complete domain DTO in IAM-01",
+      "cli": "nuochong org members memberships update",
+      "sideEffect": "write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "expectedRevision",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "organization.members.deactivate.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; complete domain DTO in IAM-01",
+      "cli": "nuochong org members deactivate",
+      "sideEffect": "write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "expectedRevision",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "access.roles.list.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; complete domain DTO in IAM-01",
+      "cli": "nuochong access roles list",
+      "sideEffect": "read",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": []
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "access.roles.upsert.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; complete domain DTO in IAM-01",
+      "cli": "nuochong access roles upsert",
+      "sideEffect": "write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "expectedRevision",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "access.bindings.grant.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; complete domain DTO in IAM-01",
+      "cli": "nuochong access bindings grant",
+      "sideEffect": "write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "expectedRevision",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "access.bindings.revoke.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; complete domain DTO in IAM-01",
+      "cli": "nuochong access bindings revoke",
+      "sideEffect": "write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "expectedRevision",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "access.permissions.check.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; complete domain DTO in IAM-01",
+      "cli": "nuochong access permissions check",
+      "sideEffect": "read",
+      "approvalRequired": false,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": []
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    },
+    {
+      "commandId": "organization.connectors.sync.v1",
+      "status": "planned",
+      "contractMaturity": "draft-envelope; complete domain DTO in IAM-01",
+      "cli": "nuochong org connectors sync",
+      "sideEffect": "write",
+      "approvalRequired": true,
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16
+          },
+          "expectedRevision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "expectedRevision",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requestId"
+        ]
+      }
+    }
+  ]
+}
