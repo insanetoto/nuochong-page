@@ -72,3 +72,10 @@ test("supports English and Chinese with the current Material brand assets", asyn
   assert.match(layout, /lang="en"/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
 });
+
+test('fixed product entries route knowledge to its company workbench and keep planned products explicit',async()=>{
+ const kb=await render('/product/kb?return_to=https://attacker.invalid&token=untrusted');assert.equal(kb.status,307);assert.equal(kb.headers.get('location'),'https://www.nuochong.net/oa-test/product/');
+ for(const slug of ['te','ai-assistant']){const response=await render('/product/'+slug);assert.equal(response.status,200);assert.match(await response.text(),/规划中 · 尚未上线/);}
+ assert.equal((await render('/product/unknown')).status,404);
+
+});
