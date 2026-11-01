@@ -43,16 +43,16 @@ test.describe("homepage navigation and OA links", () => {
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     });
   }
-  test("all product footer links open the OA login page", async ({ page }) => {
+  test("product footer links use separate product entries and knowledge goes to the company workbench", async ({ page }) => {
+    await page.route("https://www.nuochong.net/oa-test/product/", route => route.fulfill({status:200,contentType:"text/html",body:"<h1>Synthetic company knowledge login</h1>"}));
     for (const lang of ["zh", "en"]) {
       const names = lang === "zh" ? ["企业知识库", "培训与考试", "企业 AI 助手"] : ["Enterprise Knowledge Base", "Training & Assessments", "Enterprise AI Assistant"];
-      for (const name of names) {
+      for (const [index,name] of names.entries()) {
         await page.goto(`/?lang=${lang}`, { waitUntil: "networkidle" });
-        const link = page.locator("footer").getByRole("link", { name, exact: true });
-        await expect(link).toHaveAttribute("href", "/oa-login.html");
-        await link.click();
-        await expect(page).toHaveURL(/\/oa-login\.html$/);
-        await expect(page.getByRole("heading", { name: "登录 OA 管理员页面" })).toBeVisible();
+        const path=["/product/kb","/product/te","/product/ai-assistant"][index];
+        const link=page.locator("footer").getByRole("link",{name,exact:true});await expect(link).toHaveAttribute("href",path);await link.click();
+        if(index===0){await expect(page).toHaveURL("https://www.nuochong.net/oa-test/product/");await expect(page.getByRole("heading",{name:"Synthetic company knowledge login"})).toBeVisible();}
+        else {await expect(page).toHaveURL(new RegExp(path+"/?$"));await expect(page.getByText("规划中 · 尚未上线",{exact:true})).toBeVisible();await expect(page.locator('form')).toHaveCount(0);}
       }
     }
   });
