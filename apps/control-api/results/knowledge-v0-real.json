@@ -1,0 +1,16 @@
+{
+  "time": "2026-11-01T10:21:34.120Z",
+  "platform": "darwin",
+  "node": "v24.21.0",
+  "provider": "deepseek-official",
+  "model": "deepseek-v4-flash",
+  "scope": "Real restricted Harness + PostgreSQL + private objects + company API",
+  "submittedTasks": 2,
+  "providerRequests": "not-measured",
+  "cost": "unknown",
+  "passed": true,
+  "compiledDraft": true,
+  "reviewedPublication": true,
+  "answerHasCurrentRawRevision": true,
+  "noOwnerOrClientKey": true
+}

@@ -24,7 +24,7 @@ export class AccessKernel {
  async event(db,type,id){const row=(await db.query('UPDATE product_settings SET epoch=epoch+1 WHERE id=1 RETURNING epoch')).rows[0];await db.query('INSERT INTO product_outbox(event_id,type,resource_id,revision) VALUES($1,$2,$3,$4)',[randomUUID(),type,id,row.epoch]);}
  async perform(actor,command,input,body,authorize=async()=>{}){
   return transaction(this.pool,async db=>{
-   await db.query("SELECT pg_advisory_xact_lock(hashtext('product-domain-state'))");
+   await db.query('SELECT pg_advisory_xact_lock(hashtext($1))',[this.pool.oaSchema+':product-domain-state']);
    try {
     const registry=await this.registry(db);registry.assertEnabled('identity-company',command.sideEffect!=='none');registry.assertEnabled('access-management',command.sideEffect!=='none');
     if(command.id.startsWith('organization.'))registry.assertEnabled('organization',command.sideEffect!=='none');
@@ -69,7 +69,7 @@ export class AccessKernel {
  }
  async login(input){
   return transaction(this.pool,async db=>{
-   await db.query("SELECT pg_advisory_xact_lock(hashtext('product-login'))");
+   await db.query('SELECT pg_advisory_xact_lock(hashtext($1))',[this.pool.oaSchema+':product-login']);
    await db.query("UPDATE product_login_limit SET failures=0,window_start=clock_timestamp() WHERE id=1 AND window_start<clock_timestamp()-interval '15 minutes'");
    const limits=(await db.query('SELECT * FROM product_login_limit WHERE id=1')).rows[0];requireThat(limits.failures<20,429,'RATE_LIMITED');
    const row=(await db.query('SELECT a.*,p.active,p.kind,p.name FROM product_accounts a JOIN principals p ON p.id=a.principal_id WHERE username=$1',[input.username])).rows[0];
@@ -119,7 +119,7 @@ export class AccessKernel {
 export async function bootstrapProduct(pool,identity,{username,password}){
  requireThat(typeof username==='string'&&username.length>0&&username.length<=128&&typeof password==='string'&&password.length>=8&&password.length<=512,400,'INVALID_INPUT');
  return transaction(pool,async db=>{
-  await db.query("SELECT pg_advisory_xact_lock(hashtext('product-domain-state'))");
+  await db.query('SELECT pg_advisory_xact_lock(hashtext($1))',[pool.oaSchema+':product-domain-state']);
   requireThat(!(await db.query('SELECT initialized FROM product_settings WHERE id=1')).rows[0].initialized,409,'ALREADY_INITIALIZED');
   const id=randomUUID();const salt=randomBytes(16).toString('hex');
   const principal=(await db.query("INSERT INTO principals(id,name,kind,role) VALUES($1,$2,'user','member') RETURNING *",[id,username])).rows[0];

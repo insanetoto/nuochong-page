@@ -1,3 +1,4 @@
+import {KnowledgeJobs} from '../../../plugins/knowledge/jobs.mjs';
 import {KnowledgeService} from '../../../plugins/knowledge/service.mjs';
 import {resolve} from 'node:path';
 import {commands,valid} from '../../../tools/nuochong-cli/src/registry.mjs';
@@ -7,6 +8,7 @@ import {requireThat} from './errors.mjs';
 export function registerProduct(app,{pool,identity,publicOrigin,objectRoot=resolve('apps/control-api/.state/product-objects')}){
  const kernel=new AccessKernel(pool,identity),organization=new OrganizationService(kernel);
  const knowledge=new KnowledgeService(kernel,objectRoot);
+ const jobs=new KnowledgeJobs(kernel,knowledge);
  const trustedOrigin=()=>publicOrigin?new URL(publicOrigin).origin:app.listeningOrigin;
  for(const command of commands.filter(c=>c.product))app.post(command.path,async(req,reply)=>{
   const pending=[{value:req.body,depth:0}];let nodes=0;
@@ -32,10 +34,10 @@ export function registerProduct(app,{pool,identity,publicOrigin,objectRoot=resol
   }
   if(!bearer&&cookie&&command.sideEffect!=='none')requireThat(origin===trustedOrigin(),403,'INVALID_ORIGIN');
   const actor=await identity.authenticate(bearer??cookie);req.oaAudit={actorId:actor.id,action:command.id};
-  const data=await kernel.perform(actor,command,req.body,(db,ctx)=>command.id.startsWith('knowledge.')?knowledge.dispatch(db,ctx,command.id,req.body):command.id.startsWith('organization.')?organization.dispatch(db,ctx,command.id,req.body):kernel.dispatch(db,ctx,command.id,req.body),(db,ctx)=>command.id.startsWith('knowledge.')?knowledge.authorize(db,ctx,command,req.body):undefined);
+  const data=await kernel.perform(actor,command,req.body,(db,ctx)=>['knowledge.compilations.create.v1','knowledge.answers.ask.v1'].includes(command.id)||command.id.startsWith('knowledge.jobs.')?jobs.dispatch(db,ctx,command.id,req.body):command.id.startsWith('knowledge.')?knowledge.dispatch(db,ctx,command.id,req.body):command.id.startsWith('organization.')?organization.dispatch(db,ctx,command.id,req.body):kernel.dispatch(db,ctx,command.id,req.body),(db,ctx)=>command.id.startsWith('knowledge.')?knowledge.authorize(db,ctx,command,req.body):undefined);
   requireThat(valid(command.outputSchema,data),500,'INVALID_RESPONSE');
   if(command.id==='identity.logout.v1')reply.header('set-cookie',`product_session=; Path=${publicOrigin?new URL(publicOrigin).pathname.replace(/\/$/,'')+'/':'/product/'}; HttpOnly; SameSite=Strict; Max-Age=0${trustedOrigin().startsWith('https:')?'; Secure':''}`);
   return data;
  });
- return {kernel,organization,knowledge};
+ return {kernel,organization,knowledge,jobs};
 }

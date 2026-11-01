@@ -37,7 +37,7 @@
     "accept": "真实模型编译/问答证据独立；无依据/来源变化拒绝；失效权限不返回结果；任务租约和终态测试；不自动发布。",
     "url": "https://github.com/insanetoto/nuochong-page/issues/74",
     "number": 74,
-    "status": "Backlog"
+    "status": "Implemented; 9 queue tests, 9 knowledge tests and 2 real Harness tasks passed; human acceptance pending"
   },
   {
     "id": "KBV0-05",
