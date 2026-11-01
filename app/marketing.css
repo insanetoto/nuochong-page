@@ -12,3 +12,4 @@
 @media(prefers-reduced-motion:reduce){.m-system-product{transition:none}}
 /* Keep product copy and release-state labels readable at desktop and mobile sizes. */
 .m-product-card>p{font-size:14px;line-height:1.85}.m-product-card ul{font-size:12px}.m-state{font-size:10px;color:#52657e}.m-product-card h3{font-size:25px}.m-system-product{color:#52657d}.m-system-product b{font-size:14px}.m-system-product small{font-size:11px}.m-principles p{font-size:13px}.m-scenario-grid article>span{color:#61758e}.m-direction{color:#61758e}.m-card-cta{font-size:13px!important}.m-card-link{font-size:13px}@media(max-width:760px){.m-product-card>p{font-size:14px}.m-product-card ul{font-size:12px}}
+.marketing-page h1,.marketing-page h2,.marketing-page h3,.marketing-page h4{text-wrap:balance}
