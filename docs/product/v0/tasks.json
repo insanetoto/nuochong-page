@@ -27,7 +27,7 @@
     "accept": "重复提交/并发发布/审批 hash 失效/撤回/有效期/跨权限下载负例；仅实现明确支持的格式，其他返回未实现。",
     "url": "https://github.com/insanetoto/nuochong-page/issues/73",
     "number": 73,
-    "status": "Backlog"
+    "status": "Implemented; immutable sources, citation/review/publication tests passed; human acceptance pending"
   },
   {
     "id": "KBV0-04",

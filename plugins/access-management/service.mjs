@@ -22,7 +22,7 @@ export class AccessKernel {
   return {actor,bindings,departments,has:(permission,scope='*')=>bindings.some(b=>b.permissions.includes(permission)&&(b.scope_id==='*'||b.scope_id===scope))};
  }
  async event(db,type,id){const row=(await db.query('UPDATE product_settings SET epoch=epoch+1 WHERE id=1 RETURNING epoch')).rows[0];await db.query('INSERT INTO product_outbox(event_id,type,resource_id,revision) VALUES($1,$2,$3,$4)',[randomUUID(),type,id,row.epoch]);}
- async perform(actor,command,input,body){
+ async perform(actor,command,input,body,authorize=async()=>{}){
   return transaction(this.pool,async db=>{
    await db.query("SELECT pg_advisory_xact_lock(hashtext('product-domain-state'))");
    try {
@@ -33,6 +33,7 @@ export class AccessKernel {
    const ctx=await this.context(db,actor);
    requireThat(actor.scopes.includes(command.scope));
    if(command.permission)requireThat(ctx.has(command.permission,command.scopeField?input[command.scopeField]:'*'));
+   await authorize(db,ctx);
    const mutating=command.sideEffect!=='none';
    if(mutating){
     const old=(await db.query('SELECT * FROM product_writes WHERE actor_id=$1 AND command_id=$2 AND key=$3',[actor.id,command.id,input.idempotencyKey])).rows[0];
