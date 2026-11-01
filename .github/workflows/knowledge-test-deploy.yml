@@ -47,7 +47,10 @@ jobs:
           remote_base=.local/share/nuochong-knowledge-test
           ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "mkdir -p $remote_base/releases/$GITHUB_SHA $remote_base/postgres/17.11 .local/state/nuochong-knowledge-test && chmod 700 .local/state/nuochong-knowledge-test"
           tar -czf "$RUNNER_TEMP/knowledge-source.tgz" apps/control-api/src apps/control-api/package.json apps/control-api/package-lock.json apps/control-api/deploy/product apps/product-web packages/platform plugins tools/nuochong-cli/src public/logo-mark.svg apps/oa/deploy/gateway.mjs apps/oa/deploy/service.mjs
-          scp -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes "$RUNNER_TEMP/knowledge-source.tgz" "$RUNNER_TEMP/postgres-runtime.tgz" deploy@"$DEPLOY_HOST":"$remote_base/"
+          scp -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes "$RUNNER_TEMP/knowledge-source.tgz" deploy@"$DEPLOY_HOST":"$remote_base/"
+          if ! ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "test -x $remote_base/postgres/17.11/bin/postgres"; then
+            scp -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes "$RUNNER_TEMP/postgres-runtime.tgz" deploy@"$DEPLOY_HOST":"$remote_base/"
+          fi
           printf '%s' "$KBV0_BOOTSTRAP_JSON" | ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes deploy@"$DEPLOY_HOST" 'umask 077; cat > .local/state/nuochong-knowledge-test/bootstrap-input.json'
           ssh -i ~/.ssh/oa_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "bash -s -- $GITHUB_SHA" <<'REMOTE'
           set -euo pipefail
