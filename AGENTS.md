@@ -30,3 +30,9 @@
 ## 当前产品范围（覆盖旧业务迁移要求）
 
 以DeepSeek Harness为公司OA基座，先保留官方原生Web页面作为OA首页，官网独立。旧业务演示与旧B—E产品路线已撤销，不能按历史盘点自动恢复员工、知识、培训或工单；具体业务以后独立规划。当前任务以docs/refactor/roadmap.md、tasks.md和ADR-010为准，A阶段历史证据保留。
+
+## 2026-11-01 产品规划更新
+
+负责人明确三产品：企业知识库、企业 AI 工具、培训和考试，共用 DeepSeek Harness，业务通过插件扩展。先完成整体规划与知识库详细设计/任务拆分，具体成果见 docs/product/README.md；当前路线以 docs/refactor/roadmap.md 为准，新增业务任务仍 planned，ADR-011 为 Proposed。原生 owner 不向普通员工下放，旧业务演示不自动恢复。演示统一使用服务端公司模型凭据，访客无需 DeepSeek 登录/自带 API Key。用户要求本轮自主形成完整成果，澄清项集中留待下一轮；不得据此伪造人工验收。
+
+部门、人员与角色权限管理按 docs/product/shared-access/design.md 规划为三产品共用插件；产品不能重复维护人员/部门/角色主库，身份验证和最终授权始终由可信核心执行。知识库及共享管理页面主题参考官网，见 docs/product/knowledge/pages.md；本轮不改官网基线。这些共享业务能力仍为 planned。

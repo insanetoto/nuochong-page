@@ -12,7 +12,7 @@ Web、nuochong CLI与未来MCP使用同一版本化能力契约和服务端授�
 | --dry-run | 本地输入验证/请求预览；不检查真实权限/额度，不联系服务端 |
 | runs create/get/cancel/events | HTTP客户端已实现；正式OA控制API实现位于apps/control-api，与原生Web网关协议分离；新API尚未公网发布 |
 | session/model/tool/runtime/auth等 | OA-02/OA-04实现20项共享契约/CLI映射，真实数据库与模型证据分别记录 |
-| 知识/培训/工单等业务命令 | 不在当前计划或能力清单中，未来需求确认后另行定义 |
+| 三产品业务命令 | 企业知识库候选命令/schema 见 [规划清单](../product/knowledge/commands.json)，共享组织/授权见 [公共能力草案](../product/shared-access/commands.json)，全部 planned，不注入运行时 ready 清单；AI 工具/培训考试后续独立细化，工单仍不在产品范围 |
 | MCP | OA-03提供受限stdio适配，使用同一契约和API授权；流式事件仍通过CLI，不开放管理员工具 |
 
 当前代码与运行方式见[CLI包](../../tools/nuochong-cli/README.md)。原生Web端口不是产品CLI控制API；本次在隔离真实PostgreSQL上验证正式API/CLI，真实模型证据见控制API包结果，不把合成故障算作真实模型。
