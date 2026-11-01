@@ -32,7 +32,9 @@ try {
     assert.equal(await page.getByRole('dialog').count(), 0);
     assert.equal(await page.getByRole('textbox', { name: /API Key/i }).count(), 0);
     phase = 'model-composer';
-    const composer = page.locator('textarea, [contenteditable="true"]').first();
+    const newChat = page.getByRole('button', { name: /^新会话$|^New chat$|^New session$/i }).first();
+    if (await newChat.count()) await newChat.click();
+    const composer = page.locator('[data-composer-input]:visible').first();
     await composer.fill('请不要使用任何工具，只回复 DEMO_MODEL_READY');
     await composer.press('Enter');
     phase = 'model-response';
