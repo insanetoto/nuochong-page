@@ -57,7 +57,7 @@
     "accept": "本地和 Linux 门禁通过；真实模型与合成故障分开；官网基线不变；标明未实现的原任务验收项，不冒充 KB-17 全部质量目标。",
     "url": "https://github.com/insanetoto/nuochong-page/issues/76",
     "number": 76,
-    "status": "Backlog"
+    "status": "Implemented; local API 51/51, browser 1/1, MCP 3/3, CLI 19/19 and package passed; Linux CI and human acceptance pending"
   },
   {
     "id": "KBV0-07",

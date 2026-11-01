@@ -12,6 +12,7 @@ test('raw documents are private immutable objects; explicit format limits, stabl
 test('published sources and compiled pages follow one authorization policy, while drafts never reach ordinary readers',async t=>{
  const f=await fixture(t),source=await f.ingest(),reader=await f.reader(),page=await f.draft(source);
  assert.equal((await f.call('knowledge.sources.get.v1',{spaceId:f.spaceId,sourceId:source.id},reader.token)).status,404);
+ assert.equal((await f.call('knowledge.sources.list.v1',{spaceId:f.spaceId},reader.token)).status,403);
  assert.equal((await f.call('knowledge.pages.list.v1',{spaceId:f.spaceId,view:'published'},reader.token)).data.items.length,0);
  assert.equal((await f.call('knowledge.pages.get.v1',{spaceId:f.spaceId,pageId:page.pageId,view:'manage'},reader.token)).status,403);
  await f.review(page);await f.publish(page);
@@ -63,4 +64,11 @@ test('publication withdrawal is explicit in management and removes both browsing
  assert.equal((await f.call('knowledge.pages.get.v1',{spaceId:f.spaceId,pageId:page.pageId,view:'manage'})).data.pageState,'withdrawn');
  assert.equal((await f.call('knowledge.pages.get.v1',{spaceId:f.spaceId,pageId:page.pageId,view:'published'},reader.token)).status,404);
  assert.equal((await f.call('knowledge.sources.get.v1',{spaceId:f.spaceId,sourceId:source.id},reader.token)).status,404);
+ assert.equal((await f.call('knowledge.sources.list.v1',{spaceId:f.spaceId},reader.token)).status,403);
+});
+test('knowledge CLI reads the same authorized publication and denies unpublished raw management',async t=>{
+ const {execFile}=await import('node:child_process');const {promisify}=await import('node:util');const {fileURLToPath}=await import('node:url');const f=await fixture(t),source=await f.ingest(),p=await f.draft(source);await f.review(p);await f.publish(p);const reader=await f.reader();
+ const cli=async(args,input)=>promisify(execFile)(process.execPath,[fileURLToPath(new URL('../../../tools/nuochong-cli/bin/nuochong.mjs',import.meta.url)),...args,'--json','--input',JSON.stringify(input)],{env:{PATH:process.env.PATH,NUOCHONG_API_URL:f.app.listeningOrigin,NUOCHONG_ACCESS_TOKEN:reader.token}});
+ const result=JSON.parse((await cli(['knowledge','search'],{spaceId:f.spaceId,query:'出差'})).stdout);assert.equal(result.data.items[0].pageId,p.pageId);
+ await assert.rejects(cli(['knowledge','sources','list'],{spaceId:f.spaceId}),e=>{assert.ok(e.stderr.includes('FORBIDDEN'));assert.ok(!e.stderr.includes(reader.token));return true;});
 });
