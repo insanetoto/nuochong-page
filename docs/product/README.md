@@ -13,7 +13,17 @@
 7. [任务、依赖及验收](tasks.md)
 8. [演示模型交付记录](demo-delivery.md)
 9. [知识库初版范围、任务与验证](v0/README.md)
-10. [整体产品路线图](../refactor/roadmap.md)
+10. [产品本体方法论](ontology/README.md)与[产品套件本体](ontology/suite-ontology.md)
+11. [知识库 v2 功能设计](knowledge/v2/README.md)：知识全景图谱、空间/导入/发布重构
+12. [整体产品路线图](../refactor/roadmap.md)
+
+## 2026-11-02 知识库 v2 设计（先设计，不开发）
+
+负责人要求：知识首页以类似 Obsidian 的关系图谱展示知识全景；空间创建移入来源管理，来源管理拆为知识空间、知识导入、知识发布；导入支持文本/视频/语音并生成可追溯片段进入条目待审区；发布输出知识能力。本轮只形成设计，全部能力仍为 planned，不创建实现任务、不部署。
+
+- [知识库 v2 总览](knowledge/v2/README.md)｜[知识首页图谱](knowledge/v2/home-graph.md)｜[来源管理](knowledge/v2/source-management.md)｜[导入管线](knowledge/v2/import-pipeline.md)｜[发布与能力](knowledge/v2/publication.md)｜[契约](knowledge/v2/contracts.md)｜[任务拆分](knowledge/v2/tasks.md)
+- [本体方法论](ontology/README.md)｜[套件本体](ontology/suite-ontology.md)｜[ADR-012](../adr/ADR-012-product-ontology-and-knowledge-graph.md)（Proposed）
+- 音视频解析依赖 ASR，供应方式与数据边界未批准前不实现；v0 的 Markdown/TXT 能力与已部署测试继续有效。
 
 ## 本轮范围和依据
 

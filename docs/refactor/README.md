@@ -13,10 +13,10 @@
 3. [OA执行跟踪](oa-tracking.md)：负责人查看实际状态和Issue入口。
 4. [原生首页运行说明](../../apps/oa/README.md)：启动官方页面、模型配置及入口边界。
 5. [产品CLI规范](cli-native.md)与[可执行客户端](../../tools/nuochong-cli/README.md)。
-6. [范围决策ADR-010](../adr/ADR-010-oa-harness-product-scope.md)、[CLI决策ADR-009](../adr/ADR-009-cli-native-capabilities.md)。
+6. [范围决策ADR-010](../adr/ADR-010-oa-harness-product-scope.md)、[CLI决策ADR-009](../adr/ADR-009-cli-native-capabilities.md)、[产品插件ADR-011](../adr/ADR-011-product-plugins-llm-wiki.md)（Proposed）、[产品本体ADR-012](../adr/ADR-012-product-ontology-and-knowledge-graph.md)（Proposed）。
 7. [团队协作](collaboration.md)、[个人开发指南](developer-onboarding.md)。
 
-官网保持独立。原生管理员测试首页、正式控制API/Worker、公司身份和22项CLI契约已交付；MCP与外部AI集成按OA-03推进，业务模块仍未规划。新控制API尚未公网发布，main未发布。
+官网保持独立。原生管理员测试首页、正式控制API/Worker、公司身份和基座/产品CLI契约（59项已注册能力）已交付；MCP与外部AI集成按OA-03推进，业务模块仍未规划。新控制API尚未公网发布，main未发布。
 
 A阶段10项已完成的验证与Go保留为历史技术证据；其旧业务范围和人日估算不再约束当前产品。[旧路线归档](archive/business-plan-2026-10-29/roadmap.md)、[历史A阶段评审](phase-a-review.md)可供复用技术结论，不作为继续迁入旧业务页面的授权。
 

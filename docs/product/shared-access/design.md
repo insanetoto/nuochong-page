@@ -51,6 +51,10 @@
 
 平台级恢复管理员如需设置，必须单独配置、强审计和有限使用，不作为默认日常全权角色。诊断接口只能检查当前调用者，管理员“模拟某人权限”如需另立独立权限与审计，不借 check 接口任意枚举他人资源。
 
+### 与产品本体的映射
+
+Person、Department、Membership、Role、Grant、Approval 等在本体层有稳定类 ID（`nc:` / `nc.org:` / `nc.access:`），共享插件是这些类的权威来源；知识库、工具、培训只引用 personId/departmentId/roleId，不复制主库。授权上下文、资源范围和审批仍由可信核心执行，本体不改变判定规则。类与关系见 [产品套件本体](../ontology/suite-ontology.md)，方法见 [本体方法论](../ontology/README.md)。
+
 ## 三产品共用但不串权
 
 | 共享对象 | 企业知识库 | 企业 AI 工具 | 培训和考试 |
