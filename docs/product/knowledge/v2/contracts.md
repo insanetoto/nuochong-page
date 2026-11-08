@@ -58,13 +58,15 @@
 
 **`knowledge_capability_bindings`**：snapshot_id、capability_id、scope、status、consumer_ref、quota、last_seen_at。
 
+消费者不设产品级白名单或数量上限（2026-11-08 确认）；但仍需注册、受限凭据、审计与撤销。`quota` 可空表示默认不限。
+
 **索引建议**：fragments(space_id, source_revision_id, status)；relations(space_id, from_entry_id, type)；entry_concepts(concept_id)；import_files(batch_id, status)；publications(page_id, created_at)；publication_snapshots(space_id, current) 部分唯一索引。
 
 ### 1.3 迁移顺序（planned）
 
 1. 新增可空列/新表（不锁旧路径）。
 2. 回填空间 code（`SPACE-<8位>`）与默认 domain_type。
-3. 按需回填片段：将 v0 来源文本按段落切分，行号映射；旧引用保留行号兼容。
+3. 按段落回填片段（已确认）：将 v0 来源文本按段落切分，行号映射到段落片段；旧引用保留行号兼容，回填幂等。
 4. 回填条目类型（默认 `policy`）。
 5. 双读验证：Web/CLI 读旧数据正常；新发布要求片段证据。
 6. 不重命名、不删除旧列；回滚只需停用新写入路径。
@@ -75,7 +77,7 @@
 
 | commandId | 说明 | 权限 | 关键输入 | 输出 |
 | --- | --- | --- | --- | --- |
-| `knowledge.graph.query.v1` | 图谱节点/边/统计 | `knowledge:read`；draft/管理层需 `knowledge:edit`/`review`/`publish` | spaceIds、types、relations、focusId、depth、asOf、limit | nodes、edges、stats、truncated、graphVersion |
+| `knowledge.graph.query.v1` | 图谱节点/边/统计；支持多空间与跨空间关系 | `knowledge:read`；draft/管理层需 `knowledge:edit`/`review`/`publish` | spaceIds、types、relations、focusId、depth、asOf、limit | nodes、edges、stats、truncated、graphVersion |
 | `knowledge.entries.list.v1` | 待审/管理/已发布条目 | `knowledge:read`（published）；`knowledge:edit`/`review`/`publish`（manage） | spaceId、view、status、after | items、nextCursor |
 | `knowledge.entries.get.v1` | 条目 + 片段 + 草稿 | `knowledge:read`（published）；`knowledge:edit`/`review`/`publish`（manage） | spaceId、entryId、view | entry、revision、fragments、relations、citations |
 | `knowledge.fragments.list.v1` | 待审/来源片段 | `knowledge:edit`/`review`（pending）；`knowledge:read`（已发布引用） | spaceId、status、sourceId、after | items、nextCursor |
@@ -89,7 +91,7 @@
 | commandId | 说明 | 权限 | 副作用 | 幂等 | 审批 |
 | --- | --- | --- | --- | --- | --- |
 | `knowledge.spaces.create.v1` | 创建空间（扩展输入） | `knowledge:publish`（全局） | 创建空间/角色/审计 | 必须 | 是 |
-| `knowledge.spaces.update.v1` | 修改名称/范围/配额 | 空间负责人 + `knowledge:publish` | 更新 + outbox | 必须 | 范围放宽时 |
+| `knowledge.spaces.update.v1` | 修改显示名/范围/配额（编码不可改） | 空间负责人 + `knowledge:publish` | 更新 + outbox | 必须 | 范围放宽时 |
 | `knowledge.spaces.archive.v1` | 归档空间 | 同上 | 状态 + 审计 | 必须 | 是 |
 | `knowledge.imports.create.v1` | 创建导入批次 | `knowledge:edit` | 批次 + 任务 | 必须 | 否（导入不等于发布） |
 | `knowledge.imports.cancel.v1` | 取消未完成文件 | `knowledge:edit` | 取消请求 | 必须 | 否 |
@@ -103,7 +105,7 @@
 | `knowledge.publications.schedule.v1` | 排期发布 | `knowledge:publish` | 计划任务 | 必须 | **是** |
 | `knowledge.publications.withdraw.v1` | 撤回（现有） | `knowledge:publish` | 指针 + 失效 | 必须 | **是** |
 | `knowledge.publications.rollback.v1` | 回滚为新发布 | `knowledge:publish` | 新快照 | 必须 | **是** |
-| `knowledge.relations.upsert.v1` | 手工关系 | `knowledge:edit` | 关系行 | 必须 | 否（发布前审校） |
+| `knowledge.relations.upsert.v1` | 手工关系（跨空间需双方可读） | `knowledge:edit` | 关系行 | 必须 | 否（发布前审校） |
 | `knowledge.capabilities.set.v1` | 能力启停 | `knowledge:publish` + 平台管理员 | 能力状态 | 必须 | **是** |
 
 ### 2.3 任务命令（复用现有 jobs）
@@ -192,12 +194,12 @@ Job:        queued → running → succeeded | failed | cancelled（复用现有
 | `EVIDENCE_REQUIRED` | 422 | 无有效片段/引用 |
 | `EVIDENCE_CHANGED` | 409 | 来源撤回/过期/ACL 变化 |
 | `CITATION_MISMATCH` | 422 | 引用与片段不一致 |
-| `CROSS_SPACE_REFERENCE` | 422 | 首期跨空间引用 |
+| `CROSS_SPACE_REFERENCE` | 422 | 跨空间证据引用（关系边允许，不报此错） |
 | `CONFLICT_UNRESOLVED` | 422 | 冲突未处理 |
 | `APPROVAL_REQUIRED` / `APPROVAL_EXPIRED` | 409 | 审批缺失/失效 |
 | `QUOTA_EXCEEDED` | 429 | 配额 |
 | `DEPENDENCY_UNAVAILABLE` | 503 | 插件/依赖不可用 |
-| `PARSER_UNAVAILABLE` | 503 | 解析/ASR 未配置 |
+| `PARSER_UNAVAILABLE` | 503 | 解析/外部 ASR/OCR 未配置 |
 | `CAPABILITY_UNAVAILABLE` | 503 | 能力停用/降级 |
 | `INTERNAL` | 500 | 未分类；只返回 requestId |
 

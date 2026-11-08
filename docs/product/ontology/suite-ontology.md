@@ -78,12 +78,12 @@
 
 | 关系 | 从 → 到 | 基数 | 语义与约束 |
 | --- | --- | --- | --- |
-| `belongsToSpace` | SourceDocument / KnowledgeEntry / Concept → KnowledgeSpace | N:1 | 首期禁止跨空间引用；跨空间关系需后续 ADR |
+| `belongsToSpace` | SourceDocument / KnowledgeEntry / Concept → KnowledgeSpace | N:1 | 首期禁止跨空间证据引用；跨空间条目关系允许（双方可见），无需新 ADR |
 | `hasRevision` | SourceDocument → SourceRevision、KnowledgeEntry → EntryRevision | 1:N | 修订不可变；版本号单调 |
 | `extractedFrom` | SourceFragment → SourceRevision | N:1 | 必须有 locator；无 locator 的片段只能人工创建并标记 |
 | `cites` | EntryRevision → SourceFragment | N:M | 发布前逐条重新验权/有效期；引用必须逐字匹配片段范围 |
 | `about` | KnowledgeEntry → Concept | N:M | 至少一个概念才进入“主题”视图；概念层级无环 |
-| `relatedTo` | KnowledgeEntry ↔ KnowledgeEntry | N:M | 必须带 reason 与 weight；展示时按权限过滤 |
+| `relatedTo` | KnowledgeEntry ↔ KnowledgeEntry | N:M | 必须带 reason 与 weight；允许跨空间，展示时按双方权限过滤 |
 | `supersedes` | EntryRevision → EntryRevision | 1:N | 仅同一条目；不得跨空间 |
 | `conflictsWith` | KnowledgeEntry ↔ KnowledgeEntry | N:M | 必须有证据片段；不能由模型自动裁定优先级 |
 | `reviewedBy` | EntryRevision → ReviewDecision | 1:N | 审批 hash 绑定正文+引用+范围 |
@@ -97,7 +97,7 @@
 | KB-C1 | 空间 `code` 在公司内唯一、不可变 | 重复创建返回 `CONFLICT` |
 | KB-C2 | 同一空间内 `policyCode + version` 唯一 | 重复导入返回 `SOURCE_VERSION_EXISTS` |
 | KB-C3 | 已发布修订至少一个有效片段且引用可定位 | 无证据发布返回 `EVIDENCE_REQUIRED` |
-| KB-C4 | 跨空间引用首期拒绝 | 组装/发布返回 `CROSS_SPACE_REFERENCE` |
+| KB-C4 | 跨空间证据引用拒绝；跨空间条目关系允许，但仅双方空间可见时返回 | 证据引用返回 `CROSS_SPACE_REFERENCE`；关系查询裁剪 |
 | KB-C5 | 每个条目仅一个当前发布修订；空间仅一个当前能力快照；CAS 切换 | 并发发布仅一个成功，另一个 `VERSION_CONFLICT` |
 | KB-C6 | 来源撤回/过期/ACL 收紧立即失效依赖条目 | 撤回后读取返回 `EVIDENCE_CHANGED` |
 | KB-C7 | 概念层级与部门树无环 | 成环写入拒绝 |
@@ -178,20 +178,13 @@ ExamAttempt A1 --scoredBy--> Score         （确定性评分 + 人工评阅）
 - 回填任务可重跑、幂等；未回填条目不阻塞读取，但发布新版本要求片段证据。
 - 破坏性变更（如强制片段证据）先以“新发布要求”生效，不追溯改写历史修订。
 
-## 9. 未决问题
+## 9. 已确认与未决
 
+2026-11-08 已确认：ASR/OCR 由外部大模型适配器提供（测试阶段只用 DeepSeek 对文本类来源做识别/结构化）；允许单人/演示空间显式开启自批发布豁免；允许空间显示名改名（编码不可变）；允许跨空间条目关系（证据引用仍限同空间）；能力消费者不设产品级白名单/数量上限；v0 片段按段落回填。
+
+仍未决：
 1. 概念体系由谁维护（空间负责人/知识运营/平台），是否需要跨空间共享概念库。
 2. 关系抽取是否允许模型自动建议并默认待审；首期建议仅人工+编译建议。
-3. 音视频 ASR/OCR 的供应方式（本地 Whisper/公司模型网关/外部服务）与数据出境限制。
+3. 外部大模型供应商、区域、保留期、成本与合规（方向已定）。
 4. 是否需要租户自定义分类；若需要，先做非安全语义的受控扩展。
-5. 图谱是否需要跨空间边；首期明确禁止，避免权限交集复杂化。
-
-## 10. 关联文档
-
-- [本体方法论](README.md)
-- [知识库 v2 总览](../knowledge/v2/README.md)
-- [知识首页图谱](../knowledge/v2/home-graph.md)
-- [来源管理](../knowledge/v2/source-management.md)
-- [导入与片段](../knowledge/v2/import-pipeline.md)
-- [发布与能力输出](../knowledge/v2/publication.md)
-- [数据模型与契约](../knowledge/v2/contracts.md)
+5. 跨空间证据引用何时开放；当前只允许关系边。

@@ -23,7 +23,7 @@
 
 - [知识库 v2 总览](knowledge/v2/README.md)｜[知识首页图谱](knowledge/v2/home-graph.md)｜[来源管理](knowledge/v2/source-management.md)｜[导入管线](knowledge/v2/import-pipeline.md)｜[发布与能力](knowledge/v2/publication.md)｜[契约](knowledge/v2/contracts.md)｜[任务拆分](knowledge/v2/tasks.md)
 - [本体方法论](ontology/README.md)｜[套件本体](ontology/suite-ontology.md)｜[ADR-012](../adr/ADR-012-product-ontology-and-knowledge-graph.md)（Proposed）
-- 音视频解析依赖 ASR，供应方式与数据边界未批准前不实现；v0 的 Markdown/TXT 能力与已部署测试继续有效。
+- ASR/OCR 由外部大模型适配器提供；测试阶段只用 DeepSeek 识别文本类来源，音视频/扫描件不纳入测试；v0 的 Markdown/TXT 能力与已部署测试继续有效。
 
 ## 本轮范围和依据
 
