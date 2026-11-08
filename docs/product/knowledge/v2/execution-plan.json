@@ -1,6 +1,6 @@
 {
   "date": "2026-11-08",
-  "status": "Owner approved W0 design; R1 accepted; KBV2-01 Ready; full runtime admission pending",
+  "status": "KBV2-01 accepted, merged and released to existing knowledge isolated test; website test/production published; full runtime admission pending",
   "gates": {
     "existingIssues": [
       85,
@@ -104,7 +104,23 @@
         "state": "MERGED"
       }
     ],
-    "dependencyEvaluation": "KBV2-01 consumes only PLAN-03:R1; do not require PLAN-03 issue closed. All other tasks retain full dependency acceptance."
+    "dependencyEvaluation": "KBV2-01 consumes only PLAN-03:R1; do not require PLAN-03 issue closed. All other tasks retain full dependency acceptance.",
+    "release20261108": {
+      "ownerConfirmation": "验收通过，合并代码并部署新版本到测试和生产环境；沿用现有范围：发布官网测试/生产，并更新知识库隔离测试服务",
+      "scope": [
+        "existing website test",
+        "existing website production",
+        "existing knowledge isolated test"
+      ],
+      "knowledgeProductionAuthorized": false,
+      "evidence": "docs/product/knowledge/v2/release-2026-11-08.md",
+      "codeSha": "99d651f73fd0af8a51a503c08c1d91a0eed92866",
+      "workflowRuns": [
+        42476982698,
+        42477771035,
+        42477577103
+      ]
+    }
   },
   "tasks": [
     {
@@ -238,7 +254,7 @@
       "ownerRole": "DeepSeek；ChatGPT预审；负责人验收",
       "priority": "P1",
       "lane": "P1实现",
-      "status": "Ready",
+      "status": "Released",
       "issue": 104,
       "dependsOn": [
         "PLAN-03"
@@ -260,9 +276,9 @@
         "apps/control-api/test/"
       ],
       "delivery": "注册/加载校验与兼容测试；只读内部模块不强行新增业务命令",
-      "readiness": "#103的R1子出口已验收，设计已合入integration；DeepSeek可领取纯离线本体任务。",
+      "readiness": "负责人已验收，PR #123已合入integration，离线模块已更新至知识库隔离测试；后续任务仍要求各自完整准入。",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/104",
-      "issueState": "OPEN",
+      "issueState": "CLOSED",
       "registeredAt": "2026-11-08",
       "proposedDependencyExit": null,
       "designSpec": "docs/product/knowledge/v2/w0/ontology-spec.md",
@@ -275,7 +291,12 @@
       "reviewer": "ChatGPT / Codex",
       "acceptanceOwner": "项目负责人",
       "sharedFileOwnership": "KBV2-01期间packages/platform本体/注册文件由DeepSeek本任务独占修改；不得改其他共享服务/锁文件，新增依赖先反馈设计。",
-      "requiredAdmissionExit": "PLAN-03:R1"
+      "requiredAdmissionExit": "PLAN-03:R1",
+      "acceptedAt": "2026-11-08",
+      "releaseScope": "existing knowledge isolated test only",
+      "releaseEvidence": "docs/product/knowledge/v2/release-2026-11-08.md",
+      "implementationHeadSha": "93c39ef84af001c6a6c5bf183171c705519aa264",
+      "mergeSha": "99d651f73fd0af8a51a503c08c1d91a0eed92866"
     },
     {
       "id": "KBV2-02",
