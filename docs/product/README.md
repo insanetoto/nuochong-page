@@ -1,8 +1,10 @@
 # 诺崇产品体系与企业知识库设计
 
-2026-11-08后续安排：[工作波次与18项任务卡](knowledge/v2/next-work.md)、[机器可读任务台账](knowledge/v2/execution-plan.json)。ChatGPT负责设计规划、页面原型、交互设计与预审，DeepSeek只负责按确认设计进行代码实现；当前仅规划，待设计决定及准入确认后领取，不等于已创建远程Issue或开始编码。
+2026-11-08后续安排：[工作波次与20项任务卡](knowledge/v2/next-work.md)、[机器可读任务台账](knowledge/v2/execution-plan.json)。ChatGPT负责设计规划、页面原型、交互设计与预审，DeepSeek只负责按确认设计进行代码实现；v2原型评审已通过，当前更新实施规划，待其余设计决定及准入确认后领取，不等于已创建远程Issue或开始编码。
 
 2026-11-01 · 规划 v1.1 + 初版工程 v0 · 状态：知识库初版已实施并验证，隔离测试已部署并通过真实模型/浏览器/CLI/MCP 验证；负责人已于2026-11-08确认v0已交付范围人工验收（[记录](v0/acceptance-2026-11-08.md)）；生产发布另批。
+
+当前原型已评审通过；[确认记录](knowledge/v2/prototype-acceptance-2026-11-08.md)与[负责人任务路线图](knowledge/v2/execution-roadmap.md)为本次更新入口。
 
 推荐阅读顺序：
 

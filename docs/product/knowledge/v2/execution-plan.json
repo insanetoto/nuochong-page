@@ -1,6 +1,6 @@
 {
   "date": "2026-11-08",
-  "status": "Proposed plan; no implementation authorized",
+  "status": "Prototype accepted; execution planning updated; implementation not started",
   "gates": {
     "existingIssues": [
       85,
@@ -16,9 +16,23 @@
       "productionReleaseAuthorized": false
     },
     "prototype": {
-      "status": "Pending owner review",
+      "status": "Accepted",
       "artifact": "docs/product/prototypes/knowledge-v2.html",
-      "design": "docs/product/knowledge/v2/prototype-design.md"
+      "design": "docs/product/knowledge/v2/prototype-design.md",
+      "confirmedAt": "2026-11-08",
+      "approvedCommit": "5a172f5582f308f2e4dfd5733d6ddfa221b77b68",
+      "evidence": "docs/product/knowledge/v2/prototype-acceptance-2026-11-08.md"
+    },
+    "prototypePR": 100,
+    "implementationAuthorized": false,
+    "issueRegistration": "Not requested in this update; implementation issue fields remain null",
+    "blockingIssues": [
+      94
+    ],
+    "designPRsMerged": false,
+    "adrStatus": {
+      "ADR-011": "Proposed",
+      "ADR-012": "Proposed"
     }
   },
   "tasks": [
@@ -28,17 +42,32 @@
       "ownerRole": "ChatGPT；负责人确认",
       "priority": "P0",
       "lane": "设计与交接",
-      "status": "Planned",
+      "status": "In progress",
       "issue": null,
       "dependsOn": [],
-      "scope": "核对#85、v0运行版本、实际schema、#99和ADR-012；将全部待确认项分类为P1阻断或P2后置。",
+      "scope": "复用已验收v0和已通过原型，核对实际schema/权限差异；冻结P1范围、关系与审校规则、性能/文件额度及ADR决定。",
       "notInScope": "不代替#85人工验收，不改运行代码，不合并或发布。",
       "acceptance": [
         "输出来源SHA/部署版本/实际实现/未交付/关联任务五列映射，不重复恢复旧B—E任务。",
         "片段审校单位、首期关系类型、图谱上限、发布原子性及豁免治理有明确决定与批准证据；批准前不得标Accepted。",
         "核验v0固定角色是否满足P1，列出共享IAM最小缺口及独立任务；不得把完整IAM-03默认为已验收。",
-        "页面原型与交互规范经负责人确认，覆盖正常、空态、权限、失败、审批失效与移动端；固定交给DeepSeek的设计版本。"
-      ]
+        "复用已通过原型5a172f5，不重复请求页面方向批准；未决技术/范围决定逐项记录，不推定ADR已Accepted。"
+      ],
+      "progressEvidence": [
+        "v0人工验收：#85已关闭",
+        "v2原型评审通过：prototype-acceptance-2026-11-08.md"
+      ],
+      "wave": "W0",
+      "commandIds": [],
+      "prototypeViews": [],
+      "implementationBase": "approved design baseline; no runtime changes",
+      "allowedPaths": [
+        "docs/product/",
+        "docs/refactor/",
+        "docs/adr/"
+      ],
+      "delivery": "设计/契约/决定/任务证据；不提交运行代码",
+      "readiness": "可继续设计核查；原型确认已完成，技术/范围决定尚待冻结"
     },
     {
       "id": "PLAN-02",
@@ -51,13 +80,24 @@
       "dependsOn": [
         "PLAN-01"
       ],
-      "scope": "按contracts.md逐命令确定字段、版本、权限、审批、幂等、错误及CLI映射，提前冻结公共schema。",
+      "scope": "按contracts.md逐命令确定字段、版本、权限、审批、幂等、错误及CLI映射，提前冻结公共schema。 以原型逐页核对命令，冻结旧v1兼容方案、错误/响应及发布hash规范；原型字段名不直接作为运行时契约。",
       "notInScope": "不等到KBV2-10才决定接口，不修改实际能力注册。",
       "acceptance": [
         "新增/扩展命令逐项对照v0能力，破坏性变化使用新版本，列出兼容窗口。",
         "定义graphHash规范化、关系/概念/分配修订、policyRevision与发布审批摘要字段；输入输出schema可验证。",
         "实现任务的命令清单和负例一一关联；planned不注册在线成功，数据迁移有expand/contract边界。"
-      ]
+      ],
+      "wave": "W0",
+      "commandIds": [],
+      "prototypeViews": [],
+      "implementationBase": "approved design baseline; no runtime changes",
+      "allowedPaths": [
+        "docs/product/",
+        "docs/refactor/",
+        "docs/adr/"
+      ],
+      "delivery": "设计/契约/决定/任务证据；不提交运行代码",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
       "id": "PLAN-03",
@@ -71,13 +111,25 @@
         "PLAN-01",
         "PLAN-02"
       ],
-      "scope": "核对#99最新head/CI/评审结论，固定DeepSeek实现基础，准备Issue与验收矩阵。",
+      "scope": "核对#99/#100的合并与批准证据、PLAN-01/02及#94，固定refactor/integration真实SHA，准备可分配任务及文件责任。",
       "notInScope": "不直接推main/test，不批准生产迁移，不共享同一可写目录。",
       "acceptance": [
         "记录批准的设计提交及ADR决定；PR合并或CI绿色不自动充当设计批准。",
         "#94调查结论有复现/时序/无披露/唯一终态证据，或负责人记录明确风险决定；任务依赖解除可追踪。",
-        "仅在明确授权后创建实现Issues，填写执行者DeepSeek、预审ChatGPT、负责人、目录和基础SHA；当前不伪造已创建或已领取。"
-      ]
+        "仅在明确授权后创建实现Issues，填写执行者DeepSeek、预审ChatGPT、负责人、目录和基础SHA；当前不伪造已创建或已领取。",
+        "记录实施授权、命名责任人、已合入设计的集成SHA及共享文件负责人；只靠原型通过不能将代码任务标Ready。"
+      ],
+      "wave": "W0",
+      "commandIds": [],
+      "prototypeViews": [],
+      "implementationBase": "approved design baseline; no runtime changes",
+      "allowedPaths": [
+        "docs/product/",
+        "docs/refactor/",
+        "docs/adr/"
+      ],
+      "delivery": "设计/契约/决定/任务证据；不提交运行代码",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
       "id": "KBV2-01",
@@ -96,7 +148,18 @@
         "不兼容/重复 ID/未登记命名空间拒绝；版本升级/回退有迁移记录；三产品可声明片段",
         "复用v0现有插件组合，先做差异清单；命名空间、重复ID、兼容major、缺依赖均拒绝；不得关闭可信授权。",
         "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。"
-      ]
+      ],
+      "wave": "W1",
+      "commandIds": [],
+      "prototypeViews": [],
+      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "allowedPaths": [
+        "packages/platform/",
+        "plugins/knowledge/",
+        "apps/control-api/test/"
+      ],
+      "delivery": "注册/加载校验与兼容测试；只读内部模块不强行新增业务命令",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
       "id": "KBV2-02",
@@ -116,7 +179,18 @@
         "新关系/概念/分配修订与supersedes模型落库；同条目不同修订合法，同修订自指/跨条目/逆序拒绝。",
         "合成v0数据按段落回填可重跑，旧行号仍可定位；先验证新旧读路径，再批准切换；应用回退和数据恢复分别演练。",
         "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。"
-      ]
+      ],
+      "wave": "W1",
+      "commandIds": [],
+      "prototypeViews": [],
+      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "allowedPaths": [
+        "apps/control-api/src/migrations/",
+        "plugins/knowledge/",
+        "apps/control-api/test/"
+      ],
+      "delivery": "增量迁移、幂等回填、旧数据双读与恢复演练证据",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
       "id": "KBV2-03",
@@ -135,8 +209,33 @@
         "编码唯一/部门停用/无权限/未豁免自批负例；改名后旧链接稳定；390px/键盘；CLI 同权",
         "只读展示自批策略；普通create/update夹带allowSelfPublish拒绝；新治理命令必须合格空间、独立治理审批、policyRevision、幂等与审计。",
         "策略变化使旧内容审批失效；无第二治理批准人保持关闭；API/CLI和受限MCP负例一致。",
-        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。"
-      ]
+        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。",
+        "新增/变更能力随本任务交付版本化输入输出schema、CLI映射及API/CLI同权负例；纯布局不新增业务命令，未实现保持planned。"
+      ],
+      "wave": "W2",
+      "commandIds": [
+        "knowledge.spaces.list.v1",
+        "knowledge.spaces.get.v1",
+        "knowledge.spaces.create.v1",
+        "knowledge.spaces.update.v1",
+        "knowledge.spaces.archive.v1",
+        "knowledge.spaces.publication-policy.set.v1"
+      ],
+      "prototypeViews": [
+        "spaces",
+        "access"
+      ],
+      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "allowedPaths": [
+        "plugins/knowledge/",
+        "apps/product-web/plugins/knowledge.mjs",
+        "apps/control-api/src/product.mjs",
+        "tools/nuochong-cli/src/",
+        "tools/nuochong-cli/test/",
+        "apps/control-api/test/"
+      ],
+      "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
       "id": "KBV2-04",
@@ -149,33 +248,87 @@
       "dependsOn": [
         "KBV2-02"
       ],
-      "scope": "批次/文件/校验/解析/片段/任务/重试/取消；locator 与 hash",
+      "scope": "批次/文件/校验/解析/片段/任务/重试/取消；locator 与 hash；交付批次列表/详情、三步导入表单及逐文件结果UI，PDF文本层检测须由服务端执行。",
       "notInScope": "不恢复旧演示，不改官网，不扩权，不将planned注册为成功。",
       "acceptance": [
-        "三格式定位准确；空/加密/超限/伪装拒绝；强杀恢复不重复；配额",
+        "Markdown、TXT、文本层PDF、DOCX分别验证；空/加密/超限/伪装拒绝，输入保留且不得伪造解析成功。",
         "Markdown/TXT、文本层PDF、DOCX分别提供定位夹具；扫描/加密/伪装/超限明确失败，无半成功。",
         "任务强杀/重试/撤权不重复写；原文/模型建议分离；无媒体供应商也可完成本任务。",
-        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。"
-      ]
+        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。",
+        "新增/变更能力随本任务交付版本化输入输出schema、CLI映射及API/CLI同权负例；纯布局不新增业务命令，未实现保持planned。"
+      ],
+      "wave": "W2",
+      "commandIds": [
+        "knowledge.imports.create.v1",
+        "knowledge.imports.list.v1",
+        "knowledge.imports.get.v1",
+        "knowledge.imports.cancel.v1",
+        "knowledge.imports.retry.v1",
+        "knowledge.fragments.list.v1",
+        "knowledge.jobs.get.v1",
+        "knowledge.jobs.events.v1"
+      ],
+      "prototypeViews": [
+        "imports"
+      ],
+      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "allowedPaths": [
+        "plugins/knowledge/",
+        "apps/product-web/plugins/knowledge.mjs",
+        "apps/control-api/src/product.mjs",
+        "tools/nuochong-cli/src/",
+        "tools/nuochong-cli/test/",
+        "apps/control-api/test/"
+      ],
+      "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
-      "id": "KBV2-05",
-      "title": "音视频/OCR 导入（P2）",
+      "id": "KBV2-15",
+      "title": "产品壳、导航兼容与持久任务页面",
       "ownerRole": "DeepSeek；ChatGPT预审；负责人验收",
-      "priority": "P2",
-      "lane": "P2后续",
+      "priority": "P1",
+      "lane": "P1实现",
       "status": "Planned",
       "issue": null,
       "dependsOn": [
-        "KBV2-11"
+        "KBV2-03",
+        "KBV2-04"
       ],
-      "scope": "外部大模型 ASR/OCR 适配、音视频抽取、时间码片段、置信度、失败码、数据边界",
-      "notInScope": "不阻塞P1，不未经批准调用外部媒体服务。",
+      "scope": "产品壳与响应式导航、可信会话/角色驱动菜单、空间范围、我的任务、共享组织入口与旧链接兼容；提供其他页面共用的加载/错误/引用组件。",
+      "notInScope": "不创建人员角色主库，不把原型角色/状态切换器或原生owner入口带入正式页面；不实现AI工具/培训业务。",
       "acceptance": [
-        "文本类测试通过；外部适配器未配置明确失败；开关/审计/成本记录；不宣称 DeepSeek 可转写",
-        "P2须另外确认供应商、区域、数据保留、预算及真实媒体验收授权；文本/未配置失败不能算媒体成功。",
-        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。"
-      ]
+        "侧栏含全景/搜索/问答、来源三模块和共享管理入口；空库引导去知识空间，首页没有新建空间表单。",
+        "身份/权限由可信会话返回，跨空间切换清理旧数据；无权请求由API拒绝而非仅隐藏按钮。",
+        "我的任务使用真实jobs列表/事件游标/持久终态；导入/编译/问答均可恢复跟随，停止跟随不取消远端。",
+        "取消请求保持pending直到服务端终态；失败有稳定错误码/requestId和可用恢复动作，不盲目重复未知结果。",
+        "旧sources/changes及现有v0书签有明确兼容映射，保留参数、代理前缀和登录cookie边界；任务路由在PLAN-02冻结，不凭原型hash另开未授权路由。",
+        "桌面和390px导航/表单可操作；键盘焦点与弹层关闭可恢复；共享目录复用现有插件，未交付产品明确规划中。",
+        "新增/变更能力随本任务交付版本化输入输出schema、CLI映射及API/CLI同权负例；纯布局不新增业务命令，未实现保持planned。"
+      ],
+      "wave": "W2",
+      "commandIds": [
+        "knowledge.spaces.list.v1",
+        "knowledge.jobs.list.v1",
+        "knowledge.jobs.get.v1",
+        "knowledge.jobs.events.v1",
+        "knowledge.jobs.cancel.v1"
+      ],
+      "prototypeViews": [
+        "tasks",
+        "shared-shell"
+      ],
+      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "allowedPaths": [
+        "apps/product-web/",
+        "apps/control-api/src/product-web.mjs",
+        "apps/control-api/test/product-web.browser.mjs",
+        "tools/nuochong-cli/src/",
+        "tools/nuochong-cli/test/",
+        "apps/control-api/test/"
+      ],
+      "delivery": "真实UI与共享API集成、适用契约/CLI、浏览器/负例证据及PR",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
       "id": "KBV2-06",
@@ -188,14 +341,37 @@
       "dependsOn": [
         "KBV2-04"
       ],
-      "scope": "待审区、片段接受/拒绝/合并/拆分、条目草稿、引用校验、冲突提示",
+      "scope": "待审区、片段接受/拒绝/合并/拆分、条目草稿、引用校验、冲突提示；按批准原型实现三栏审校、概念/关系候选及正文差异、引用抽屉与冲突恢复。",
       "notInScope": "不恢复旧演示，不改官网，不扩权，不将planned注册为成功。",
       "acceptance": [
         "片段不能直接发布；引用漂移阻断；并发保留草稿；审校 hash",
         "逐片段核验与条目组装采用已冻结审校粒度；草稿保留expectedRevision，引用hash漂移阻断。",
         "来源输入不能提权或写发布指针；真实模型与合成失败证据分开。",
-        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。"
-      ]
+        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。",
+        "接受/拒绝/合并/拆分保留原始来源修订与定位；模型建议标suggested，关系/概念修改形成新修订并使旧审批失效。",
+        "新增/变更能力随本任务交付版本化输入输出schema、CLI映射及API/CLI同权负例；纯布局不新增业务命令，未实现保持planned。"
+      ],
+      "wave": "W2",
+      "commandIds": [
+        "knowledge.fragments.review.v1",
+        "knowledge.entries.draft.v1",
+        "knowledge.entries.submit.v1",
+        "knowledge.changes.review.v1"
+      ],
+      "prototypeViews": [
+        "review"
+      ],
+      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "allowedPaths": [
+        "plugins/knowledge/",
+        "apps/product-web/plugins/knowledge.mjs",
+        "apps/control-api/src/product.mjs",
+        "tools/nuochong-cli/src/",
+        "tools/nuochong-cli/test/",
+        "apps/control-api/test/"
+      ],
+      "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
       "id": "KBV2-07",
@@ -209,15 +385,36 @@
         "KBV2-03",
         "KBV2-06"
       ],
-      "scope": "P1立即发布、撤回、必要回退、快照与现有知识能力绑定；排期、消费者管理和培训快照归KBV2-13。",
+      "scope": "P1立即发布、撤回、必要回退、快照与现有知识能力绑定；排期、消费者管理和培训快照归KBV2-13。 包含批准原型的确认、阻断与失败恢复页面；不将事务完成态样例当真实结果。",
       "notInScope": "不恢复旧演示，不改官网，不扩权，不将planned注册为成功。",
       "acceptance": [
-        "并发仅一成功；审批失效；能力失效即时；消费者不设白名单但仍需注册/凭据/审计；培训快照只读发布快照",
+        "发布中心/能力展示/质量检查接真实API；有效独立审批、CAS、幂等及实时失效通过；无审批/已失效/自批未获治理批准时不得写发布指针。",
         "封存关系/概念/分配与graphHash，审批/CAS同事务；修改候选不改变S1，S2批准后原子切换。",
         "跨空间目标换版隐藏旧边；历史重建叠加当前权限/有效性；新旧发布命令兼容。",
         "P1只做立即发布、撤回、必要的版本回退和现有读能力；新增排期/消费者管理/培训快照转后续任务，按PLAN-01确认。",
-        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。"
-      ]
+        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。",
+        "新增/变更能力随本任务交付版本化输入输出schema、CLI映射及API/CLI同权负例；纯布局不新增业务命令，未实现保持planned。"
+      ],
+      "wave": "W3",
+      "commandIds": [
+        "knowledge.publications.publish.v1",
+        "knowledge.publications.withdraw.v1",
+        "knowledge.capabilities.list.v1"
+      ],
+      "prototypeViews": [
+        "publish"
+      ],
+      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "allowedPaths": [
+        "plugins/knowledge/",
+        "apps/product-web/plugins/knowledge.mjs",
+        "apps/control-api/src/product.mjs",
+        "tools/nuochong-cli/src/",
+        "tools/nuochong-cli/test/",
+        "apps/control-api/test/"
+      ],
+      "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
       "id": "KBV2-08",
@@ -236,8 +433,25 @@
         "权限裁剪无泄漏；跨空间仅双方可见；300/2k 节点性能；撤回后边消失；CLI 同权",
         "员工图只读发布refs；维护草稿视图独立权限/缓存；两端不可见则边/标题/计数不返回。",
         "300/2000节点与截断/聚合按冻结环境实测；撤回/撤权立即过滤；旧快照不恢复权限。",
-        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。"
-      ]
+        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。",
+        "新增/变更能力随本任务交付版本化输入输出schema、CLI映射及API/CLI同权负例；纯布局不新增业务命令，未实现保持planned。"
+      ],
+      "wave": "W3",
+      "commandIds": [
+        "knowledge.graph.query.v1"
+      ],
+      "prototypeViews": [],
+      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "allowedPaths": [
+        "plugins/knowledge/",
+        "apps/product-web/plugins/knowledge.mjs",
+        "apps/control-api/src/product.mjs",
+        "tools/nuochong-cli/src/",
+        "tools/nuochong-cli/test/",
+        "apps/control-api/test/"
+      ],
+      "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
       "id": "KBV2-09",
@@ -248,16 +462,89 @@
       "status": "Planned",
       "issue": null,
       "dependsOn": [
-        "KBV2-08"
+        "KBV2-08",
+        "KBV2-15"
       ],
-      "scope": "力导向图、筛选、局部图、抽屉、列表兜底、移动端、无障碍",
+      "scope": "力导向图、筛选、局部图、抽屉、列表兜底、移动端、无障碍；仅负责图谱页面，搜索/阅读/问答归14，公共壳与任务归15。",
       "notInScope": "不恢复旧演示，不改官网，不扩权，不将planned注册为成功。",
       "acceptance": [
         "交互/键盘/390px；空/错/截断状态；reduced motion；性能降级",
         "真实API完成聚焦/筛选/列表兜底/390px/键盘/reduced-motion；不将静态原型当真实产品。",
         "官网截图/正文/SEO无回归；默认不把修订替代折叠成条目自环。",
-        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。"
-      ]
+        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。",
+        "按批准全景原型接真实节点/边，支持1–2跳、拖动/缩放、URL筛选恢复和截断提示；点击不同节点加载对应条目，不能复用样例正文。",
+        "新增/变更能力随本任务交付版本化输入输出schema、CLI映射及API/CLI同权负例；纯布局不新增业务命令，未实现保持planned。"
+      ],
+      "wave": "W3",
+      "commandIds": [
+        "knowledge.graph.query.v1",
+        "knowledge.entries.get.v1"
+      ],
+      "prototypeViews": [
+        "graph"
+      ],
+      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "allowedPaths": [
+        "apps/product-web/",
+        "apps/control-api/src/product-web.mjs",
+        "apps/control-api/test/product-web.browser.mjs",
+        "tools/nuochong-cli/src/",
+        "tools/nuochong-cli/test/",
+        "apps/control-api/test/"
+      ],
+      "delivery": "真实UI与共享API集成、适用契约/CLI、浏览器/负例证据及PR",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+    },
+    {
+      "id": "KBV2-14",
+      "title": "员工搜索、阅读、原文核验与引用问答页面",
+      "ownerRole": "DeepSeek；ChatGPT预审；负责人验收",
+      "priority": "P1",
+      "lane": "P1实现",
+      "status": "Planned",
+      "issue": null,
+      "dependsOn": [
+        "KBV2-07",
+        "KBV2-15"
+      ],
+      "scope": "按批准原型交付搜索结果、条目正文、定位抽屉、有依据问答及异常状态，复用现有服务并适配v2片段/快照。",
+      "notInScope": "不另造检索/授权/任务状态机，不重复建设语义检索或向量数据库，不改官网。",
+      "acceptance": [
+        "搜索/阅读使用真实资源ID和现行快照；结果范围由服务端过滤，URL前进后退恢复关键词与空间，不隐式调用模型。",
+        "引用抽屉展示真实来源修订与行/段/页定位；打开/下载重新验权；兼容v0行号引用。",
+        "问答接持久任务，有依据/无依据/冲突/失败状态明确；答案引用可跳转原文，来源失效或撤权后停止输出并清除旧内容。",
+        "停止跟随、请求取消与已取消终态分别显示；保留问题但不继续呈现失效答案。",
+        "390px、键盘、焦点恢复和安全文本渲染通过；不将原型角色切换器带入产品。",
+        "复用knowledge.search.v1、pages.get/list、sources.get、answers.ask及jobs契约；扩展schema保留兼容，API/CLI与Web同权且无权负例无泄漏。",
+        "新增/变更能力随本任务交付版本化输入输出schema、CLI映射及API/CLI同权负例；纯布局不新增业务命令，未实现保持planned。"
+      ],
+      "wave": "W3",
+      "commandIds": [
+        "knowledge.search.v1",
+        "knowledge.pages.list.v1",
+        "knowledge.pages.get.v1",
+        "knowledge.sources.get.v1",
+        "knowledge.answers.ask.v1",
+        "knowledge.jobs.get.v1",
+        "knowledge.jobs.cancel.v1",
+        "knowledge.jobs.events.v1"
+      ],
+      "prototypeViews": [
+        "search",
+        "read",
+        "ask"
+      ],
+      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "allowedPaths": [
+        "apps/product-web/",
+        "apps/control-api/src/product-web.mjs",
+        "apps/control-api/test/product-web.browser.mjs",
+        "tools/nuochong-cli/src/",
+        "tools/nuochong-cli/test/",
+        "apps/control-api/test/"
+      ],
+      "delivery": "真实UI与共享API集成、适用契约/CLI、浏览器/负例证据及PR",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
       "id": "KBV2-10",
@@ -274,14 +561,29 @@
         "KBV2-07",
         "KBV2-08"
       ],
-      "scope": "完整 JSON Schema/OpenAPI、CLI 映射、MCP 白名单、负例、包安装",
+      "scope": "基于各功能已交付schema/CLI，完成API/CLI/受限MCP联合验证、兼容与包安装收尾；不在本任务才首次定义契约。",
       "notInScope": "不恢复旧演示，不改官网，不扩权，不将planned注册为成功。",
       "acceptance": [
         "API/CLI/MCP 同权；planned 不注册；审批/幂等不可绕过；独立安装",
         "本任务做跨入口联合收尾，不替代各实现任务随功能交付schema/CLI和负例。",
         "独立CLI包安装、API/CLI/MCP同权、审批幂等不可绕过；未实现命令不进入ready；不默认开放治理写命令。",
-        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。"
-      ]
+        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。",
+        "新增/变更能力随本任务交付版本化输入输出schema、CLI映射及API/CLI同权负例；纯布局不新增业务命令，未实现保持planned。"
+      ],
+      "wave": "W3",
+      "commandIds": [],
+      "prototypeViews": [],
+      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "allowedPaths": [
+        "plugins/knowledge/",
+        "apps/product-web/plugins/knowledge.mjs",
+        "apps/control-api/src/product.mjs",
+        "tools/nuochong-cli/src/",
+        "tools/nuochong-cli/test/",
+        "apps/control-api/test/"
+      ],
+      "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
       "id": "KBV2-11",
@@ -298,7 +600,9 @@
         "KBV2-07",
         "KBV2-08",
         "KBV2-09",
-        "KBV2-10"
+        "KBV2-10",
+        "KBV2-14",
+        "KBV2-15"
       ],
       "scope": "v0 迁移演练、按段落片段回填校验、检索/图谱质量、恢复、容量、合成数据",
       "notInScope": "不恢复旧演示，不改官网，不扩权，不将planned注册为成功。",
@@ -306,8 +610,61 @@
         "迁移/回滚演练；权限/撤回/强杀/并发；Linux 检查；不冒充生产容量",
         "#85人工基线记录完成；#94结论及回归通过，或有明确风险接受；v0迁移/回退、任务强杀、发布竞争、图谱无泄漏有Linux证据。",
         "负责人完成P1产品验收、真实资料授权及试点范围决定；部署另行授权，不能以工程结项替代Accepted。",
-        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。"
-      ]
+        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。",
+        "批准原型10个视图逐一对照真实页面与资源ID，覆盖正常/空/错/撤权/过期/冲突；390px和键盘可用，官网Linux基线按适用流程检查。",
+        "新增/变更能力随本任务交付版本化输入输出schema、CLI映射及API/CLI同权负例；纯布局不新增业务命令，未实现保持planned。"
+      ],
+      "wave": "W4",
+      "commandIds": [],
+      "prototypeViews": [],
+      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "allowedPaths": [
+        "plugins/knowledge/",
+        "apps/product-web/plugins/knowledge.mjs",
+        "apps/control-api/src/product.mjs",
+        "tools/nuochong-cli/src/",
+        "tools/nuochong-cli/test/",
+        "apps/control-api/test/"
+      ],
+      "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+    },
+    {
+      "id": "KBV2-05",
+      "title": "音视频/OCR 导入（P2）",
+      "ownerRole": "DeepSeek；ChatGPT预审；负责人验收",
+      "priority": "P2",
+      "lane": "P2后续",
+      "status": "Planned",
+      "issue": null,
+      "dependsOn": [
+        "KBV2-11"
+      ],
+      "scope": "外部大模型 ASR/OCR 适配、音视频抽取、时间码片段、置信度、失败码、数据边界",
+      "notInScope": "不阻塞P1，不未经批准调用外部媒体服务。",
+      "acceptance": [
+        "文本类测试通过；外部适配器未配置明确失败；开关/审计/成本记录；不宣称 DeepSeek 可转写",
+        "P2须另外确认供应商、区域、数据保留、预算及真实媒体验收授权；文本/未配置失败不能算媒体成功。",
+        "提交实际SHA、测试证据及未运行项；先自查/CI，再设计一致性预审，人工验收另记。",
+        "新增/变更能力随本任务交付版本化输入输出schema、CLI映射及API/CLI同权负例；纯布局不新增业务命令，未实现保持planned。"
+      ],
+      "wave": "P2",
+      "commandIds": [
+        "knowledge.imports.create.v1",
+        "knowledge.imports.get.v1"
+      ],
+      "prototypeViews": [],
+      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "allowedPaths": [
+        "plugins/knowledge/",
+        "apps/product-web/plugins/knowledge.mjs",
+        "apps/control-api/src/product.mjs",
+        "tools/nuochong-cli/src/",
+        "tools/nuochong-cli/test/",
+        "apps/control-api/test/"
+      ],
+      "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
       "id": "KBV2-12",
@@ -327,7 +684,21 @@
         "真实合成音视频/扫描夹具通过供应商集成，时间码/页框可核验；无凭据则Blocked。",
         "外部写结果不确定不得盲目重试；费用未知明确unknown；恢复、清理和外部数据边界有证据。",
         "P2负责人批准才进入试点；不复用P1验收冒充媒体已交付。"
-      ]
+      ],
+      "wave": "P2",
+      "commandIds": [],
+      "prototypeViews": [],
+      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "allowedPaths": [
+        "plugins/knowledge/",
+        "apps/product-web/plugins/knowledge.mjs",
+        "apps/control-api/src/product.mjs",
+        "tools/nuochong-cli/src/",
+        "tools/nuochong-cli/test/",
+        "apps/control-api/test/"
+      ],
+      "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
       "id": "KBV2-13",
@@ -346,7 +717,18 @@
         "版本化命令/schema/CLI、权限/审批/幂等与取消错误矩阵齐全。",
         "排期时与执行时分别验权；消费者注册不等于授权；撤回通知和读路径实时失效分别规定。",
         "培训复核不无声改变历史成绩；形成单独实现任务，不将本设计算上线。"
-      ]
+      ],
+      "wave": "P2",
+      "commandIds": [],
+      "prototypeViews": [],
+      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "allowedPaths": [
+        "docs/product/",
+        "docs/refactor/",
+        "docs/adr/"
+      ],
+      "delivery": "设计/契约/决定/任务证据；不提交运行代码",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
       "id": "TOOL-01",
@@ -365,7 +747,18 @@
         "使用者/输入样例/成功指标/非目标清楚，限定一个MVP。",
         "形成版本化工具/运行/产物契约与失败恢复；公共身份/任务/模型能力不重复建设。",
         "列实现子任务、依赖和验收；仅使用知识时依赖已发布知识契约，不等待全知识库完成。"
-      ]
+      ],
+      "wave": "Parallel design",
+      "commandIds": [],
+      "prototypeViews": [],
+      "implementationBase": "approved design baseline; no runtime changes",
+      "allowedPaths": [
+        "docs/product/",
+        "docs/refactor/",
+        "docs/adr/"
+      ],
+      "delivery": "设计/契约/决定/任务证据；不提交运行代码",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     },
     {
       "id": "LEARN-01",
@@ -384,7 +777,18 @@
         "确定性客观评分、主观人工确认、服务端计时、交卷幂等与成绩权限规则完整。",
         "课程引用批准的知识快照；撤回触发复核但不自动篡改历史成绩。",
         "给出领域数据/版本化命令/CLI/页面设计与实现子任务，不重复人员主库。"
-      ]
+      ],
+      "wave": "Parallel design",
+      "commandIds": [],
+      "prototypeViews": [],
+      "implementationBase": "approved design baseline; no runtime changes",
+      "allowedPaths": [
+        "docs/product/",
+        "docs/refactor/",
+        "docs/adr/"
+      ],
+      "delivery": "设计/契约/决定/任务证据；不提交运行代码",
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
     }
   ],
   "designResponsibilities": {
@@ -408,5 +812,9 @@
       "human acceptance",
       "release authorization"
     ]
-  }
+  },
+  "revision": "v2-execution-r2",
+  "taskCount": 20,
+  "scopeDecisionStatus": "P1 implementation scope proposal requires PLAN-01 confirmation; prototype accepted",
+  "estimation": "Re-estimate after PLAN-01/02; historic 47-75 person-days is not the updated scope estimate"
 }
