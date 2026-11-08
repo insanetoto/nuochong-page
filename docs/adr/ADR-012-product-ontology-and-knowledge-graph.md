@@ -1,6 +1,8 @@
 # ADR-012：产品本体层与知识图谱投影
 
-状态：**Proposed**，2026-11-02。用户要求“把本体论的方法论用于公司产品所有设计”，并授权先形成设计、暂不开发。本 ADR 只提出架构方向，尚未评审为 Accepted，不改变 [ADR-011](ADR-011-product-plugins-llm-wiki.md) 的 Proposed 状态，也不授权实现或发布。
+**2026-11-08：Accepted（本轮P1架构方向）。** 负责人已批准W0确认单，证据见[准入验收](../product/knowledge/v2/w0/r1-acceptance-2026-11-08.md)。仅KBV2-01获R1有限开工；P2、其他运行任务和部署不因此获授权。下方Proposed/待评审表述为原提交背景，不能覆盖本条最新决定。
+
+状态：**Accepted（P1架构方向）**，2026-11-08。2026-11-02初稿为Proposed；负责人现已批准W0确认单和本ADR方向。仅KBV2-01获R1有限开工，完整运行准入及发布仍独立，不由本ADR自动授权。
 
 ## 背景
 
@@ -51,4 +53,4 @@
 - [产品套件本体](../product/ontology/suite-ontology.md)
 - [知识库 v2 设计](../product/knowledge/v2/README.md)
 - [知识首页图谱](../product/knowledge/v2/home-graph.md)
-- [ADR-011 三产品插件体系](ADR-011-product-plugins-llm-wiki.md)（Proposed）
+- [ADR-011 三产品插件体系](ADR-011-product-plugins-llm-wiki.md)（P1方向Accepted）

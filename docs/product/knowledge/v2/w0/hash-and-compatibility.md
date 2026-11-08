@@ -1,6 +1,8 @@
 # PLAN-02：P1契约、hash与兼容规范
 
-2026-11-08 · 设计交付候选 `2.0.0-proposed.1` · **待负责人确认及DeepSeek可实现性复核**，对应[#102](https://github.com/insanetoto/nuochong-page/issues/102)。本轮没有把契约导入运行时。
+**2026-11-08最新状态：本契约设计已由负责人批准冻结；实现可实现性反馈通过设计修订处理，运行能力仍planned。** 见[批准与准入记录](r1-acceptance-2026-11-08.md)。
+
+2026-11-08 · 设计冻结版 `2.0.0-design.1` · **负责人已确认；实现可实现性反馈继续走设计变更**，对应[#102](https://github.com/insanetoto/nuochong-page/issues/102)。本轮没有把契约导入运行时。
 
 ## 1. 完整机器契约与版本
 

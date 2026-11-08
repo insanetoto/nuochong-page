@@ -1,10 +1,10 @@
 # 诺崇产品路线图：Harness 基座与三产品插件体系
 
-W0最新交接：[决策、完整契约与KBV2-01有限准入确认单](../product/knowledge/v2/w0/README.md)。#104仍受准入阻塞，R1建议待负责人确认；本轮没有启动实现。
+W0最新交接：[决策、完整契约与KBV2-01有限准入确认单](../product/knowledge/v2/w0/README.md)。#104的R1准入已通过、Ready，完整运行准入仍未完成；本轮只记录合并与开工授权。
 
 ## 2026-11-08 下一轮工作安排（提案）
 
-v2原型已于2026-11-08评审通过（[确认记录](../product/knowledge/v2/prototype-acceptance-2026-11-08.md)）；已更新[负责人任务路线图](../product/knowledge/v2/execution-roadmap.md)。已细化 [20项后续任务](../product/knowledge/v2/next-work.md)。优先进行v0交接/缺口核查（#85已于2026-11-08人工验收确认）与#94稳定性调查、PR #99设计确认及P1契约冻结；随后由DeepSeek按依赖实现文本来源—片段审校—发布快照—图谱闭环。ChatGPT负责设计规划、页面原型、交互设计与预审，负责人保留人工验收和发布决定。AI工具与培训考试可并行开展首期设计，不提前启动其运行代码。媒体能力及其真实验收单列P2；PLAN-01/02/03设计交付待确认，其余任务仍Planned，20项Issues已创建，实际成员待分配；未授权部署。以下保留总体路线与历史状态。
+v2原型已于2026-11-08评审通过（[确认记录](../product/knowledge/v2/prototype-acceptance-2026-11-08.md)）；已更新[负责人任务路线图](../product/knowledge/v2/execution-roadmap.md)。已细化 [20项后续任务](../product/knowledge/v2/next-work.md)。优先进行v0交接/缺口核查（#85已于2026-11-08人工验收确认）与#94稳定性调查、PR #99设计确认及P1契约冻结；随后由DeepSeek按依赖实现文本来源—片段审校—发布快照—图谱闭环。ChatGPT负责设计规划、页面原型、交互设计与预审，负责人保留人工验收和发布决定。AI工具与培训考试可并行开展首期设计，不提前启动其运行代码。媒体能力及其真实验收单列P2；PLAN-01/02设计已Accepted，PLAN-03仅R1通过，其余任务仍Planned，20项Issues已创建，实际成员待分配；未授权部署。以下保留总体路线与历史状态。
 
 更新：2026-11-01。负责人明确公司三条产品线：**企业知识库、企业 AI 工具、培训和考试**，统一使用 DeepSeek Harness 技术基座，通过插件扩展业务。部门、人员、角色权限作为共享插件组合使用，详见[统一组织与权限设计](../product/shared-access/design.md)。知识库优先，以规章制度为首个知识域，采用 LLM Wiki 持续编译/审校/维护思路，并提供外部集成能力。
 
@@ -60,7 +60,7 @@ flowchart LR
 - 企业 Wiki 保留原始来源，模型生成可版本化知识页、目录、链接和维护建议；企业增加审批、来源有效期、权限交集和即时失效。制度原文是权威依据。
 - 员工 Web、CLI、外部 AI/MCP 同权，复用版本化 commandId/schema；模型和文档不能提权。原生 owner 仅保留管理员演示。
 - 公司统一提供模型，访客不自备 Key；密钥不出服务端。当前演示和将来全员产品分别验收。
-- 2026-11-02：三产品设计采用统一本体方法（上层/共享/产品/租户扩展四层），知识图谱是发布快照的权限投影，不引入图数据库；知识库 v2 设计已形成但全部 planned，见 [本体方法](../product/ontology/README.md)、[知识库 v2](../product/knowledge/v2/README.md)与 [ADR-012](../adr/ADR-012-product-ontology-and-knowledge-graph.md)（Proposed）。
+- 2026-11-02：三产品设计采用统一本体方法（上层/共享/产品/租户扩展四层），知识图谱是发布快照的权限投影，不引入图数据库；知识库 v2 设计已形成但全部 planned，见 [本体方法](../product/ontology/README.md)、[知识库 v2](../product/knowledge/v2/README.md)与 [ADR-012](../adr/ADR-012-product-ontology-and-knowledge-graph.md)（P1方向Accepted）。
 - 下一轮统一确认制度归口/发布人、格式和规模、密级、身份源、首个外部系统与页面反馈；本轮采用建议默认值完整落稿，不用逐项澄清阻塞成果。
 
 ## 基座验收记录

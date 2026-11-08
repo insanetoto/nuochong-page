@@ -1,6 +1,8 @@
 # KBV2-01 可直接实现的本体注册规范
 
-版本1.0.0候选 · 对应[#104](https://github.com/insanetoto/nuochong-page/issues/104) · **待负责人确认有限准入，不冒充Ready**。
+**2026-11-08最新状态：负责人已批准R1，#104 Ready，按验收记录的固定SHA与有限范围实现；未开始编码或部署。** 见[批准与准入记录](r1-acceptance-2026-11-08.md)。
+
+版本1.0.0设计冻结 · 对应[#104](https://github.com/insanetoto/nuochong-page/issues/104) · **R1有限准入已验收，KBV2-01 Ready；实现尚未验收**。
 
 ## 输入、输出与边界
 
