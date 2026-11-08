@@ -51,7 +51,7 @@
 ### 4.1 审批
 
 - 复用 `access.approvals.create.v1` + `product_approvals`：审批绑定 commandId、目标 hash、范围、审批人、凭据与有效期。
-- 目标 hash 覆盖正文、引用片段、来源版本、可见范围、条目关系；任一变化使审批失效。
+- 目标 hash 覆盖正文、引用片段、来源版本、可见范围、确切关系/概念/分配修订及 graphHash、publicationPolicyRevision；任一变化使审批失效。策略豁免的管理权限、资格与独立审批见 [来源管理 §2.4](source-management.md)，发布人不能自行解除双人约束。
 - 审校人提交审校（`knowledge.changes.review.v1` 或 v2 等价命令）；默认由另一发布人审批；单人/演示空间可显式豁免自批，仍记录 approvalId 与审计。
 - `--yes`、dry-run、UI 二次确认都不能替代服务端审批；拒绝请求无副作用。
 
@@ -75,6 +75,12 @@
     {"publicationId": "pub-2", "entryId": "entry-expense", "entryRevisionId": "rev-9"}
   ],
   "sourceRevisions": ["src-rev-7", "src-rev-8"],
+  "relationRevisionRefs": ["rel-rev-3"],
+  "conceptRevisionRefs": ["concept-rev-2"],
+  "assignmentRevisionRefs": ["assignment-rev-4"],
+  "supersessionRefs": ["supersession-1"],
+  "graphHash": "sha256:...",
+  "publicationPolicyRevision": 2,
   "effectiveAt": "2026-11-05T00:00:00+08:00",
   "approvalHash": "sha256:...",
   "aclEpoch": 42,
@@ -86,6 +92,16 @@
 ```
 
 manifest 不可变；回滚创建新快照与新发布记录并重新校验，不直接复用旧指针。
+
+### 4.4 图谱数据的封存与投影
+
+发布前封存关系、概念和条目概念分配的确切修订，形成 graphHash；内容审批绑定该摘要和 baseSnapshot。发布事务验证这些引用未变化后 CAS 切换快照。员工图谱仅从快照 refs 读取不可变内容，不能 JOIN 最新可变关系/概念表作为现行内容；维护者草稿视图独立鉴权，不复用员工缓存。
+
+修改关系原因、证据、权重、概念标签或分配只生成候选修订，不能立即改变当前图谱；发布新快照后才切换。关系删除也先生成删除候选，审批发布后才从当前投影移除。supersedes 使用独立修订替代记录，发布事务按同条目修订派生，不允许条目自环。
+
+跨空间边由发起空间快照封存，目标修订必须是目标空间当前有效发布版本；权限收紧/来源撤回/目标换版时即时裁剪，不自动把旧边改绑到新修订。历史快照仍可重建原始关系与标签，但对用户返回时叠加当前权限/有效性过滤；历史查询也不能恢复已失效访问权。
+
+新增验收：发布后编辑关系/概念不改变现行图谱；修改后旧审批失效；新发布原子切换图内容及 graphHash；旧快照可重建但不能绕过撤权；跨空间目标换版后旧边隐藏、复核重发后才出现。
 
 ## 5. 知识能力输出
 

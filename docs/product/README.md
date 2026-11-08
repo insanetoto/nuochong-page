@@ -4,6 +4,8 @@
 
 推荐阅读顺序：
 
+2026-11-08协作约定：ChatGPT负责设计规划与预审，DeepSeek负责代码实现；人工验收和发布由负责人确认。知识库v2预审修订及实现检查清单见 [PR #99交接说明](knowledge/v2/review-handoff.md)。文档合并不代表启动实现或产品验收。
+
 1. [公司产品体系与三条技术路线](portfolio.md)
 2. [共享组织、人员与角色权限插件](shared-access/design.md)
 3. [插件架构决策 ADR-011](../adr/ADR-011-product-plugins-llm-wiki.md)

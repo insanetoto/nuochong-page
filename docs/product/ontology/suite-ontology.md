@@ -90,6 +90,8 @@
 | `publishedAs` | EntryRevision → Publication | N:M | 发布快照不可变；回滚创建新发布记录 |
 | `exposesCapability` | Publication → CapabilityBinding | 1:N | 只有已发布快照可暴露能力 |
 
+`EntryRelation` 的相关/冲突关系以条目为端点，并有不可变关系修订。`supersedes` 独立使用修订级替代记录，两端指向 EntryRevision，不存入禁止条目自指的 knowledge_relations。发布快照封存 relationRevisionRefs、conceptRevisionRefs、assignmentRevisionRefs、supersessionRefs 与 graphHash；当前可变候选不影响现行图谱，历史重建始终叠加当前授权/有效性裁剪。具体表见 [v2契约](../knowledge/v2/contracts.md)。
+
 ### 4.3 约束（必须可测试）
 
 | ID | 约束 | 负例 |
@@ -101,7 +103,7 @@
 | KB-C5 | 每个条目仅一个当前发布修订；空间仅一个当前能力快照；CAS 切换 | 并发发布仅一个成功，另一个 `VERSION_CONFLICT` |
 | KB-C6 | 来源撤回/过期/ACL 收紧立即失效依赖条目 | 撤回后读取返回 `EVIDENCE_CHANGED` |
 | KB-C7 | 概念层级与部门树无环 | 成环写入拒绝 |
-| KB-C8 | 关系不得自指（`supersedes`/`relatedTo`） | 拒绝 |
+| KB-C8 | 条目关系禁止相同entryId自指；supersedes须同条目不同revisionId，禁止同修订自指/逆序/成环 | 拒绝非法端点；同条目新修订替代旧修订允许 |
 | KB-C9 | 默认审校人 ≠ 发布人；单人/演示空间可显式豁免并审计 | `APPROVAL_REQUIRED` |
 | KB-C10 | 片段 locator 在同一修订内唯一 | 重复解析幂等或拒绝 |
 
