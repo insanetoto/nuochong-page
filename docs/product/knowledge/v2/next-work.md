@@ -1,9 +1,14 @@
-# 知识库 v2 执行计划与任务卡（2026-11-08 · r5（R1已批准））
+# 知识库 v2 执行计划与任务卡（2026-11-08 · r6（整版发布规划））
+
+**r6 · V2整版发布规划（2026-11-08）：原20项加6项质量/发布任务，共26项，新增Issues #125—#130。仅#104离线模块已Released（隔离测试）；完整V2尚未实现/验收/发布。REL-01设计已输出待评审，#94与PLAN-03:FULL仍待处理。**
+
+[发布流程](release-process.md) · [16条页面/交互验收矩阵](release-acceptance.md) · [6项补充任务卡](release-tasks.md) · [统一台账](execution-plan.json)
+
 
 **2026-11-08 发布更新：KBV2-01 已由负责人验收，PR #123 已合入 integration；官网测试/生产及知识库隔离测试发布成功。知识库 v2 页面与后续业务能力仍 planned，#94 / 完整运行准入保持独立。详见[验收与发布记录](release-2026-11-08.md)。**
 
 
-负责人已确认 **v0人工验收和v2原型评审通过**。本次把原型逐页映射为交付任务：共20项（18项知识库工作、2项其他产品设计），其中PLAN-01/02已Accepted，PLAN-03完整准入进行中、R1已通过，KBV2-01 Released（隔离测试），其余16项Planned。仅KBV2-01离线模块已实现，已创建20项Issues，具体成员尚未分配；具体成员与日历排期未虚构。
+负责人已确认 **v0人工验收和v2原型评审通过**。本次把原型逐页映射为交付任务：共26项（原20项加6项质量/发布工作），其中PLAN-01/02已Accepted，PLAN-03完整准入进行中、R1已通过，KBV2-01 Released（隔离测试），REL-01 In review，其余21项Planned。仅KBV2-01离线模块已实现，已创建26项Issues，具体成员尚未分配；具体成员与日历排期未虚构。
 
 - [原型确认记录](prototype-acceptance-2026-11-08.md)：批准版本 `5a172f5`；HTML和截图保持原批准内容。
 - [任务JSON](execution-plan.json)：本文件表格/任务卡与之对应；[负责人路线图](execution-roadmap.md)提供快速查看入口。
@@ -54,7 +59,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 | KBV2-09 | [#112](https://github.com/insanetoto/nuochong-page/issues/112) | 知识全景前端 | W3 | KBV2-08, KBV2-15 | Planned |
 | KBV2-14 | [#113](https://github.com/insanetoto/nuochong-page/issues/113) | 员工搜索、阅读、原文核验与引用问答页面 | W3 | KBV2-07, KBV2-15 | Planned |
 | KBV2-10 | [#114](https://github.com/insanetoto/nuochong-page/issues/114) | 契约、CLI 与 MCP | W3 | KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08 | Planned |
-| KBV2-11 | [#115](https://github.com/insanetoto/nuochong-page/issues/115) | P1迁移、评测与试点 | W4 | KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08, KBV2-09, KBV2-10, KBV2-14, KBV2-15 | Planned |
+| KBV2-11 | [#115](https://github.com/insanetoto/nuochong-page/issues/115) | P1迁移、评测与试点 | W4 | KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08, KBV2-09, KBV2-10, KBV2-14, KBV2-15, KBV2-REL-02, KBV2-REL-03, KBV2-REL-04 | Planned |
 | KBV2-05 | [#116](https://github.com/insanetoto/nuochong-page/issues/116) | 音视频/OCR 导入（P2） | P2 | KBV2-11 | Planned |
 | KBV2-12 | [#117](https://github.com/insanetoto/nuochong-page/issues/117) | P2媒体专项评测与试点 | P2 | KBV2-05, KBV2-11 | Planned |
 | KBV2-13 | [#118](https://github.com/insanetoto/nuochong-page/issues/118) | 能力运营、排期与跨产品知识快照设计 | P2 | KBV2-11 | Planned |
@@ -420,7 +425,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 
 ## 5. 领取、提交与状态
 
-负责人已授权本轮批量登记，20项Issues均已创建，见[登记与核对记录](issue-registration.md)。创建不再等待PLAN-03，也不等于实施Ready。PLAN-03继续补齐实际成员、预审、负责人、设计版本、集成SHA、共享文件责任、依赖验收及实施授权，然后逐项领取；无需再次审批同一登记动作。
+负责人已授权本轮批量登记，原20项与新增6项Issues均已创建，见[登记与核对记录](issue-registration.md)。创建不再等待PLAN-03，也不等于实施Ready。PLAN-03继续补齐实际成员、预审、负责人、设计版本、集成SHA、共享文件责任、依赖验收及实施授权，然后逐项领取；无需再次审批同一登记动作。
 
 DeepSeek领取后用独立分支/目录实现；发现设计缺口先交ChatGPT修订，不自行改变页面/交互/权限语义。提交提供“批准设计→实现→schema/CLI→成功/负例→CI→预审”矩阵，真实模型和合成故障、Linux和macOS证据分别记录。
 
@@ -429,3 +434,8 @@ DeepSeek领取后用独立分支/目录实现；发现设计缺口先交ChatGPT�
 原47–75工程人日含历史范围，未涵盖本次全部UI/治理调整，不再用于新版排期。PLAN-01/02后由DeepSeek按最终范围评估，负责人配置人员，再制定日历计划。当前不承诺虚构完成日期。
 
 R1最新准入以[验收与固定基线](w0/r1-acceptance-2026-11-08.md)为准；#104只依赖#103的R1子出口，不等待父Issue关闭。其余任务不据此跳过完整前置。
+
+
+## r6整版发布补充
+
+新增REL-01—06完整范围、验收标准和依赖见[补充任务卡](release-tasks.md)。#115新增依赖REL-02/03/04，由同一RC完成16条AC联合验证和负责人验收，再经REL-05生产准备与REL-06具体批准/执行发布。历史r5的20项估算和验证快照不覆盖这6项新增工作。

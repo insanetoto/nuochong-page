@@ -1,5 +1,7 @@
 # 当前产品协作入口
 
+2026-11-08 r6最新：[V2整版发布流程](../product/knowledge/v2/release-process.md)、[16条原型验收矩阵](../product/knowledge/v2/release-acceptance.md)、[6项补充任务 #125—#130](../product/knowledge/v2/release-tasks.md)。统一台账现26项；只有KBV2-01离线模块已Released（隔离测试），完整V2尚未实现/验收/发布，FULL/#94仍待处理。以下保留历次阶段记录，当前状态以r6为准。
+
 2026-11-08发布更新：KBV2-01已验收并合入integration，官网测试/生产与知识库隔离测试发布成功；见[发布记录](../product/knowledge/v2/release-2026-11-08.md)。下方开工状态为早期快照，后续任务仍需完整准入。
 
 W0最新交接：[决策、完整契约与KBV2-01有限准入确认单](../product/knowledge/v2/w0/README.md)。#104的R1准入已通过、Ready，完整运行准入仍未完成；本轮只记录合并与开工授权。
