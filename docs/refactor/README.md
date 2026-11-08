@@ -1,5 +1,7 @@
 # 当前产品协作入口
 
+2026-11-08发布更新：KBV2-01已验收并合入integration，官网测试/生产与知识库隔离测试发布成功；见[发布记录](../product/knowledge/v2/release-2026-11-08.md)。下方开工状态为早期快照，后续任务仍需完整准入。
+
 W0最新交接：[决策、完整契约与KBV2-01有限准入确认单](../product/knowledge/v2/w0/README.md)。#104的R1准入已通过、Ready，完整运行准入仍未完成；本轮只记录合并与开工授权。
 
 2026-11-08接续：v0人工验收与v2原型评审已确认；执行计划更新为[20项任务](../product/knowledge/v2/next-work.md)，见[负责人路线图](../product/knowledge/v2/execution-roadmap.md)。20项Issues已登记（[入口](../product/knowledge/v2/issue-registration.md)）；PLAN-01/02设计已Accepted，PLAN-03仅R1通过，v2运行代码未开工，#94独立调查。

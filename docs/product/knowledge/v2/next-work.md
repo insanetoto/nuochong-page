@@ -1,12 +1,15 @@
 # 知识库 v2 执行计划与任务卡（2026-11-08 · r5（R1已批准））
 
-负责人已确认 **v0人工验收和v2原型评审通过**。本次把原型逐页映射为交付任务：共20项（18项知识库工作、2项其他产品设计），其中PLAN-01/02已Accepted，PLAN-03完整准入进行中、R1已通过，KBV2-01 Ready，其余16项Planned。未开始v2代码实现，已创建20项Issues，具体成员尚未分配；具体成员与日历排期未虚构。
+**2026-11-08 发布更新：KBV2-01 已由负责人验收，PR #123 已合入 integration；官网测试/生产及知识库隔离测试发布成功。知识库 v2 页面与后续业务能力仍 planned，#94 / 完整运行准入保持独立。详见[验收与发布记录](release-2026-11-08.md)。**
+
+
+负责人已确认 **v0人工验收和v2原型评审通过**。本次把原型逐页映射为交付任务：共20项（18项知识库工作、2项其他产品设计），其中PLAN-01/02已Accepted，PLAN-03完整准入进行中、R1已通过，KBV2-01 Released（隔离测试），其余16项Planned。仅KBV2-01离线模块已实现，已创建20项Issues，具体成员尚未分配；具体成员与日历排期未虚构。
 
 - [原型确认记录](prototype-acceptance-2026-11-08.md)：批准版本 `5a172f5`；HTML和截图保持原批准内容。
 - [任务JSON](execution-plan.json)：本文件表格/任务卡与之对应；[负责人路线图](execution-roadmap.md)提供快速查看入口。
 - ChatGPT负责设计规划、页面原型、交互设计、契约和预审；DeepSeek只负责按确认设计实现代码、迁移及自动化测试；负责人确认设计/人工验收/发布。
 
-本轮W0已补齐[决策、契约与有限准入确认单](w0/README.md)。负责人已批准并完成R1准入，#104 Ready；其依赖为#103的R1子出口，完整运行准入仍未完成；新v2命令/允许目录变化见契约候选，不把旧草稿字段直接用于实现。
+本轮W0已补齐[决策、契约与有限准入确认单](w0/README.md)。负责人已批准并完成R1准入，#104 Released（隔离测试）；其依赖为#103的R1子出口，完整运行准入仍未完成；新v2命令/允许目录变化见契约候选，不把旧草稿字段直接用于实现。
 
 ## 1. 本次调整
 
@@ -40,7 +43,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 | PLAN-01 | [#101](https://github.com/insanetoto/nuochong-page/issues/101) | 知识库交接、存量缺口与设计决定冻结 | W0 | 无 | Accepted |
 | PLAN-02 | [#102](https://github.com/insanetoto/nuochong-page/issues/102) | P1命令与数据契约实现前冻结 | W0 | PLAN-01 | Accepted |
 | PLAN-03 | [#103](https://github.com/insanetoto/nuochong-page/issues/103) | 实现准入与执行任务登记 | W0 | PLAN-01, PLAN-02 | In progress |
-| KBV2-01 | [#104](https://github.com/insanetoto/nuochong-page/issues/104) | 本体注册表与版本治理 | W1 | PLAN-03:R1 | Ready |
+| KBV2-01 | [#104](https://github.com/insanetoto/nuochong-page/issues/104) | 本体注册表与版本治理 | W1 | PLAN-03:R1 | Released（隔离测试） |
 | KBV2-02 | [#105](https://github.com/insanetoto/nuochong-page/issues/105) | 数据模型扩展与迁移 | W1 | KBV2-01 | Planned |
 | KBV2-03 | [#106](https://github.com/insanetoto/nuochong-page/issues/106) | 知识空间管理 | W2 | KBV2-02 | Planned |
 | KBV2-04 | [#107](https://github.com/insanetoto/nuochong-page/issues/107) | 文本/PDF/DOCX 导入与片段任务 | W2 | KBV2-02 | Planned |
@@ -116,7 +119,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-01 本体注册表与版本治理
 
 - 主责：DeepSeek；ChatGPT预审；负责人验收；优先级：P1；波次：W1。
-- 状态：Ready；依赖：PLAN-03:R1（分项已验收，父任务仍Open）；Issue：[#104](https://github.com/insanetoto/nuochong-page/issues/104)。
+- 状态：Released（隔离测试）；依赖：PLAN-03:R1（分项已验收，父任务仍Open）；Issue：[#104](https://github.com/insanetoto/nuochong-page/issues/104)。
 - 范围：类/关系/约束注册、manifest 片段、版本兼容、只读加载、审计；不建推理机
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`packages/platform/`、`plugins/knowledge/`、`apps/control-api/test/`。

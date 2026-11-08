@@ -1,10 +1,13 @@
 # 知识库 v2 任务索引（执行计划 r5（R1已批准））
 
+**2026-11-08 发布更新：KBV2-01 已由负责人验收，PR #123 已合入 integration；官网测试/生产及知识库隔离测试发布成功。知识库 v2 页面与后续业务能力仍 planned，#94 / 完整运行准入保持独立。详见[验收与发布记录](release-2026-11-08.md)。**
+
+
 2026-11-08更新：负责人已确认原型评审通过。当前以[任务卡](next-work.md)、[JSON台账](execution-plan.json)及[负责人路线图](execution-roadmap.md)为唯一执行口径。本页替换原父任务/估算表中相互冲突的阶段与依赖，原始记录仍可从Git提交5a172f5查看。
 
-共20项：3项设计准入、12项P1工程/验收、3项P2后续、2项其他产品设计。新增KBV2-14（搜索/阅读/引用问答）与15（产品壳/任务/兼容），已有任务ID不重编号。PLAN-01/02已Accepted、PLAN-03进行中、KBV2-01 Ready，其余Planned；原型Accepted不等于实现Accepted。20项Issues均已创建（见[登记记录](issue-registration.md)），成员与日期待准入登记。
+共20项：3项设计准入、12项P1工程/验收、3项P2后续、2项其他产品设计。新增KBV2-14（搜索/阅读/引用问答）与15（产品壳/任务/兼容），已有任务ID不重编号。PLAN-01/02已Accepted、PLAN-03进行中、KBV2-01 Released（隔离测试），其余Planned；原型Accepted不等于实现Accepted。20项Issues均已创建（见[登记记录](issue-registration.md)），成员与日期待准入登记。
 
-W0设计已补齐，见[一次确认单](w0/admission.md)；#104当前Ready，依赖为#103的R1子出口，见[验收记录](w0/r1-acceptance-2026-11-08.md)。
+W0设计已补齐，见[一次确认单](w0/admission.md)；#104当前Released（隔离测试），依赖为#103的R1子出口，见[验收记录](w0/r1-acceptance-2026-11-08.md)。
 
 ## 任务与依赖
 
@@ -13,7 +16,7 @@ W0设计已补齐，见[一次确认单](w0/admission.md)；#104当前Ready，�
 | PLAN-01 | [#101](https://github.com/insanetoto/nuochong-page/issues/101) | 知识库交接、存量缺口与设计决定冻结 | ChatGPT；负责人确认 | 无 | Accepted |
 | PLAN-02 | [#102](https://github.com/insanetoto/nuochong-page/issues/102) | P1命令与数据契约实现前冻结 | ChatGPT；DeepSeek评估可实现性 | PLAN-01 | Accepted |
 | PLAN-03 | [#103](https://github.com/insanetoto/nuochong-page/issues/103) | 实现准入与执行任务登记 | ChatGPT；负责人批准 | PLAN-01, PLAN-02 | In progress |
-| KBV2-01 | [#104](https://github.com/insanetoto/nuochong-page/issues/104) | 本体注册表与版本治理 | DeepSeek；ChatGPT预审；负责人验收 | PLAN-03:R1 | Ready |
+| KBV2-01 | [#104](https://github.com/insanetoto/nuochong-page/issues/104) | 本体注册表与版本治理 | DeepSeek；ChatGPT预审；负责人验收 | PLAN-03:R1 | Released（隔离测试） |
 | KBV2-02 | [#105](https://github.com/insanetoto/nuochong-page/issues/105) | 数据模型扩展与迁移 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-01 | Planned |
 | KBV2-03 | [#106](https://github.com/insanetoto/nuochong-page/issues/106) | 知识空间管理 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-02 | Planned |
 | KBV2-04 | [#107](https://github.com/insanetoto/nuochong-page/issues/107) | 文本/PDF/DOCX 导入与片段任务 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-02 | Planned |
