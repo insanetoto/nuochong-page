@@ -24,7 +24,7 @@
 | 知识导入支持文本、视频、语音；后台解析生成可追溯片段进入条目待审区 | [导入管线](import-pipeline.md)：格式、校验、解析阶段、locator、任务、片段与待审 |
 | 知识发布将人工审核后的知识发布，输出知识能力 | [发布与能力输出](publication.md)：审校、审批、快照、能力目录与失效 |
 | 本体论方法用于公司产品所有设计 | [本体方法论](../../ontology/README.md)、[产品套件本体](../../ontology/suite-ontology.md)、[ADR-012](../../../adr/ADR-012-product-ontology-and-knowledge-graph.md) |
-| 所有功能先不开发 | 全部文档标注 planned；[任务](tasks.md)只做拆分，不创建 Issue/不排期/不部署 |
+| 所有功能先不开发 | 运行能力标注planned；[20项任务](tasks.md)已按负责人后续授权创建Issues，未启动实现/部署 |
 
 ## 2. 非目标
 
@@ -127,7 +127,7 @@ P1 不等待音视频：先打通“片段—待审—发布—图谱”闭环�
 - **共享能力**：空间角色、部门范围、审批、审计复用 `identity-company` / `organization` / `access-management`；知识库只声明资源与业务权限。
 - **插件**：知识库 manifest 增加 `ontology` 片段与 `capabilities` 声明；禁用知识插件后不接新写、历史可读、图谱不返回该插件节点。
 - **CLI/API**：新增能力全部有 commandId、输入/输出 schema、CLI 映射、授权/副作用/幂等说明；未实现标 planned，不注册 ready。
-- **发布边界**：本设计不创建 Issue、不排期、不部署；实现需负责人批准后按任务表逐项领取。
+- **发布边界**：负责人已授权创建20项Issues，见[登记表](issue-registration.md)；本轮不启动实现/部署，按剩余准入和依赖逐项领取。
 - **原型（2026-11-08更新）**：已输出[v2可点击原型](../../prototypes/knowledge-v2.html)及[页面/交互交接](prototype-design.md)，已于2026-11-08由负责人评审通过。原型为合成数据、无业务API，不代表v2运行UI或图谱能力已交付；原[knowledge.html](../../prototypes/knowledge.html)保留为v1历史参考。
 
 ## 9. 已确认决策（2026-11-08）

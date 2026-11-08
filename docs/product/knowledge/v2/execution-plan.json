@@ -1,6 +1,6 @@
 {
   "date": "2026-11-08",
-  "status": "Prototype accepted; execution planning updated; implementation not started",
+  "status": "20 issues registered; prototype accepted; implementation not started",
   "gates": {
     "existingIssues": [
       85,
@@ -25,7 +25,16 @@
     },
     "prototypePR": 100,
     "implementationAuthorized": false,
-    "issueRegistration": "Not requested in this update; implementation issue fields remain null",
+    "issueRegistration": {
+      "status": "Registered",
+      "date": "2026-11-08",
+      "created": 20,
+      "deferred": 0,
+      "authorizedBy": "负责人本轮要求将所有任务转换为Issue",
+      "evidence": "docs/product/knowledge/v2/issue-registration.md",
+      "assignment": "Unassigned; roles documented",
+      "implementationAuthorized": false
+    },
     "blockingIssues": [
       94
     ],
@@ -43,7 +52,7 @@
       "priority": "P0",
       "lane": "设计与交接",
       "status": "In progress",
-      "issue": null,
+      "issue": 101,
       "dependsOn": [],
       "scope": "复用已验收v0和已通过原型，核对实际schema/权限差异；冻结P1范围、关系与审校规则、性能/文件额度及ADR决定。",
       "notInScope": "不代替#85人工验收，不改运行代码，不合并或发布。",
@@ -67,7 +76,10 @@
         "docs/adr/"
       ],
       "delivery": "设计/契约/决定/任务证据；不提交运行代码",
-      "readiness": "可继续设计核查；原型确认已完成，技术/范围决定尚待冻结"
+      "readiness": "可继续设计核查；原型确认已完成，技术/范围决定尚待冻结",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/101",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "PLAN-02",
@@ -76,7 +88,7 @@
       "priority": "P0",
       "lane": "设计与交接",
       "status": "Planned",
-      "issue": null,
+      "issue": 102,
       "dependsOn": [
         "PLAN-01"
       ],
@@ -97,7 +109,10 @@
         "docs/adr/"
       ],
       "delivery": "设计/契约/决定/任务证据；不提交运行代码",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/102",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "PLAN-03",
@@ -106,7 +121,7 @@
       "priority": "P0",
       "lane": "设计与交接",
       "status": "Planned",
-      "issue": null,
+      "issue": 103,
       "dependsOn": [
         "PLAN-01",
         "PLAN-02"
@@ -116,7 +131,7 @@
       "acceptance": [
         "记录批准的设计提交及ADR决定；PR合并或CI绿色不自动充当设计批准。",
         "#94调查结论有复现/时序/无披露/唯一终态证据，或负责人记录明确风险决定；任务依赖解除可追踪。",
-        "仅在明确授权后创建实现Issues，填写执行者DeepSeek、预审ChatGPT、负责人、目录和基础SHA；当前不伪造已创建或已领取。",
+        "本轮已获负责人明确授权创建20项Issues；核对任务/Issue一一对应，继续登记实际执行者、预审、负责人、目录和集成SHA；登记完成不等于领取或实现验收。",
         "记录实施授权、命名责任人、已合入设计的集成SHA及共享文件负责人；只靠原型通过不能将代码任务标Ready。"
       ],
       "wave": "W0",
@@ -129,7 +144,13 @@
         "docs/adr/"
       ],
       "delivery": "设计/契约/决定/任务证据；不提交运行代码",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/103",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08",
+      "progressEvidence": [
+        "20项Issue已登记并回填；人员、集成SHA与实施准入仍未完成"
+      ]
     },
     {
       "id": "KBV2-01",
@@ -138,7 +159,7 @@
       "priority": "P1",
       "lane": "P1实现",
       "status": "Planned",
-      "issue": null,
+      "issue": 104,
       "dependsOn": [
         "PLAN-03"
       ],
@@ -159,7 +180,10 @@
         "apps/control-api/test/"
       ],
       "delivery": "注册/加载校验与兼容测试；只读内部模块不强行新增业务命令",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/104",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "KBV2-02",
@@ -168,7 +192,7 @@
       "priority": "P1",
       "lane": "P1实现",
       "status": "Planned",
-      "issue": null,
+      "issue": 105,
       "dependsOn": [
         "KBV2-01"
       ],
@@ -190,7 +214,10 @@
         "apps/control-api/test/"
       ],
       "delivery": "增量迁移、幂等回填、旧数据双读与恢复演练证据",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/105",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "KBV2-03",
@@ -199,7 +226,7 @@
       "priority": "P1",
       "lane": "P1实现",
       "status": "Planned",
-      "issue": null,
+      "issue": 106,
       "dependsOn": [
         "KBV2-02"
       ],
@@ -235,7 +262,10 @@
         "apps/control-api/test/"
       ],
       "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/106",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "KBV2-04",
@@ -244,7 +274,7 @@
       "priority": "P1",
       "lane": "P1实现",
       "status": "Planned",
-      "issue": null,
+      "issue": 107,
       "dependsOn": [
         "KBV2-02"
       ],
@@ -281,7 +311,10 @@
         "apps/control-api/test/"
       ],
       "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/107",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "KBV2-15",
@@ -290,7 +323,7 @@
       "priority": "P1",
       "lane": "P1实现",
       "status": "Planned",
-      "issue": null,
+      "issue": 108,
       "dependsOn": [
         "KBV2-03",
         "KBV2-04"
@@ -328,7 +361,10 @@
         "apps/control-api/test/"
       ],
       "delivery": "真实UI与共享API集成、适用契约/CLI、浏览器/负例证据及PR",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/108",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "KBV2-06",
@@ -337,7 +373,7 @@
       "priority": "P1",
       "lane": "P1实现",
       "status": "Planned",
-      "issue": null,
+      "issue": 109,
       "dependsOn": [
         "KBV2-04"
       ],
@@ -371,7 +407,10 @@
         "apps/control-api/test/"
       ],
       "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/109",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "KBV2-07",
@@ -380,7 +419,7 @@
       "priority": "P1",
       "lane": "P1实现",
       "status": "Planned",
-      "issue": null,
+      "issue": 110,
       "dependsOn": [
         "KBV2-03",
         "KBV2-06"
@@ -414,7 +453,10 @@
         "apps/control-api/test/"
       ],
       "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/110",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "KBV2-08",
@@ -423,7 +465,7 @@
       "priority": "P1",
       "lane": "P1实现",
       "status": "Planned",
-      "issue": null,
+      "issue": 111,
       "dependsOn": [
         "KBV2-07"
       ],
@@ -451,7 +493,10 @@
         "apps/control-api/test/"
       ],
       "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/111",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "KBV2-09",
@@ -460,7 +505,7 @@
       "priority": "P1",
       "lane": "P1实现",
       "status": "Planned",
-      "issue": null,
+      "issue": 112,
       "dependsOn": [
         "KBV2-08",
         "KBV2-15"
@@ -493,7 +538,10 @@
         "apps/control-api/test/"
       ],
       "delivery": "真实UI与共享API集成、适用契约/CLI、浏览器/负例证据及PR",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/112",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "KBV2-14",
@@ -502,7 +550,7 @@
       "priority": "P1",
       "lane": "P1实现",
       "status": "Planned",
-      "issue": null,
+      "issue": 113,
       "dependsOn": [
         "KBV2-07",
         "KBV2-15"
@@ -544,7 +592,10 @@
         "apps/control-api/test/"
       ],
       "delivery": "真实UI与共享API集成、适用契约/CLI、浏览器/负例证据及PR",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/113",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "KBV2-10",
@@ -553,7 +604,7 @@
       "priority": "P1",
       "lane": "P1实现",
       "status": "Planned",
-      "issue": null,
+      "issue": 114,
       "dependsOn": [
         "KBV2-03",
         "KBV2-04",
@@ -583,7 +634,10 @@
         "apps/control-api/test/"
       ],
       "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/114",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "KBV2-11",
@@ -592,7 +646,7 @@
       "priority": "P1",
       "lane": "P1实现",
       "status": "Planned",
-      "issue": null,
+      "issue": 115,
       "dependsOn": [
         "KBV2-03",
         "KBV2-04",
@@ -627,7 +681,10 @@
         "apps/control-api/test/"
       ],
       "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/115",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "KBV2-05",
@@ -636,7 +693,7 @@
       "priority": "P2",
       "lane": "P2后续",
       "status": "Planned",
-      "issue": null,
+      "issue": 116,
       "dependsOn": [
         "KBV2-11"
       ],
@@ -664,7 +721,10 @@
         "apps/control-api/test/"
       ],
       "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/116",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "KBV2-12",
@@ -673,7 +733,7 @@
       "priority": "P2",
       "lane": "P2后续",
       "status": "Planned",
-      "issue": null,
+      "issue": 117,
       "dependsOn": [
         "KBV2-05",
         "KBV2-11"
@@ -698,7 +758,10 @@
         "apps/control-api/test/"
       ],
       "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/117",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "KBV2-13",
@@ -707,7 +770,7 @@
       "priority": "P2",
       "lane": "设计与后续",
       "status": "Planned",
-      "issue": null,
+      "issue": 118,
       "dependsOn": [
         "KBV2-11"
       ],
@@ -728,7 +791,10 @@
         "docs/adr/"
       ],
       "delivery": "设计/契约/决定/任务证据；不提交运行代码",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/118",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "TOOL-01",
@@ -737,7 +803,7 @@
       "priority": "P1",
       "lane": "其他产品设计",
       "status": "Planned",
-      "issue": null,
+      "issue": 119,
       "dependsOn": [
         "PLAN-01"
       ],
@@ -758,7 +824,10 @@
         "docs/adr/"
       ],
       "delivery": "设计/契约/决定/任务证据；不提交运行代码",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/119",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     },
     {
       "id": "LEARN-01",
@@ -767,7 +836,7 @@
       "priority": "P1",
       "lane": "其他产品设计",
       "status": "Planned",
-      "issue": null,
+      "issue": 120,
       "dependsOn": [
         "PLAN-01"
       ],
@@ -788,7 +857,10 @@
         "docs/adr/"
       ],
       "delivery": "设计/契约/决定/任务证据；不提交运行代码",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现"
+      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/120",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08"
     }
   ],
   "designResponsibilities": {
@@ -813,7 +885,7 @@
       "release authorization"
     ]
   },
-  "revision": "v2-execution-r2",
+  "revision": "v2-execution-r3",
   "taskCount": 20,
   "scopeDecisionStatus": "P1 implementation scope proposal requires PLAN-01 confirmation; prototype accepted",
   "estimation": "Re-estimate after PLAN-01/02; historic 47-75 person-days is not the updated scope estimate"

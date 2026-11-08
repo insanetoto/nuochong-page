@@ -1,6 +1,6 @@
-# 知识库 v2 执行计划与任务卡（2026-11-08 · r2）
+# 知识库 v2 执行计划与任务卡（2026-11-08 · r3）
 
-负责人已确认 **v0人工验收和v2原型评审通过**。本次把原型逐页映射为交付任务：共20项（18项知识库工作、2项其他产品设计），其中PLAN-01进行中，其余19项Planned。未开始v2代码实现，尚未创建或分配实施Issues；具体成员与日历排期未虚构。
+负责人已确认 **v0人工验收和v2原型评审通过**。本次把原型逐页映射为交付任务：共20项（18项知识库工作、2项其他产品设计），其中PLAN-01进行中，其余19项Planned。未开始v2代码实现，已创建20项Issues，具体成员尚未分配；具体成员与日历排期未虚构。
 
 - [原型确认记录](prototype-acceptance-2026-11-08.md)：批准版本 `5a172f5`；HTML和截图保持原批准内容。
 - [任务JSON](execution-plan.json)：本文件表格/任务卡与之对应；[负责人路线图](execution-roadmap.md)提供快速查看入口。
@@ -33,37 +33,37 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 
 ## 3. 任务总览
 
-| ID | 工作 | 波次 | 依赖 | 状态 |
-| --- | --- | --- | --- | --- |
-| PLAN-01 | 知识库交接、存量缺口与设计决定冻结 | W0 | 无 | In progress |
-| PLAN-02 | P1命令与数据契约实现前冻结 | W0 | PLAN-01 | Planned |
-| PLAN-03 | 实现准入与执行任务登记 | W0 | PLAN-01, PLAN-02 | Planned |
-| KBV2-01 | 本体注册表与版本治理 | W1 | PLAN-03 | Planned |
-| KBV2-02 | 数据模型扩展与迁移 | W1 | KBV2-01 | Planned |
-| KBV2-03 | 知识空间管理 | W2 | KBV2-02 | Planned |
-| KBV2-04 | 文本/PDF/DOCX 导入与片段任务 | W2 | KBV2-02 | Planned |
-| KBV2-15 | 产品壳、导航兼容与持久任务页面 | W2 | KBV2-03, KBV2-04 | Planned |
-| KBV2-06 | 片段待审与条目组装 | W2 | KBV2-04 | Planned |
-| KBV2-07 | 发布与能力输出 | W3 | KBV2-03, KBV2-06 | Planned |
-| KBV2-08 | 图谱查询 API | W3 | KBV2-07 | Planned |
-| KBV2-09 | 知识全景前端 | W3 | KBV2-08, KBV2-15 | Planned |
-| KBV2-14 | 员工搜索、阅读、原文核验与引用问答页面 | W3 | KBV2-07, KBV2-15 | Planned |
-| KBV2-10 | 契约、CLI 与 MCP | W3 | KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08 | Planned |
-| KBV2-11 | P1迁移、评测与试点 | W4 | KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08, KBV2-09, KBV2-10, KBV2-14, KBV2-15 | Planned |
-| KBV2-05 | 音视频/OCR 导入（P2） | P2 | KBV2-11 | Planned |
-| KBV2-12 | P2媒体专项评测与试点 | P2 | KBV2-05, KBV2-11 | Planned |
-| KBV2-13 | 能力运营、排期与跨产品知识快照设计 | P2 | KBV2-11 | Planned |
-| TOOL-01 | 首个企业AI工具产品方案 | Parallel design | PLAN-01 | Planned |
-| LEARN-01 | 培训考试首期产品方案 | Parallel design | PLAN-01 | Planned |
+| ID | Issue | 工作 | 波次 | 依赖 | 状态 |
+| --- | --- | --- | --- | --- | --- |
+| PLAN-01 | [#101](https://github.com/insanetoto/nuochong-page/issues/101) | 知识库交接、存量缺口与设计决定冻结 | W0 | 无 | In progress |
+| PLAN-02 | [#102](https://github.com/insanetoto/nuochong-page/issues/102) | P1命令与数据契约实现前冻结 | W0 | PLAN-01 | Planned |
+| PLAN-03 | [#103](https://github.com/insanetoto/nuochong-page/issues/103) | 实现准入与执行任务登记 | W0 | PLAN-01, PLAN-02 | Planned |
+| KBV2-01 | [#104](https://github.com/insanetoto/nuochong-page/issues/104) | 本体注册表与版本治理 | W1 | PLAN-03 | Planned |
+| KBV2-02 | [#105](https://github.com/insanetoto/nuochong-page/issues/105) | 数据模型扩展与迁移 | W1 | KBV2-01 | Planned |
+| KBV2-03 | [#106](https://github.com/insanetoto/nuochong-page/issues/106) | 知识空间管理 | W2 | KBV2-02 | Planned |
+| KBV2-04 | [#107](https://github.com/insanetoto/nuochong-page/issues/107) | 文本/PDF/DOCX 导入与片段任务 | W2 | KBV2-02 | Planned |
+| KBV2-15 | [#108](https://github.com/insanetoto/nuochong-page/issues/108) | 产品壳、导航兼容与持久任务页面 | W2 | KBV2-03, KBV2-04 | Planned |
+| KBV2-06 | [#109](https://github.com/insanetoto/nuochong-page/issues/109) | 片段待审与条目组装 | W2 | KBV2-04 | Planned |
+| KBV2-07 | [#110](https://github.com/insanetoto/nuochong-page/issues/110) | 发布与能力输出 | W3 | KBV2-03, KBV2-06 | Planned |
+| KBV2-08 | [#111](https://github.com/insanetoto/nuochong-page/issues/111) | 图谱查询 API | W3 | KBV2-07 | Planned |
+| KBV2-09 | [#112](https://github.com/insanetoto/nuochong-page/issues/112) | 知识全景前端 | W3 | KBV2-08, KBV2-15 | Planned |
+| KBV2-14 | [#113](https://github.com/insanetoto/nuochong-page/issues/113) | 员工搜索、阅读、原文核验与引用问答页面 | W3 | KBV2-07, KBV2-15 | Planned |
+| KBV2-10 | [#114](https://github.com/insanetoto/nuochong-page/issues/114) | 契约、CLI 与 MCP | W3 | KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08 | Planned |
+| KBV2-11 | [#115](https://github.com/insanetoto/nuochong-page/issues/115) | P1迁移、评测与试点 | W4 | KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08, KBV2-09, KBV2-10, KBV2-14, KBV2-15 | Planned |
+| KBV2-05 | [#116](https://github.com/insanetoto/nuochong-page/issues/116) | 音视频/OCR 导入（P2） | P2 | KBV2-11 | Planned |
+| KBV2-12 | [#117](https://github.com/insanetoto/nuochong-page/issues/117) | P2媒体专项评测与试点 | P2 | KBV2-05, KBV2-11 | Planned |
+| KBV2-13 | [#118](https://github.com/insanetoto/nuochong-page/issues/118) | 能力运营、排期与跨产品知识快照设计 | P2 | KBV2-11 | Planned |
+| TOOL-01 | [#119](https://github.com/insanetoto/nuochong-page/issues/119) | 首个企业AI工具产品方案 | Parallel design | PLAN-01 | Planned |
+| LEARN-01 | [#120](https://github.com/insanetoto/nuochong-page/issues/120) | 培训考试首期产品方案 | Parallel design | PLAN-01 | Planned |
 
-## 4. 可转为Issue的任务卡
+## 4. 已登记Issue的任务卡
 
 以下是角色主责，不代表已分配实际成员。commandId为现有/候选命令引用，完整schema在PLAN-02冻结；空清单的内部/迁移/验收任务不强行新增产品能力。全部实现任务随功能交付CLI，10负责联合收尾。
 
 ### PLAN-01 知识库交接、存量缺口与设计决定冻结
 
 - 主责：ChatGPT；负责人确认；优先级：P0；波次：W0。
-- 状态：In progress；依赖：无；Issue：未创建。
+- 状态：In progress；依赖：无；Issue：[#101](https://github.com/insanetoto/nuochong-page/issues/101)。
 - 范围：复用已验收v0和已通过原型，核对实际schema/权限差异；冻结P1范围、关系与审校规则、性能/文件额度及ADR决定。
 - 不做：不代替#85人工验收，不改运行代码，不合并或发布。
 - 允许目录/文件：`docs/product/`、`docs/refactor/`、`docs/adr/`。
@@ -81,7 +81,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### PLAN-02 P1命令与数据契约实现前冻结
 
 - 主责：ChatGPT；DeepSeek评估可实现性；优先级：P0；波次：W0。
-- 状态：Planned；依赖：PLAN-01；Issue：未创建。
+- 状态：Planned；依赖：PLAN-01；Issue：[#102](https://github.com/insanetoto/nuochong-page/issues/102)。
 - 范围：按contracts.md逐命令确定字段、版本、权限、审批、幂等、错误及CLI映射，提前冻结公共schema。 以原型逐页核对命令，冻结旧v1兼容方案、错误/响应及发布hash规范；原型字段名不直接作为运行时契约。
 - 不做：不等到KBV2-10才决定接口，不修改实际能力注册。
 - 允许目录/文件：`docs/product/`、`docs/refactor/`、`docs/adr/`。
@@ -97,7 +97,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### PLAN-03 实现准入与执行任务登记
 
 - 主责：ChatGPT；负责人批准；优先级：P0；波次：W0。
-- 状态：Planned；依赖：PLAN-01, PLAN-02；Issue：未创建。
+- 状态：Planned；依赖：PLAN-01, PLAN-02；Issue：[#103](https://github.com/insanetoto/nuochong-page/issues/103)。
 - 范围：核对#99/#100的合并与批准证据、PLAN-01/02及#94，固定refactor/integration真实SHA，准备可分配任务及文件责任。
 - 不做：不直接推main/test，不批准生产迁移，不共享同一可写目录。
 - 允许目录/文件：`docs/product/`、`docs/refactor/`、`docs/adr/`。
@@ -108,13 +108,13 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 
 - [ ] 记录批准的设计提交及ADR决定；PR合并或CI绿色不自动充当设计批准。
 - [ ] #94调查结论有复现/时序/无披露/唯一终态证据，或负责人记录明确风险决定；任务依赖解除可追踪。
-- [ ] 仅在明确授权后创建实现Issues，填写执行者DeepSeek、预审ChatGPT、负责人、目录和基础SHA；当前不伪造已创建或已领取。
+- [ ] 本轮已获负责人明确授权创建20项Issues；核对任务/Issue一一对应，继续登记实际执行者、预审、负责人、目录和集成SHA；登记完成不等于领取或实现验收。
 - [ ] 记录实施授权、命名责任人、已合入设计的集成SHA及共享文件负责人；只靠原型通过不能将代码任务标Ready。
 
 ### KBV2-01 本体注册表与版本治理
 
 - 主责：DeepSeek；ChatGPT预审；负责人验收；优先级：P1；波次：W1。
-- 状态：Planned；依赖：PLAN-03；Issue：未创建。
+- 状态：Planned；依赖：PLAN-03；Issue：[#104](https://github.com/insanetoto/nuochong-page/issues/104)。
 - 范围：类/关系/约束注册、manifest 片段、版本兼容、只读加载、审计；不建推理机
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`packages/platform/`、`plugins/knowledge/`、`apps/control-api/test/`。
@@ -130,7 +130,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-02 数据模型扩展与迁移
 
 - 主责：DeepSeek；ChatGPT预审；负责人验收；优先级：P1；波次：W1。
-- 状态：Planned；依赖：KBV2-01；Issue：未创建。
+- 状态：Planned；依赖：KBV2-01；Issue：[#105](https://github.com/insanetoto/nuochong-page/issues/105)。
 - 范围：空间 code/type、片段、概念、关系、导入批次/文件、能力表；v0 按段落回填与双读
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`apps/control-api/src/migrations/`、`plugins/knowledge/`、`apps/control-api/test/`。
@@ -147,7 +147,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-03 知识空间管理
 
 - 主责：DeepSeek；ChatGPT预审；负责人验收；优先级：P1；波次：W2。
-- 状态：Planned；依赖：KBV2-02；Issue：未创建。
+- 状态：Planned；依赖：KBV2-02；Issue：[#106](https://github.com/insanetoto/nuochong-page/issues/106)。
 - 范围：列表、创建向导、设置、改名、归档、角色/部门范围、审计；从首页移除创建
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`plugins/knowledge/`、`apps/product-web/plugins/knowledge.mjs`、`apps/control-api/src/product.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
@@ -165,7 +165,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-04 文本/PDF/DOCX 导入与片段任务
 
 - 主责：DeepSeek；ChatGPT预审；负责人验收；优先级：P1；波次：W2。
-- 状态：Planned；依赖：KBV2-02；Issue：未创建。
+- 状态：Planned；依赖：KBV2-02；Issue：[#107](https://github.com/insanetoto/nuochong-page/issues/107)。
 - 范围：批次/文件/校验/解析/片段/任务/重试/取消；locator 与 hash；交付批次列表/详情、三步导入表单及逐文件结果UI，PDF文本层检测须由服务端执行。
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`plugins/knowledge/`、`apps/product-web/plugins/knowledge.mjs`、`apps/control-api/src/product.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
@@ -183,7 +183,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-15 产品壳、导航兼容与持久任务页面
 
 - 主责：DeepSeek；ChatGPT预审；负责人验收；优先级：P1；波次：W2。
-- 状态：Planned；依赖：KBV2-03, KBV2-04；Issue：未创建。
+- 状态：Planned；依赖：KBV2-03, KBV2-04；Issue：[#108](https://github.com/insanetoto/nuochong-page/issues/108)。
 - 范围：产品壳与响应式导航、可信会话/角色驱动菜单、空间范围、我的任务、共享组织入口与旧链接兼容；提供其他页面共用的加载/错误/引用组件。
 - 不做：不创建人员角色主库，不把原型角色/状态切换器或原生owner入口带入正式页面；不实现AI工具/培训业务。
 - 允许目录/文件：`apps/product-web/`、`apps/control-api/src/product-web.mjs`、`apps/control-api/test/product-web.browser.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
@@ -203,7 +203,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-06 片段待审与条目组装
 
 - 主责：DeepSeek；ChatGPT预审；负责人验收；优先级：P1；波次：W2。
-- 状态：Planned；依赖：KBV2-04；Issue：未创建。
+- 状态：Planned；依赖：KBV2-04；Issue：[#109](https://github.com/insanetoto/nuochong-page/issues/109)。
 - 范围：待审区、片段接受/拒绝/合并/拆分、条目草稿、引用校验、冲突提示；按批准原型实现三栏审校、概念/关系候选及正文差异、引用抽屉与冲突恢复。
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`plugins/knowledge/`、`apps/product-web/plugins/knowledge.mjs`、`apps/control-api/src/product.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
@@ -222,7 +222,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-07 发布与能力输出
 
 - 主责：DeepSeek；ChatGPT预审；负责人验收；优先级：P1；波次：W3。
-- 状态：Planned；依赖：KBV2-03, KBV2-06；Issue：未创建。
+- 状态：Planned；依赖：KBV2-03, KBV2-06；Issue：[#110](https://github.com/insanetoto/nuochong-page/issues/110)。
 - 范围：P1立即发布、撤回、必要回退、快照与现有知识能力绑定；排期、消费者管理和培训快照归KBV2-13。 包含批准原型的确认、阻断与失败恢复页面；不将事务完成态样例当真实结果。
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`plugins/knowledge/`、`apps/product-web/plugins/knowledge.mjs`、`apps/control-api/src/product.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
@@ -241,7 +241,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-08 图谱查询 API
 
 - 主责：DeepSeek；ChatGPT预审；负责人验收；优先级：P1；波次：W3。
-- 状态：Planned；依赖：KBV2-07；Issue：未创建。
+- 状态：Planned；依赖：KBV2-07；Issue：[#111](https://github.com/insanetoto/nuochong-page/issues/111)。
 - 范围：可见集合、节点/边、跨空间关系、概念/关系、聚合/截断、graphVersion、缓存键
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`plugins/knowledge/`、`apps/product-web/plugins/knowledge.mjs`、`apps/control-api/src/product.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
@@ -259,7 +259,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-09 知识全景前端
 
 - 主责：DeepSeek；ChatGPT预审；负责人验收；优先级：P1；波次：W3。
-- 状态：Planned；依赖：KBV2-08, KBV2-15；Issue：未创建。
+- 状态：Planned；依赖：KBV2-08, KBV2-15；Issue：[#112](https://github.com/insanetoto/nuochong-page/issues/112)。
 - 范围：力导向图、筛选、局部图、抽屉、列表兜底、移动端、无障碍；仅负责图谱页面，搜索/阅读/问答归14，公共壳与任务归15。
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`apps/product-web/`、`apps/control-api/src/product-web.mjs`、`apps/control-api/test/product-web.browser.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
@@ -278,7 +278,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-14 员工搜索、阅读、原文核验与引用问答页面
 
 - 主责：DeepSeek；ChatGPT预审；负责人验收；优先级：P1；波次：W3。
-- 状态：Planned；依赖：KBV2-07, KBV2-15；Issue：未创建。
+- 状态：Planned；依赖：KBV2-07, KBV2-15；Issue：[#113](https://github.com/insanetoto/nuochong-page/issues/113)。
 - 范围：按批准原型交付搜索结果、条目正文、定位抽屉、有依据问答及异常状态，复用现有服务并适配v2片段/快照。
 - 不做：不另造检索/授权/任务状态机，不重复建设语义检索或向量数据库，不改官网。
 - 允许目录/文件：`apps/product-web/`、`apps/control-api/src/product-web.mjs`、`apps/control-api/test/product-web.browser.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
@@ -298,7 +298,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-10 契约、CLI 与 MCP
 
 - 主责：DeepSeek；ChatGPT预审；负责人验收；优先级：P1；波次：W3。
-- 状态：Planned；依赖：KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08；Issue：未创建。
+- 状态：Planned；依赖：KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08；Issue：[#114](https://github.com/insanetoto/nuochong-page/issues/114)。
 - 范围：基于各功能已交付schema/CLI，完成API/CLI/受限MCP联合验证、兼容与包安装收尾；不在本任务才首次定义契约。
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`plugins/knowledge/`、`apps/product-web/plugins/knowledge.mjs`、`apps/control-api/src/product.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
@@ -316,7 +316,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-11 P1迁移、评测与试点
 
 - 主责：DeepSeek；ChatGPT预审；负责人验收；优先级：P1；波次：W4。
-- 状态：Planned；依赖：KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08, KBV2-09, KBV2-10, KBV2-14, KBV2-15；Issue：未创建。
+- 状态：Planned；依赖：KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08, KBV2-09, KBV2-10, KBV2-14, KBV2-15；Issue：[#115](https://github.com/insanetoto/nuochong-page/issues/115)。
 - 范围：v0 迁移演练、按段落片段回填校验、检索/图谱质量、恢复、容量、合成数据
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`plugins/knowledge/`、`apps/product-web/plugins/knowledge.mjs`、`apps/control-api/src/product.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
@@ -335,7 +335,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-05 音视频/OCR 导入（P2）
 
 - 主责：DeepSeek；ChatGPT预审；负责人验收；优先级：P2；波次：P2。
-- 状态：Planned；依赖：KBV2-11；Issue：未创建。
+- 状态：Planned；依赖：KBV2-11；Issue：[#116](https://github.com/insanetoto/nuochong-page/issues/116)。
 - 范围：外部大模型 ASR/OCR 适配、音视频抽取、时间码片段、置信度、失败码、数据边界
 - 不做：不阻塞P1，不未经批准调用外部媒体服务。
 - 允许目录/文件：`plugins/knowledge/`、`apps/product-web/plugins/knowledge.mjs`、`apps/control-api/src/product.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
@@ -352,7 +352,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-12 P2媒体专项评测与试点
 
 - 主责：DeepSeek；负责人验收；优先级：P2；波次：P2。
-- 状态：Planned；依赖：KBV2-05, KBV2-11；Issue：未创建。
+- 状态：Planned；依赖：KBV2-05, KBV2-11；Issue：[#117](https://github.com/insanetoto/nuochong-page/issues/117)。
 - 范围：独立验证真实转写/OCR、定位、权限、撤权、取消、成本和数据保留。
 - 不做：不包含P1文本闭环，不购买服务或生产发布。
 - 允许目录/文件：`plugins/knowledge/`、`apps/product-web/plugins/knowledge.mjs`、`apps/control-api/src/product.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
@@ -368,7 +368,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-13 能力运营、排期与跨产品知识快照设计
 
 - 主责：ChatGPT；负责人确认；优先级：P2；波次：P2。
-- 状态：Planned；依赖：KBV2-11；Issue：未创建。
+- 状态：Planned；依赖：KBV2-11；Issue：[#118](https://github.com/insanetoto/nuochong-page/issues/118)。
 - 范围：细化排期执行复核、消费者注册/撤销/配额、导出事件和培训快照，复用公共权限。
 - 不做：不默认开发连接器或培训模块，不改变消费者不限产品级白名单的已确认方向。
 - 允许目录/文件：`docs/product/`、`docs/refactor/`、`docs/adr/`。
@@ -384,7 +384,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### TOOL-01 首个企业AI工具产品方案
 
 - 主责：ChatGPT；负责人确认；优先级：P1；波次：Parallel design。
-- 状态：Planned；依赖：PLAN-01；Issue：未创建。
+- 状态：Planned；依赖：PLAN-01；Issue：[#119](https://github.com/insanetoto/nuochong-page/issues/119)。
 - 范围：选择一个首发办公痛点，定义工具输入输出、权限、副作用、审批与产物。
 - 不做：不写工具产品代码，不开放任意shell，不提前授权外部写入。
 - 允许目录/文件：`docs/product/`、`docs/refactor/`、`docs/adr/`。
@@ -400,7 +400,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### LEARN-01 培训考试首期产品方案
 
 - 主责：ChatGPT；负责人确认；优先级：P1；波次：Parallel design。
-- 状态：Planned；依赖：PLAN-01；Issue：未创建。
+- 状态：Planned；依赖：PLAN-01；Issue：[#120](https://github.com/insanetoto/nuochong-page/issues/120)。
 - 范围：冻结课程/题库/学习/考试/成绩流程和知识引用边界。
 - 不做：不编写培训运行代码，不恢复旧培训演示。
 - 允许目录/文件：`docs/product/`、`docs/refactor/`、`docs/adr/`。
@@ -415,7 +415,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 
 ## 5. 领取、提交与状态
 
-PLAN-03完成后，另行授权批量创建/分配实施Issue。Issue逐项复制任务卡，必须补齐实际执行者、预审人、负责人、设计版本、集成SHA、修改文件责任、命令/schema/CLI、依赖验收和证据链接；不将本次规划描述成已创建任务。
+负责人已授权本轮批量登记，20项Issues均已创建，见[登记与核对记录](issue-registration.md)。创建不再等待PLAN-03，也不等于实施Ready。PLAN-03继续补齐实际成员、预审、负责人、设计版本、集成SHA、共享文件责任、依赖验收及实施授权，然后逐项领取；无需再次审批同一登记动作。
 
 DeepSeek领取后用独立分支/目录实现；发现设计缺口先交ChatGPT修订，不自行改变页面/交互/权限语义。提交提供“批准设计→实现→schema/CLI→成功/负例→CI→预审”矩阵，真实模型和合成故障、Linux和macOS证据分别记录。
 

@@ -1,6 +1,6 @@
-# v2 负责人任务路线图（2026-11-08 · r2）
+# v2 负责人任务路线图（2026-11-08 · r3）
 
-**当前：v0已验收、v2原型已评审通过；正在完善执行计划，未进入v2编码。** 共20项：3项设计准入、12项P1工程/验收、3项P2后续、2项其他产品设计。PLAN-01进行中，其余19项Planned；实际人员、实施Issue及日历工期未分配。完整卡片见[next-work.md](next-work.md)，机器台账见[execution-plan.json](execution-plan.json)。
+**当前：v0已验收、v2原型已评审通过；正在完善执行计划，未进入v2编码。** 共20项：3项设计准入、12项P1工程/验收、3项P2后续、2项其他产品设计。PLAN-01进行中，其余19项Planned；20项Issues已登记；实际人员和日历工期待分配。完整卡片见[next-work.md](next-work.md)，机器台账见[execution-plan.json](execution-plan.json)。
 
 ## 已解除与剩余门槛
 
@@ -89,7 +89,7 @@ flowchart TD
 
 ## 负责人如何看进度
 
-以任务ID查看[next-work.md](next-work.md)。任务未创建Issue时JSON的issue保持null，不伪造GitHub看板。后续每项Issue回填执行者、预审、基础SHA、PR、CI、人工验收和发布版本。原型Accepted只代表设计里程碑；任务工程完成、产品Accepted与Released分别统计，不按关闭数量混算完成率。
+以任务ID查看[next-work.md](next-work.md)。20项任务均已回填真实Issue编号与依赖链接，见[登记表](issue-registration.md)。本轮没有建立GitHub Project或启用额外强制规则，不声称已配置项目看板。后续每项Issue回填执行者、预审、基础SHA、PR、CI、人工验收和发布版本。原型Accepted只代表设计里程碑；任务工程完成、产品Accepted与Released分别统计，不按关闭数量混算完成率。
 
 ## 本次计划验证
 

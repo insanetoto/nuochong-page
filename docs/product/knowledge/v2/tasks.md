@@ -1,33 +1,33 @@
-# 知识库 v2 任务索引（执行计划 r2）
+# 知识库 v2 任务索引（执行计划 r3）
 
 2026-11-08更新：负责人已确认原型评审通过。当前以[任务卡](next-work.md)、[JSON台账](execution-plan.json)及[负责人路线图](execution-roadmap.md)为唯一执行口径。本页替换原父任务/估算表中相互冲突的阶段与依赖，原始记录仍可从Git提交5a172f5查看。
 
-共20项：3项设计准入、12项P1工程/验收、3项P2后续、2项其他产品设计。新增KBV2-14（搜索/阅读/引用问答）与15（产品壳/任务/兼容），已有任务ID不重编号。PLAN-01进行中，其余Planned；原型Accepted不等于实现Accepted。实施Issue未创建，成员与日期待准入登记。
+共20项：3项设计准入、12项P1工程/验收、3项P2后续、2项其他产品设计。新增KBV2-14（搜索/阅读/引用问答）与15（产品壳/任务/兼容），已有任务ID不重编号。PLAN-01进行中，其余Planned；原型Accepted不等于实现Accepted。20项Issues均已创建（见[登记记录](issue-registration.md)），成员与日期待准入登记。
 
 ## 任务与依赖
 
-| ID | 工作 | 主责 | 依赖 | 状态 |
-| --- | --- | --- | --- | --- |
-| PLAN-01 | 知识库交接、存量缺口与设计决定冻结 | ChatGPT；负责人确认 | 无 | In progress |
-| PLAN-02 | P1命令与数据契约实现前冻结 | ChatGPT；DeepSeek评估可实现性 | PLAN-01 | Planned |
-| PLAN-03 | 实现准入与执行任务登记 | ChatGPT；负责人批准 | PLAN-01, PLAN-02 | Planned |
-| KBV2-01 | 本体注册表与版本治理 | DeepSeek；ChatGPT预审；负责人验收 | PLAN-03 | Planned |
-| KBV2-02 | 数据模型扩展与迁移 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-01 | Planned |
-| KBV2-03 | 知识空间管理 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-02 | Planned |
-| KBV2-04 | 文本/PDF/DOCX 导入与片段任务 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-02 | Planned |
-| KBV2-15 | 产品壳、导航兼容与持久任务页面 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-03, KBV2-04 | Planned |
-| KBV2-06 | 片段待审与条目组装 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-04 | Planned |
-| KBV2-07 | 发布与能力输出 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-03, KBV2-06 | Planned |
-| KBV2-08 | 图谱查询 API | DeepSeek；ChatGPT预审；负责人验收 | KBV2-07 | Planned |
-| KBV2-09 | 知识全景前端 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-08, KBV2-15 | Planned |
-| KBV2-14 | 员工搜索、阅读、原文核验与引用问答页面 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-07, KBV2-15 | Planned |
-| KBV2-10 | 契约、CLI 与 MCP | DeepSeek；ChatGPT预审；负责人验收 | KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08 | Planned |
-| KBV2-11 | P1迁移、评测与试点 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08, KBV2-09, KBV2-10, KBV2-14, KBV2-15 | Planned |
-| KBV2-05 | 音视频/OCR 导入（P2） | DeepSeek；ChatGPT预审；负责人验收 | KBV2-11 | Planned |
-| KBV2-12 | P2媒体专项评测与试点 | DeepSeek；负责人验收 | KBV2-05, KBV2-11 | Planned |
-| KBV2-13 | 能力运营、排期与跨产品知识快照设计 | ChatGPT；负责人确认 | KBV2-11 | Planned |
-| TOOL-01 | 首个企业AI工具产品方案 | ChatGPT；负责人确认 | PLAN-01 | Planned |
-| LEARN-01 | 培训考试首期产品方案 | ChatGPT；负责人确认 | PLAN-01 | Planned |
+| ID | Issue | 工作 | 主责 | 依赖 | 状态 |
+| --- | --- | --- | --- | --- | --- |
+| PLAN-01 | [#101](https://github.com/insanetoto/nuochong-page/issues/101) | 知识库交接、存量缺口与设计决定冻结 | ChatGPT；负责人确认 | 无 | In progress |
+| PLAN-02 | [#102](https://github.com/insanetoto/nuochong-page/issues/102) | P1命令与数据契约实现前冻结 | ChatGPT；DeepSeek评估可实现性 | PLAN-01 | Planned |
+| PLAN-03 | [#103](https://github.com/insanetoto/nuochong-page/issues/103) | 实现准入与执行任务登记 | ChatGPT；负责人批准 | PLAN-01, PLAN-02 | Planned |
+| KBV2-01 | [#104](https://github.com/insanetoto/nuochong-page/issues/104) | 本体注册表与版本治理 | DeepSeek；ChatGPT预审；负责人验收 | PLAN-03 | Planned |
+| KBV2-02 | [#105](https://github.com/insanetoto/nuochong-page/issues/105) | 数据模型扩展与迁移 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-01 | Planned |
+| KBV2-03 | [#106](https://github.com/insanetoto/nuochong-page/issues/106) | 知识空间管理 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-02 | Planned |
+| KBV2-04 | [#107](https://github.com/insanetoto/nuochong-page/issues/107) | 文本/PDF/DOCX 导入与片段任务 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-02 | Planned |
+| KBV2-15 | [#108](https://github.com/insanetoto/nuochong-page/issues/108) | 产品壳、导航兼容与持久任务页面 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-03, KBV2-04 | Planned |
+| KBV2-06 | [#109](https://github.com/insanetoto/nuochong-page/issues/109) | 片段待审与条目组装 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-04 | Planned |
+| KBV2-07 | [#110](https://github.com/insanetoto/nuochong-page/issues/110) | 发布与能力输出 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-03, KBV2-06 | Planned |
+| KBV2-08 | [#111](https://github.com/insanetoto/nuochong-page/issues/111) | 图谱查询 API | DeepSeek；ChatGPT预审；负责人验收 | KBV2-07 | Planned |
+| KBV2-09 | [#112](https://github.com/insanetoto/nuochong-page/issues/112) | 知识全景前端 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-08, KBV2-15 | Planned |
+| KBV2-14 | [#113](https://github.com/insanetoto/nuochong-page/issues/113) | 员工搜索、阅读、原文核验与引用问答页面 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-07, KBV2-15 | Planned |
+| KBV2-10 | [#114](https://github.com/insanetoto/nuochong-page/issues/114) | 契约、CLI 与 MCP | DeepSeek；ChatGPT预审；负责人验收 | KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08 | Planned |
+| KBV2-11 | [#115](https://github.com/insanetoto/nuochong-page/issues/115) | P1迁移、评测与试点 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08, KBV2-09, KBV2-10, KBV2-14, KBV2-15 | Planned |
+| KBV2-05 | [#116](https://github.com/insanetoto/nuochong-page/issues/116) | 音视频/OCR 导入（P2） | DeepSeek；ChatGPT预审；负责人验收 | KBV2-11 | Planned |
+| KBV2-12 | [#117](https://github.com/insanetoto/nuochong-page/issues/117) | P2媒体专项评测与试点 | DeepSeek；负责人验收 | KBV2-05, KBV2-11 | Planned |
+| KBV2-13 | [#118](https://github.com/insanetoto/nuochong-page/issues/118) | 能力运营、排期与跨产品知识快照设计 | ChatGPT；负责人确认 | KBV2-11 | Planned |
+| TOOL-01 | [#119](https://github.com/insanetoto/nuochong-page/issues/119) | 首个企业AI工具产品方案 | ChatGPT；负责人确认 | PLAN-01 | Planned |
+| LEARN-01 | [#120](https://github.com/insanetoto/nuochong-page/issues/120) | 培训考试首期产品方案 | ChatGPT；负责人确认 | PLAN-01 | Planned |
 
 ## 范围、估算与门槛
 
