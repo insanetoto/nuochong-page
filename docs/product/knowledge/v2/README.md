@@ -1,8 +1,14 @@
 # 企业知识库 v2：知识全景与「空间—导入—发布」来源管理
 
-后续工作已细化为 [执行波次与任务卡](next-work.md)（18项，含设计准入、P1实现、P2专项及其他产品设计）和 [JSON台账](execution-plan.json)。全部Planned；实施范围及负责人仍待确认。
+2026-11-08新增：[v2页面与交互原型](../../prototypes/knowledge-v2.html)、[设计交接规范](prototype-design.md)。由ChatGPT负责原型与交互；DeepSeek只负责按确认设计代码实现。原型评审已通过，见[确认记录](prototype-acceptance-2026-11-08.md)；业务能力仍planned。
+
+后续工作已细化为 [执行波次与任务卡](next-work.md)（20项，补齐员工知识页面及产品壳/任务页面）和 [JSON台账](execution-plan.json)。PLAN-01/02/03设计交付待确认、其余17项Planned；见[负责人任务路线图](execution-roadmap.md)，实际实施范围及成员在准入时登记。
 
 2026-11-02 · 设计稿 v1 · 决策更新 2026-11-08 · **planned，先设计不开发**。本文在 [知识库 v1 设计](../design.md) 与 [v0 已交付范围](../../v0/README.md) 基础上，按负责人本轮要求重构知识首页与来源管理，并把公司本体方法落到知识域。所有页面、命令、表结构均为设计建议；未实现能力不得注册为 ready，也不得用原型或 mock 冒充完成。
+
+## W0准入补齐
+
+DeepSeek反馈#104被W0阻塞。当前已提供[完整决策/契约与本体规范](w0/README.md)，并提出[仅KBV2-01的R1有限准入](w0/admission.md)供负责人一次确认。当前仍Blocked，不把原型通过当后端架构批准；#94继续独立调查。
 
 ## 1. 本轮目标
 
@@ -22,7 +28,7 @@
 | 知识导入支持文本、视频、语音；后台解析生成可追溯片段进入条目待审区 | [导入管线](import-pipeline.md)：格式、校验、解析阶段、locator、任务、片段与待审 |
 | 知识发布将人工审核后的知识发布，输出知识能力 | [发布与能力输出](publication.md)：审校、审批、快照、能力目录与失效 |
 | 本体论方法用于公司产品所有设计 | [本体方法论](../../ontology/README.md)、[产品套件本体](../../ontology/suite-ontology.md)、[ADR-012](../../../adr/ADR-012-product-ontology-and-knowledge-graph.md) |
-| 所有功能先不开发 | 全部文档标注 planned；[任务](tasks.md)只做拆分，不创建 Issue/不排期/不部署 |
+| 所有功能先不开发 | 运行能力标注planned；[20项任务](tasks.md)已按负责人后续授权创建Issues，未启动实现/部署 |
 
 ## 2. 非目标
 
@@ -125,8 +131,8 @@ P1 不等待音视频：先打通“片段—待审—发布—图谱”闭环�
 - **共享能力**：空间角色、部门范围、审批、审计复用 `identity-company` / `organization` / `access-management`；知识库只声明资源与业务权限。
 - **插件**：知识库 manifest 增加 `ontology` 片段与 `capabilities` 声明；禁用知识插件后不接新写、历史可读、图谱不返回该插件节点。
 - **CLI/API**：新增能力全部有 commandId、输入/输出 schema、CLI 映射、授权/副作用/幂等说明；未实现标 planned，不注册 ready。
-- **发布边界**：本设计不创建 Issue、不排期、不部署；实现需负责人批准后按任务表逐项领取。
-- **原型**：本轮不更新可点击原型；[knowledge.html](../../prototypes/knowledge.html) 仍是 v1 参考，不能据此认为 v2 图谱或三子模块 UI 已交付。
+- **发布边界**：负责人已授权创建20项Issues，见[登记表](issue-registration.md)；本轮不启动实现/部署，按剩余准入和依赖逐项领取。
+- **原型（2026-11-08更新）**：已输出[v2可点击原型](../../prototypes/knowledge-v2.html)及[页面/交互交接](prototype-design.md)，已于2026-11-08由负责人评审通过。原型为合成数据、无业务API，不代表v2运行UI或图谱能力已交付；原[knowledge.html](../../prototypes/knowledge.html)保留为v1历史参考。
 
 ## 9. 已确认决策（2026-11-08）
 

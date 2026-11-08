@@ -2,7 +2,7 @@
 
 # 开发人员上手指南：从个人环境到任务验收
 
-2026-11-08分工更新：ChatGPT/Codex负责设计规划与预审，DeepSeek负责代码/迁移/测试及实现PR。下文历史Codex实现提示词按此分工交给DeepSeek使用；人工验收与发布仍由负责人决定。实现遇到设计缺口先回填Issue并交由ChatGPT修订，详见 [设计与实现交接](../product/knowledge/v2/review-handoff.md)。
+2026-11-08分工更新：ChatGPT/Codex负责设计规划、页面原型、交互设计与预审；DeepSeek只负责按确认设计实现代码/迁移/自动化测试及实现PR。下文历史Codex实现提示词按此分工交给DeepSeek使用；人工验收与发布仍由负责人决定。实现遇到设计缺口先回填Issue并交由ChatGPT修订，详见 [设计与实现交接](../product/knowledge/v2/review-handoff.md)。
 
 适用项目：nuochong-page；日期：2026-10-29。按顺序完成首次配置，以后从“领取任务”开始。
 

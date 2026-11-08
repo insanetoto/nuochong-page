@@ -1,0 +1,3823 @@
+{
+  "sourceCommit": "e9fa89f51cde1586c0d43e6008d470918c774683",
+  "runtimeCommandCount": 59,
+  "commands": [
+    {
+      "id": "identity.me.v1",
+      "argv": [
+        "identity",
+        "me"
+      ],
+      "description": "identity.me.v1",
+      "method": "POST",
+      "path": "/product/api/commands/identity.me.v1",
+      "sideEffect": "none",
+      "idempotency": "read",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {},
+        "required": []
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "principalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "kind": {
+            "enum": [
+              "user",
+              "service"
+            ]
+          },
+          "bindings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "principalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "roleId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "scopeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "id",
+                "principalId",
+                "roleId",
+                "scopeId",
+                "revision"
+              ]
+            },
+            "maxItems": 100
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "principalId",
+          "name",
+          "kind",
+          "bindings",
+          "permissions"
+        ]
+      },
+      "product": true,
+      "scope": "product:read",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "access.permissions.check.v1",
+      "argv": [
+        "access",
+        "permissions",
+        "check"
+      ],
+      "description": "access.permissions.check.v1",
+      "method": "POST",
+      "path": "/product/api/commands/access.permissions.check.v1",
+      "sideEffect": "none",
+      "idempotency": "read",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "permission": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "scopeId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "permission",
+          "scopeId"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "allowed": {
+            "type": "boolean"
+          },
+          "principalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "allowed",
+          "principalId"
+        ]
+      },
+      "product": true,
+      "scope": "product:read",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "access.approvals.create.v1",
+      "argv": [
+        "access",
+        "approvals",
+        "create"
+      ],
+      "description": "access.approvals.create.v1",
+      "method": "POST",
+      "path": "/product/api/commands/access.approvals.create.v1",
+      "sideEffect": "product-write",
+      "idempotency": "required-client-key",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "commandId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "target": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {},
+            "required": []
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "commandId",
+          "target",
+          "reason"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "approvalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "targetHash": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "expiresAt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "approvalId",
+          "targetHash",
+          "expiresAt"
+        ]
+      },
+      "product": true,
+      "scope": "product:write",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.spaces.list.v1",
+      "argv": [
+        "knowledge",
+        "spaces",
+        "list"
+      ],
+      "description": "knowledge.spaces.list.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.spaces.list.v1",
+      "sideEffect": "none",
+      "idempotency": "read",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "after": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": []
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "departmentIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "maxItems": 100
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "departmentIds",
+                "revision"
+              ]
+            },
+            "maxItems": 100
+          },
+          "nextCursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "product": true,
+      "scope": "product:read",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.spaces.create.v1",
+      "argv": [
+        "knowledge",
+        "spaces",
+        "create"
+      ],
+      "description": "knowledge.spaces.create.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.spaces.create.v1",
+      "sideEffect": "product-write",
+      "idempotency": "required-client-key",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "departmentIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "approvalId",
+          "title",
+          "departmentIds"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "departmentIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "maxItems": 100
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "departmentIds",
+          "revision"
+        ]
+      },
+      "product": true,
+      "scope": "product:write",
+      "permission": "knowledge:publish",
+      "approval": true,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.sources.import.v1",
+      "argv": [
+        "knowledge",
+        "sources",
+        "import"
+      ],
+      "description": "knowledge.sources.import.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.sources.import.v1",
+      "sideEffect": "product-write",
+      "idempotency": "required-client-key",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "policyCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "validFrom": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "validUntil": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "spaceId",
+          "title",
+          "policyCode",
+          "version",
+          "filename",
+          "content",
+          "validFrom",
+          "validUntil"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "documentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "policyCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "hash": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "status": {
+            "enum": [
+              "active",
+              "withdrawn"
+            ]
+          },
+          "validFrom": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "validUntil": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 64
+          },
+          "createdAt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "id",
+          "documentId",
+          "spaceId",
+          "title",
+          "revision",
+          "policyCode",
+          "version",
+          "filename",
+          "hash",
+          "status",
+          "validFrom",
+          "validUntil",
+          "createdAt"
+        ]
+      },
+      "product": true,
+      "scope": "product:write",
+      "permission": "knowledge:edit",
+      "scopeField": "spaceId",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.sources.list.v1",
+      "argv": [
+        "knowledge",
+        "sources",
+        "list"
+      ],
+      "description": "knowledge.sources.list.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.sources.list.v1",
+      "sideEffect": "none",
+      "idempotency": "read",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "after": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "spaceId"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "documentId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "spaceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "policyCode": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "version": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "filename": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "hash": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "status": {
+                  "enum": [
+                    "active",
+                    "withdrawn"
+                  ]
+                },
+                "validFrom": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "validUntil": {
+                  "type": "string",
+                  "minLength": 0,
+                  "maxLength": 64
+                },
+                "createdAt": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                }
+              },
+              "required": [
+                "id",
+                "documentId",
+                "spaceId",
+                "title",
+                "revision",
+                "policyCode",
+                "version",
+                "filename",
+                "hash",
+                "status",
+                "validFrom",
+                "validUntil",
+                "createdAt"
+              ]
+            },
+            "maxItems": 100
+          },
+          "nextCursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "product": true,
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.sources.get.v1",
+      "argv": [
+        "knowledge",
+        "sources",
+        "get"
+      ],
+      "description": "knowledge.sources.get.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.sources.get.v1",
+      "sideEffect": "none",
+      "idempotency": "read",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "spaceId",
+          "sourceId"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "documentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "policyCode": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "version": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "filename": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "hash": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "status": {
+                "enum": [
+                  "active",
+                  "withdrawn"
+                ]
+              },
+              "validFrom": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "validUntil": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 64
+              },
+              "createdAt": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              }
+            },
+            "required": [
+              "id",
+              "documentId",
+              "spaceId",
+              "title",
+              "revision",
+              "policyCode",
+              "version",
+              "filename",
+              "hash",
+              "status",
+              "validFrom",
+              "validUntil",
+              "createdAt"
+            ]
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          }
+        },
+        "required": [
+          "source",
+          "content"
+        ]
+      },
+      "product": true,
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.sources.withdraw.v1",
+      "argv": [
+        "knowledge",
+        "sources",
+        "withdraw"
+      ],
+      "description": "knowledge.sources.withdraw.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.sources.withdraw.v1",
+      "sideEffect": "product-write",
+      "idempotency": "required-client-key",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "approvalId",
+          "spaceId",
+          "sourceId"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "withdrawn": {
+            "const": true
+          }
+        },
+        "required": [
+          "withdrawn"
+        ]
+      },
+      "product": true,
+      "scope": "product:write",
+      "permission": "knowledge:publish",
+      "scopeField": "spaceId",
+      "approval": true,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.changes.create.v1",
+      "argv": [
+        "knowledge",
+        "changes",
+        "create"
+      ],
+      "description": "knowledge.changes.create.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.changes.create.v1",
+      "sideEffect": "product-write",
+      "idempotency": "required-client-key",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "pageId": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 128
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 12000
+          },
+          "citations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "sourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "lineStart": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "lineEnd": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "quote": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              },
+              "required": [
+                "sourceId",
+                "lineStart",
+                "lineEnd",
+                "quote"
+              ]
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "spaceId",
+          "pageId",
+          "expectedRevision",
+          "title",
+          "body",
+          "citations"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "pageId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "revisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pageState": {
+            "enum": [
+              "draft",
+              "reviewed",
+              "published",
+              "withdrawn",
+              "stale"
+            ]
+          },
+          "sourceIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "maxItems": 100
+          },
+          "citations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "sourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "lineStart": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "lineEnd": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "quote": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              },
+              "required": [
+                "sourceId",
+                "lineStart",
+                "lineEnd",
+                "quote"
+              ]
+            },
+            "maxItems": 100
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          }
+        },
+        "required": [
+          "pageId",
+          "spaceId",
+          "revisionId",
+          "title",
+          "revision",
+          "pageState",
+          "sourceIds",
+          "citations",
+          "body"
+        ]
+      },
+      "product": true,
+      "scope": "product:write",
+      "permission": "knowledge:edit",
+      "scopeField": "spaceId",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.changes.review.v1",
+      "argv": [
+        "knowledge",
+        "changes",
+        "review"
+      ],
+      "description": "knowledge.changes.review.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.changes.review.v1",
+      "sideEffect": "product-write",
+      "idempotency": "required-client-key",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "revisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "decision": {
+            "enum": [
+              "approve",
+              "reject"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "spaceId",
+          "revisionId",
+          "expectedRevision",
+          "decision",
+          "reason"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "pageId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "revisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pageState": {
+            "enum": [
+              "draft",
+              "reviewed",
+              "published",
+              "withdrawn",
+              "stale"
+            ]
+          },
+          "sourceIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "maxItems": 100
+          },
+          "citations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "sourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "lineStart": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "lineEnd": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "quote": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              },
+              "required": [
+                "sourceId",
+                "lineStart",
+                "lineEnd",
+                "quote"
+              ]
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "pageId",
+          "spaceId",
+          "revisionId",
+          "title",
+          "revision",
+          "pageState",
+          "sourceIds",
+          "citations"
+        ]
+      },
+      "product": true,
+      "scope": "product:write",
+      "permission": "knowledge:review",
+      "scopeField": "spaceId",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.publications.publish.v1",
+      "argv": [
+        "knowledge",
+        "publications",
+        "publish"
+      ],
+      "description": "knowledge.publications.publish.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.publications.publish.v1",
+      "sideEffect": "product-write",
+      "idempotency": "required-client-key",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "revisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "approvalId",
+          "spaceId",
+          "revisionId",
+          "expectedRevision"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "pageId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "revisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pageState": {
+            "enum": [
+              "draft",
+              "reviewed",
+              "published",
+              "withdrawn",
+              "stale"
+            ]
+          },
+          "sourceIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "maxItems": 100
+          },
+          "citations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "sourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "lineStart": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "lineEnd": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "quote": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              },
+              "required": [
+                "sourceId",
+                "lineStart",
+                "lineEnd",
+                "quote"
+              ]
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "pageId",
+          "spaceId",
+          "revisionId",
+          "title",
+          "revision",
+          "pageState",
+          "sourceIds",
+          "citations"
+        ]
+      },
+      "product": true,
+      "scope": "product:write",
+      "permission": "knowledge:publish",
+      "scopeField": "spaceId",
+      "approval": true,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.publications.withdraw.v1",
+      "argv": [
+        "knowledge",
+        "publications",
+        "withdraw"
+      ],
+      "description": "knowledge.publications.withdraw.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.publications.withdraw.v1",
+      "sideEffect": "product-write",
+      "idempotency": "required-client-key",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "pageId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "approvalId",
+          "spaceId",
+          "pageId",
+          "expectedRevision"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "withdrawn": {
+            "const": true
+          }
+        },
+        "required": [
+          "withdrawn"
+        ]
+      },
+      "product": true,
+      "scope": "product:write",
+      "permission": "knowledge:publish",
+      "scopeField": "spaceId",
+      "approval": true,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.pages.list.v1",
+      "argv": [
+        "knowledge",
+        "pages",
+        "list"
+      ],
+      "description": "knowledge.pages.list.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.pages.list.v1",
+      "sideEffect": "none",
+      "idempotency": "read",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "after": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "view": {
+            "enum": [
+              "published",
+              "manage"
+            ]
+          }
+        },
+        "required": [
+          "spaceId",
+          "view"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pageId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "spaceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "revisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "pageState": {
+                  "enum": [
+                    "draft",
+                    "reviewed",
+                    "published",
+                    "withdrawn",
+                    "stale"
+                  ]
+                },
+                "sourceIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "maxItems": 100
+                },
+                "citations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "sourceId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "lineStart": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "lineEnd": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "quote": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1000
+                      }
+                    },
+                    "required": [
+                      "sourceId",
+                      "lineStart",
+                      "lineEnd",
+                      "quote"
+                    ]
+                  },
+                  "maxItems": 100
+                }
+              },
+              "required": [
+                "pageId",
+                "spaceId",
+                "revisionId",
+                "title",
+                "revision",
+                "pageState",
+                "sourceIds",
+                "citations"
+              ]
+            },
+            "maxItems": 100
+          },
+          "nextCursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "product": true,
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.pages.get.v1",
+      "argv": [
+        "knowledge",
+        "pages",
+        "get"
+      ],
+      "description": "knowledge.pages.get.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.pages.get.v1",
+      "sideEffect": "none",
+      "idempotency": "read",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "pageId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "view": {
+            "enum": [
+              "published",
+              "manage"
+            ]
+          }
+        },
+        "required": [
+          "spaceId",
+          "pageId",
+          "view"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "pageId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "revisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pageState": {
+            "enum": [
+              "draft",
+              "reviewed",
+              "published",
+              "withdrawn",
+              "stale"
+            ]
+          },
+          "sourceIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "maxItems": 100
+          },
+          "citations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "sourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "lineStart": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "lineEnd": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "quote": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              },
+              "required": [
+                "sourceId",
+                "lineStart",
+                "lineEnd",
+                "quote"
+              ]
+            },
+            "maxItems": 100
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          }
+        },
+        "required": [
+          "pageId",
+          "spaceId",
+          "revisionId",
+          "title",
+          "revision",
+          "pageState",
+          "sourceIds",
+          "citations",
+          "body"
+        ]
+      },
+      "product": true,
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.search.v1",
+      "argv": [
+        "knowledge",
+        "search"
+      ],
+      "description": "knowledge.search.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.search.v1",
+      "sideEffect": "none",
+      "idempotency": "read",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "spaceId",
+          "query"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pageId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "spaceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "revisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "pageState": {
+                  "enum": [
+                    "draft",
+                    "reviewed",
+                    "published",
+                    "withdrawn",
+                    "stale"
+                  ]
+                },
+                "sourceIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "maxItems": 100
+                },
+                "citations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "sourceId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "lineStart": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "lineEnd": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "quote": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1000
+                      }
+                    },
+                    "required": [
+                      "sourceId",
+                      "lineStart",
+                      "lineEnd",
+                      "quote"
+                    ]
+                  },
+                  "maxItems": 100
+                },
+                "excerpt": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 600
+                }
+              },
+              "required": [
+                "pageId",
+                "spaceId",
+                "revisionId",
+                "title",
+                "revision",
+                "pageState",
+                "sourceIds",
+                "citations",
+                "excerpt"
+              ]
+            },
+            "maxItems": 100
+          },
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "items",
+          "query"
+        ]
+      },
+      "product": true,
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.quality.get.v1",
+      "argv": [
+        "knowledge",
+        "quality"
+      ],
+      "description": "knowledge.quality.get.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.quality.get.v1",
+      "sideEffect": "none",
+      "idempotency": "read",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "after": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "spaceId"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pageId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "code": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                }
+              },
+              "required": [
+                "pageId",
+                "title",
+                "code"
+              ]
+            },
+            "maxItems": 100
+          },
+          "nextCursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "product": true,
+      "scope": "product:read",
+      "permission": "knowledge:edit",
+      "scopeField": "spaceId",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.compilations.create.v1",
+      "argv": [
+        "knowledge",
+        "compile"
+      ],
+      "description": "knowledge.compilations.create.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.compilations.create.v1",
+      "sideEffect": "product-write",
+      "idempotency": "required-client-key",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "sourceIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "maxItems": 3
+          },
+          "pageId": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 128
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "spaceId",
+          "sourceIds",
+          "pageId",
+          "expectedRevision"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "kind": {
+            "enum": [
+              "compile",
+              "answer"
+            ]
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "cancelRequested": {
+            "type": "boolean"
+          },
+          "resultValid": {
+            "type": "boolean"
+          },
+          "errorCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "invalidReason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "page": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "pageId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "spaceId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "revisionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "pageState": {
+                    "enum": [
+                      "draft",
+                      "reviewed",
+                      "published",
+                      "withdrawn",
+                      "stale"
+                    ]
+                  },
+                  "sourceIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "maxItems": 100
+                  },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "sourceId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "lineStart": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "lineEnd": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "quote": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        }
+                      },
+                      "required": [
+                        "sourceId",
+                        "lineStart",
+                        "lineEnd",
+                        "quote"
+                      ]
+                    },
+                    "maxItems": 100
+                  },
+                  "body": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 20000
+                  }
+                },
+                "required": [
+                  "pageId",
+                  "spaceId",
+                  "revisionId",
+                  "title",
+                  "revision",
+                  "pageState",
+                  "sourceIds",
+                  "citations",
+                  "body"
+                ]
+              },
+              "answer": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "answered",
+                      "insufficient_evidence",
+                      "conflict"
+                    ]
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 12000
+                  },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "sourceId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "lineStart": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "lineEnd": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "quote": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        },
+                        "policyCode": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "sourceVersion": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "sourceRevision": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "hash": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        }
+                      },
+                      "required": [
+                        "sourceId",
+                        "lineStart",
+                        "lineEnd",
+                        "quote",
+                        "policyCode",
+                        "sourceVersion",
+                        "sourceRevision",
+                        "hash"
+                      ]
+                    },
+                    "maxItems": 20
+                  },
+                  "modelUsed": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "status",
+                  "text",
+                  "citations",
+                  "modelUsed"
+                ]
+              }
+            },
+            "required": []
+          },
+          "createdAt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "jobId",
+          "spaceId",
+          "kind",
+          "status",
+          "version",
+          "cancelRequested",
+          "resultValid",
+          "createdAt"
+        ]
+      },
+      "product": true,
+      "scope": "product:write",
+      "permission": "knowledge:edit",
+      "scopeField": "spaceId",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.answers.ask.v1",
+      "argv": [
+        "knowledge",
+        "ask"
+      ],
+      "description": "knowledge.answers.ask.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.answers.ask.v1",
+      "sideEffect": "product-write",
+      "idempotency": "required-client-key",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "spaceId",
+          "query"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "kind": {
+            "enum": [
+              "compile",
+              "answer"
+            ]
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "cancelRequested": {
+            "type": "boolean"
+          },
+          "resultValid": {
+            "type": "boolean"
+          },
+          "errorCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "invalidReason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "page": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "pageId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "spaceId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "revisionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "pageState": {
+                    "enum": [
+                      "draft",
+                      "reviewed",
+                      "published",
+                      "withdrawn",
+                      "stale"
+                    ]
+                  },
+                  "sourceIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "maxItems": 100
+                  },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "sourceId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "lineStart": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "lineEnd": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "quote": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        }
+                      },
+                      "required": [
+                        "sourceId",
+                        "lineStart",
+                        "lineEnd",
+                        "quote"
+                      ]
+                    },
+                    "maxItems": 100
+                  },
+                  "body": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 20000
+                  }
+                },
+                "required": [
+                  "pageId",
+                  "spaceId",
+                  "revisionId",
+                  "title",
+                  "revision",
+                  "pageState",
+                  "sourceIds",
+                  "citations",
+                  "body"
+                ]
+              },
+              "answer": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "answered",
+                      "insufficient_evidence",
+                      "conflict"
+                    ]
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 12000
+                  },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "sourceId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "lineStart": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "lineEnd": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "quote": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        },
+                        "policyCode": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "sourceVersion": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "sourceRevision": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "hash": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        }
+                      },
+                      "required": [
+                        "sourceId",
+                        "lineStart",
+                        "lineEnd",
+                        "quote",
+                        "policyCode",
+                        "sourceVersion",
+                        "sourceRevision",
+                        "hash"
+                      ]
+                    },
+                    "maxItems": 20
+                  },
+                  "modelUsed": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "status",
+                  "text",
+                  "citations",
+                  "modelUsed"
+                ]
+              }
+            },
+            "required": []
+          },
+          "createdAt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "jobId",
+          "spaceId",
+          "kind",
+          "status",
+          "version",
+          "cancelRequested",
+          "resultValid",
+          "createdAt"
+        ]
+      },
+      "product": true,
+      "scope": "product:write",
+      "permission": "knowledge:ask",
+      "scopeField": "spaceId",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.jobs.get.v1",
+      "argv": [
+        "knowledge",
+        "jobs",
+        "get"
+      ],
+      "description": "knowledge.jobs.get.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.jobs.get.v1",
+      "sideEffect": "none",
+      "idempotency": "read",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "jobId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "spaceId",
+          "jobId"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "kind": {
+            "enum": [
+              "compile",
+              "answer"
+            ]
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "cancelRequested": {
+            "type": "boolean"
+          },
+          "resultValid": {
+            "type": "boolean"
+          },
+          "errorCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "invalidReason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "page": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "pageId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "spaceId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "revisionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "pageState": {
+                    "enum": [
+                      "draft",
+                      "reviewed",
+                      "published",
+                      "withdrawn",
+                      "stale"
+                    ]
+                  },
+                  "sourceIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "maxItems": 100
+                  },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "sourceId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "lineStart": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "lineEnd": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "quote": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        }
+                      },
+                      "required": [
+                        "sourceId",
+                        "lineStart",
+                        "lineEnd",
+                        "quote"
+                      ]
+                    },
+                    "maxItems": 100
+                  },
+                  "body": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 20000
+                  }
+                },
+                "required": [
+                  "pageId",
+                  "spaceId",
+                  "revisionId",
+                  "title",
+                  "revision",
+                  "pageState",
+                  "sourceIds",
+                  "citations",
+                  "body"
+                ]
+              },
+              "answer": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "answered",
+                      "insufficient_evidence",
+                      "conflict"
+                    ]
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 12000
+                  },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "sourceId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "lineStart": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "lineEnd": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "quote": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        },
+                        "policyCode": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "sourceVersion": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "sourceRevision": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "hash": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        }
+                      },
+                      "required": [
+                        "sourceId",
+                        "lineStart",
+                        "lineEnd",
+                        "quote",
+                        "policyCode",
+                        "sourceVersion",
+                        "sourceRevision",
+                        "hash"
+                      ]
+                    },
+                    "maxItems": 20
+                  },
+                  "modelUsed": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "status",
+                  "text",
+                  "citations",
+                  "modelUsed"
+                ]
+              }
+            },
+            "required": []
+          },
+          "createdAt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "jobId",
+          "spaceId",
+          "kind",
+          "status",
+          "version",
+          "cancelRequested",
+          "resultValid",
+          "createdAt"
+        ]
+      },
+      "product": true,
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.jobs.list.v1",
+      "argv": [
+        "knowledge",
+        "jobs",
+        "list"
+      ],
+      "description": "knowledge.jobs.list.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.jobs.list.v1",
+      "sideEffect": "none",
+      "idempotency": "read",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "after": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "spaceId"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "jobId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "spaceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "kind": {
+                  "enum": [
+                    "compile",
+                    "answer"
+                  ]
+                },
+                "status": {
+                  "enum": [
+                    "queued",
+                    "running",
+                    "succeeded",
+                    "failed",
+                    "cancelled"
+                  ]
+                },
+                "version": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "cancelRequested": {
+                  "type": "boolean"
+                },
+                "resultValid": {
+                  "type": "boolean"
+                },
+                "errorCode": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "invalidReason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "question": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "result": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "page": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "pageId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "spaceId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "revisionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "title": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "revision": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "pageState": {
+                          "enum": [
+                            "draft",
+                            "reviewed",
+                            "published",
+                            "withdrawn",
+                            "stale"
+                          ]
+                        },
+                        "sourceIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 256
+                          },
+                          "maxItems": 100
+                        },
+                        "citations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "sourceId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 256
+                              },
+                              "lineStart": {
+                                "type": "integer",
+                                "minimum": 1
+                              },
+                              "lineEnd": {
+                                "type": "integer",
+                                "minimum": 1
+                              },
+                              "quote": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 1000
+                              }
+                            },
+                            "required": [
+                              "sourceId",
+                              "lineStart",
+                              "lineEnd",
+                              "quote"
+                            ]
+                          },
+                          "maxItems": 100
+                        },
+                        "body": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 20000
+                        }
+                      },
+                      "required": [
+                        "pageId",
+                        "spaceId",
+                        "revisionId",
+                        "title",
+                        "revision",
+                        "pageState",
+                        "sourceIds",
+                        "citations",
+                        "body"
+                      ]
+                    },
+                    "answer": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "status": {
+                          "enum": [
+                            "answered",
+                            "insufficient_evidence",
+                            "conflict"
+                          ]
+                        },
+                        "text": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 12000
+                        },
+                        "citations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "sourceId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 256
+                              },
+                              "lineStart": {
+                                "type": "integer",
+                                "minimum": 1
+                              },
+                              "lineEnd": {
+                                "type": "integer",
+                                "minimum": 1
+                              },
+                              "quote": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 1000
+                              },
+                              "policyCode": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 256
+                              },
+                              "sourceVersion": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 256
+                              },
+                              "sourceRevision": {
+                                "type": "integer",
+                                "minimum": 1
+                              },
+                              "hash": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 256
+                              }
+                            },
+                            "required": [
+                              "sourceId",
+                              "lineStart",
+                              "lineEnd",
+                              "quote",
+                              "policyCode",
+                              "sourceVersion",
+                              "sourceRevision",
+                              "hash"
+                            ]
+                          },
+                          "maxItems": 20
+                        },
+                        "modelUsed": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "text",
+                        "citations",
+                        "modelUsed"
+                      ]
+                    }
+                  },
+                  "required": []
+                },
+                "createdAt": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                }
+              },
+              "required": [
+                "jobId",
+                "spaceId",
+                "kind",
+                "status",
+                "version",
+                "cancelRequested",
+                "resultValid",
+                "createdAt"
+              ]
+            },
+            "maxItems": 100
+          },
+          "nextCursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "product": true,
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.jobs.cancel.v1",
+      "argv": [
+        "knowledge",
+        "jobs",
+        "cancel"
+      ],
+      "description": "knowledge.jobs.cancel.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.jobs.cancel.v1",
+      "sideEffect": "product-write",
+      "idempotency": "required-client-key",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "jobId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "spaceId",
+          "jobId"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "kind": {
+            "enum": [
+              "compile",
+              "answer"
+            ]
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "cancelRequested": {
+            "type": "boolean"
+          },
+          "resultValid": {
+            "type": "boolean"
+          },
+          "errorCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "invalidReason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "page": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "pageId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "spaceId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "revisionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "pageState": {
+                    "enum": [
+                      "draft",
+                      "reviewed",
+                      "published",
+                      "withdrawn",
+                      "stale"
+                    ]
+                  },
+                  "sourceIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "maxItems": 100
+                  },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "sourceId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "lineStart": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "lineEnd": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "quote": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        }
+                      },
+                      "required": [
+                        "sourceId",
+                        "lineStart",
+                        "lineEnd",
+                        "quote"
+                      ]
+                    },
+                    "maxItems": 100
+                  },
+                  "body": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 20000
+                  }
+                },
+                "required": [
+                  "pageId",
+                  "spaceId",
+                  "revisionId",
+                  "title",
+                  "revision",
+                  "pageState",
+                  "sourceIds",
+                  "citations",
+                  "body"
+                ]
+              },
+              "answer": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "answered",
+                      "insufficient_evidence",
+                      "conflict"
+                    ]
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 12000
+                  },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "sourceId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "lineStart": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "lineEnd": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "quote": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        },
+                        "policyCode": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "sourceVersion": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "sourceRevision": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "hash": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        }
+                      },
+                      "required": [
+                        "sourceId",
+                        "lineStart",
+                        "lineEnd",
+                        "quote",
+                        "policyCode",
+                        "sourceVersion",
+                        "sourceRevision",
+                        "hash"
+                      ]
+                    },
+                    "maxItems": 20
+                  },
+                  "modelUsed": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "status",
+                  "text",
+                  "citations",
+                  "modelUsed"
+                ]
+              }
+            },
+            "required": []
+          },
+          "createdAt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "jobId",
+          "spaceId",
+          "kind",
+          "status",
+          "version",
+          "cancelRequested",
+          "resultValid",
+          "createdAt"
+        ]
+      },
+      "product": true,
+      "scope": "product:write",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    },
+    {
+      "id": "knowledge.jobs.events.v1",
+      "argv": [
+        "knowledge",
+        "jobs",
+        "events"
+      ],
+      "description": "knowledge.jobs.events.v1",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.jobs.events.v1",
+      "sideEffect": "none",
+      "idempotency": "read",
+      "success": [
+        200
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "jobId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "afterSequence": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "spaceId",
+          "jobId"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "sequence": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "type": {
+                  "enum": [
+                    "job.created",
+                    "job.started",
+                    "job.requeued",
+                    "job.completed",
+                    "job.failed",
+                    "job.cancelled"
+                  ]
+                },
+                "time": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                }
+              },
+              "required": [
+                "eventId",
+                "sequence",
+                "type",
+                "time"
+              ]
+            },
+            "maxItems": 100
+          },
+          "nextSequence": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "nextSequence"
+        ]
+      },
+      "product": true,
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": false,
+      "admin": false,
+      "clientStatus": "implemented",
+      "serverStatus": "oa-control-api",
+      "authorization": "server-identity-and-resource-policy",
+      "automaticRetry": false
+    }
+  ]
+}

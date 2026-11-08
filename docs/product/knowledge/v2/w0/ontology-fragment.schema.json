@@ -1,0 +1,195 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "namespace": {
+      "enum": [
+        "nc:",
+        "nc.org:",
+        "nc.access:",
+        "nc.kb:",
+        "nc.tool:",
+        "nc.learn:"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "apiMajor": {
+      "const": 1
+    },
+    "classes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^nc(?:\\.[a-z]+)?:[A-Za-z][A-Za-z0-9]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "kind": {
+            "enum": [
+              "entity",
+              "value",
+              "event"
+            ]
+          },
+          "status": {
+            "enum": [
+              "planned",
+              "implemented"
+            ]
+          },
+          "properties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64
+                },
+                "valueType": {
+                  "enum": [
+                    "string",
+                    "integer",
+                    "boolean",
+                    "datetime",
+                    "hash",
+                    "reference"
+                  ]
+                },
+                "required": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "name",
+                "valueType",
+                "required"
+              ]
+            },
+            "maxItems": 64,
+            "minItems": 0
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "kind",
+          "status",
+          "properties"
+        ]
+      },
+      "maxItems": 64,
+      "minItems": 1
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^nc(?:\\.[a-z]+)?:[A-Za-z][A-Za-z0-9]*$"
+          },
+          "from": {
+            "type": "string",
+            "pattern": "^nc(?:\\.[a-z]+)?:[A-Za-z][A-Za-z0-9]*$"
+          },
+          "to": {
+            "type": "string",
+            "pattern": "^nc(?:\\.[a-z]+)?:[A-Za-z][A-Za-z0-9]*$"
+          },
+          "direction": {
+            "enum": [
+              "directed",
+              "symmetric"
+            ]
+          },
+          "evidenceRequired": {
+            "type": "boolean"
+          },
+          "authorizationPropagation": {
+            "const": false
+          }
+        },
+        "required": [
+          "id",
+          "from",
+          "to",
+          "direction",
+          "evidenceRequired",
+          "authorizationPropagation"
+        ]
+      },
+      "maxItems": 64,
+      "minItems": 0
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "KB-C1",
+          "KB-C2",
+          "KB-C3",
+          "KB-C4",
+          "KB-C5",
+          "KB-C6",
+          "KB-C7",
+          "KB-C8",
+          "KB-C9",
+          "KB-C10"
+        ]
+      },
+      "maxItems": 10,
+      "minItems": 0
+    },
+    "requires": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "namespace": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32
+          },
+          "major": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "namespace",
+          "major"
+        ]
+      },
+      "maxItems": 8,
+      "minItems": 0
+    }
+  },
+  "required": [
+    "namespace",
+    "version",
+    "apiMajor",
+    "classes",
+    "relations",
+    "constraints",
+    "requires"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:nuochong:knowledge-v2:ontology-fragment:1.0.0"
+}
