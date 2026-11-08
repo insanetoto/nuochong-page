@@ -1,0 +1,683 @@
+{
+  "synthetic": true,
+  "purpose": "schema structure only; does not prove domain success",
+  "cases": [
+    {
+      "commandId": "knowledge.spaces.get.v1",
+      "input": {
+        "spaceId": "x"
+      },
+      "output": {
+        "space": {
+          "spaceId": "x",
+          "code": "x",
+          "title": "x",
+          "domainType": "policy",
+          "departmentIds": [],
+          "status": "active",
+          "revision": 1,
+          "publicationPolicyRevision": 1,
+          "allowSelfPublish": false
+        },
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.spaces.create.v2",
+      "input": {
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "approvalId": "x",
+        "code": "x",
+        "title": "x",
+        "domainType": "policy",
+        "departmentIds": []
+      },
+      "output": {
+        "space": {
+          "spaceId": "x",
+          "code": "x",
+          "title": "x",
+          "domainType": "policy",
+          "departmentIds": [],
+          "status": "active",
+          "revision": 1,
+          "publicationPolicyRevision": 1,
+          "allowSelfPublish": false
+        },
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.spaces.update.v1",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "expectedRevision": 1,
+        "title": "x",
+        "departmentIds": [],
+        "approvalId": "x"
+      },
+      "output": {
+        "space": {
+          "spaceId": "x",
+          "code": "x",
+          "title": "x",
+          "domainType": "policy",
+          "departmentIds": [],
+          "status": "active",
+          "revision": 1,
+          "publicationPolicyRevision": 1,
+          "allowSelfPublish": false
+        },
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.spaces.archive.v1",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "expectedRevision": 1,
+        "reason": "xxx",
+        "approvalId": "x"
+      },
+      "output": {
+        "space": {
+          "spaceId": "x",
+          "code": "x",
+          "title": "x",
+          "domainType": "policy",
+          "departmentIds": [],
+          "status": "active",
+          "revision": 1,
+          "publicationPolicyRevision": 1,
+          "allowSelfPublish": false
+        },
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.spaces.publication-policy.set.v1",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "allowSelfPublish": false,
+        "reason": "xxx",
+        "expectedPolicyRevision": 1,
+        "approvalId": "x",
+        "proposalId": "x"
+      },
+      "output": {
+        "spaceId": "x",
+        "allowSelfPublish": false,
+        "policyRevision": 1,
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.objects.upload.v1",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "filename": "x",
+        "mediaType": "text/plain",
+        "byteLength": 1,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "output": {
+        "objectRef": "x",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "byteLength": 1,
+        "status": "ready",
+        "expiresAt": "2026-11-08T00:00:00Z",
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.imports.create.v1",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "files": [
+          {
+            "objectRef": "x",
+            "title": "x",
+            "policyCode": "x",
+            "version": "x",
+            "validFrom": "2026-11-08T00:00:00Z"
+          }
+        ]
+      },
+      "output": {
+        "batch": {
+          "batchId": "x",
+          "spaceId": "x",
+          "status": "created",
+          "files": [],
+          "revision": 1
+        },
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.imports.list.v1",
+      "input": {
+        "spaceId": "x"
+      },
+      "output": {
+        "items": [],
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.imports.get.v1",
+      "input": {
+        "spaceId": "x",
+        "batchId": "x"
+      },
+      "output": {
+        "batch": {
+          "batchId": "x",
+          "spaceId": "x",
+          "status": "created",
+          "files": [],
+          "revision": 1
+        },
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.imports.cancel.v1",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "batchId": "x",
+        "fileIds": [
+          "x"
+        ]
+      },
+      "output": {
+        "batchId": "x",
+        "cancelRequested": true,
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.imports.retry.v1",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "batchId": "x",
+        "fileIds": [
+          "x"
+        ],
+        "expectedRevision": 1
+      },
+      "output": {
+        "batch": {
+          "batchId": "x",
+          "spaceId": "x",
+          "status": "created",
+          "files": [],
+          "revision": 1
+        },
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.fragments.list.v1",
+      "input": {
+        "spaceId": "x",
+        "view": "published"
+      },
+      "output": {
+        "items": [],
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.fragments.review.v1",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "fragmentId": "x",
+        "expectedRevision": 1,
+        "decision": "accept",
+        "reason": "xxx",
+        "relatedFragmentIds": [],
+        "splitRanges": []
+      },
+      "output": {
+        "fragments": [],
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.concepts.list.v1",
+      "input": {
+        "spaceId": "x"
+      },
+      "output": {
+        "items": [],
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.concepts.upsert.v1",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "conceptId": "x",
+        "expectedRevision": 0,
+        "label": "x",
+        "parentId": "x"
+      },
+      "output": {
+        "concept": {
+          "conceptId": "x",
+          "spaceId": "x",
+          "label": "x",
+          "parentId": "x",
+          "revisionId": "x",
+          "revision": 1
+        },
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.entries.list.v1",
+      "input": {
+        "spaceId": "x",
+        "view": "published"
+      },
+      "output": {
+        "items": [],
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.entries.get.v1",
+      "input": {
+        "spaceId": "x",
+        "entryId": "x",
+        "view": "published"
+      },
+      "output": {
+        "entry": {
+          "entryId": "x",
+          "spaceId": "x",
+          "revisionId": "x",
+          "revision": 1,
+          "entryType": "policy",
+          "title": "x",
+          "body": "x",
+          "status": "draft",
+          "fragmentIds": []
+        },
+        "fragments": [],
+        "relations": [],
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.entries.draft.v1",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "entryId": "x",
+        "expectedRevision": 0,
+        "title": "x",
+        "entryType": "policy",
+        "body": "x",
+        "fragmentIds": [
+          "x"
+        ],
+        "conceptRevisionIds": [],
+        "relationRevisionIds": []
+      },
+      "output": {
+        "entry": {
+          "entryId": "x",
+          "spaceId": "x",
+          "revisionId": "x",
+          "revision": 1,
+          "entryType": "policy",
+          "title": "x",
+          "body": "x",
+          "status": "draft",
+          "fragmentIds": []
+        },
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.entries.submit.v1",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "entryId": "x",
+        "expectedRevision": 1
+      },
+      "output": {
+        "entry": {
+          "entryId": "x",
+          "spaceId": "x",
+          "revisionId": "x",
+          "revision": 1,
+          "entryType": "policy",
+          "title": "x",
+          "body": "x",
+          "status": "draft",
+          "fragmentIds": []
+        },
+        "reviewTargetHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.entries.review.v1",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "entryRevisionId": "x",
+        "expectedRevision": 1,
+        "reviewTargetHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "decision": "approve",
+        "reason": "xxx"
+      },
+      "output": {
+        "entry": {
+          "entryId": "x",
+          "spaceId": "x",
+          "revisionId": "x",
+          "revision": 1,
+          "entryType": "policy",
+          "title": "x",
+          "body": "x",
+          "status": "draft",
+          "fragmentIds": []
+        },
+        "reviewId": "x",
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.relations.upsert.v1",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "relationId": "x",
+        "expectedRevision": 0,
+        "fromEntryId": "x",
+        "toEntryId": "x",
+        "type": "relatedTo",
+        "reason": "xxx",
+        "weight": 0,
+        "evidenceFragmentIds": []
+      },
+      "output": {
+        "relation": {
+          "relationId": "x",
+          "relationRevisionId": "x",
+          "fromEntryRevisionId": "x",
+          "toEntryRevisionId": "x",
+          "type": "relatedTo",
+          "reason": "x",
+          "weight": 0,
+          "revision": 1
+        },
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.publications.publish.v2",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "entryRevisionId": "x",
+        "expectedRevision": 1,
+        "baseSnapshotId": "x",
+        "reviewTargetHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "graphHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "expectedPolicyRevision": 1,
+        "approvalId": "x"
+      },
+      "output": {
+        "publicationId": "x",
+        "snapshotId": "x",
+        "spaceId": "x",
+        "entryRevisionId": "x",
+        "graphHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "effectiveAt": "2026-11-08T00:00:00Z",
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.publications.withdraw.v2",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "publicationId": "x",
+        "expectedRevision": 1,
+        "baseSnapshotId": "x",
+        "reason": "xxx",
+        "approvalId": "x"
+      },
+      "output": {
+        "publicationId": "x",
+        "withdrawn": true,
+        "snapshotId": "x",
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.publications.rollback.v1",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "entryId": "x",
+        "targetEntryRevisionId": "x",
+        "expectedRevision": 1,
+        "baseSnapshotId": "x",
+        "reason": "xxx",
+        "approvalId": "x"
+      },
+      "output": {
+        "publicationId": "x",
+        "snapshotId": "x",
+        "spaceId": "x",
+        "entryRevisionId": "x",
+        "graphHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "effectiveAt": "2026-11-08T00:00:00Z",
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.capabilities.list.v1",
+      "input": {
+        "spaceId": "x"
+      },
+      "output": {
+        "items": [],
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.graph.query.v1",
+      "input": {
+        "spaceIds": [
+          "x"
+        ],
+        "types": [
+          "entry"
+        ],
+        "view": "published"
+      },
+      "output": {
+        "nodes": [],
+        "edges": [],
+        "stats": {
+          "nodeCount": 0,
+          "edgeCount": 0
+        },
+        "truncated": false,
+        "graphVersion": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.search.v2",
+      "input": {
+        "spaceId": "x",
+        "query": "x"
+      },
+      "output": {
+        "items": [],
+        "snapshotId": "x",
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.sources.get.v2",
+      "input": {
+        "spaceId": "x",
+        "sourceRevisionId": "x",
+        "fragmentId": "x"
+      },
+      "output": {
+        "sourceRevisionId": "x",
+        "title": "x",
+        "mediaType": "x",
+        "fragment": {
+          "fragmentId": "x",
+          "spaceId": "x",
+          "sourceRevisionId": "x",
+          "locator": {
+            "type": "line",
+            "lineStart": 1,
+            "lineEnd": 1
+          },
+          "excerpt": "x",
+          "textHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "revision": 1,
+          "status": "pending"
+        },
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.answers.ask.v2",
+      "input": {
+        "spaceId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "query": "x"
+      },
+      "output": {
+        "job": {
+          "jobId": "x",
+          "spaceId": "x",
+          "kind": "compile",
+          "status": "queued",
+          "version": 1,
+          "cancelRequested": false,
+          "resultValid": false
+        },
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.jobs.get.v2",
+      "input": {
+        "spaceId": "x",
+        "jobId": "x"
+      },
+      "output": {
+        "job": {
+          "jobId": "x",
+          "spaceId": "x",
+          "kind": "compile",
+          "status": "queued",
+          "version": 1,
+          "cancelRequested": false,
+          "resultValid": false
+        },
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.jobs.list.v2",
+      "input": {
+        "spaceId": "x"
+      },
+      "output": {
+        "items": [],
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.jobs.events.v2",
+      "input": {
+        "spaceId": "x",
+        "jobId": "x"
+      },
+      "output": {
+        "items": [],
+        "nextSequence": 0,
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "knowledge.jobs.cancel.v2",
+      "input": {
+        "spaceId": "x",
+        "jobId": "x",
+        "idempotencyKey": "xxxxxxxxxxxxxxxx"
+      },
+      "output": {
+        "job": {
+          "jobId": "x",
+          "spaceId": "x",
+          "kind": "compile",
+          "status": "queued",
+          "version": 1,
+          "cancelRequested": false,
+          "resultValid": false
+        },
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "access.approval-requests.create.v1",
+      "input": {
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "commandId": "knowledge.spaces.publication-policy.set.v1",
+        "target": {
+          "spaceId": "x",
+          "allowSelfPublish": false,
+          "reason": "xxx",
+          "expectedPolicyRevision": 1
+        }
+      },
+      "output": {
+        "proposalId": "x",
+        "targetHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "expiresAt": "2026-11-08T00:00:00Z",
+        "requestId": "x"
+      }
+    },
+    {
+      "commandId": "access.approvals.create.v2",
+      "input": {
+        "idempotencyKey": "xxxxxxxxxxxxxxxx",
+        "proposalId": "x",
+        "reason": "xxx"
+      },
+      "output": {
+        "approvalId": "x",
+        "targetHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "expiresAt": "2026-11-08T00:00:00Z",
+        "requestId": "x"
+      }
+    }
+  ]
+}

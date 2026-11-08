@@ -1,16 +1,18 @@
-# 知识库 v2 任务索引（执行计划 r3）
+# 知识库 v2 任务索引（执行计划 r4（W0候选））
 
 2026-11-08更新：负责人已确认原型评审通过。当前以[任务卡](next-work.md)、[JSON台账](execution-plan.json)及[负责人路线图](execution-roadmap.md)为唯一执行口径。本页替换原父任务/估算表中相互冲突的阶段与依赖，原始记录仍可从Git提交5a172f5查看。
 
-共20项：3项设计准入、12项P1工程/验收、3项P2后续、2项其他产品设计。新增KBV2-14（搜索/阅读/引用问答）与15（产品壳/任务/兼容），已有任务ID不重编号。PLAN-01进行中，其余Planned；原型Accepted不等于实现Accepted。20项Issues均已创建（见[登记记录](issue-registration.md)），成员与日期待准入登记。
+共20项：3项设计准入、12项P1工程/验收、3项P2后续、2项其他产品设计。新增KBV2-14（搜索/阅读/引用问答）与15（产品壳/任务/兼容），已有任务ID不重编号。PLAN-01/02/03为In review，其余Planned；原型Accepted不等于实现Accepted。20项Issues均已创建（见[登记记录](issue-registration.md)），成员与日期待准入登记。
+
+W0设计已补齐，见[一次确认单](w0/admission.md)；#104当前仍阻塞，R1候选未激活。
 
 ## 任务与依赖
 
 | ID | Issue | 工作 | 主责 | 依赖 | 状态 |
 | --- | --- | --- | --- | --- | --- |
-| PLAN-01 | [#101](https://github.com/insanetoto/nuochong-page/issues/101) | 知识库交接、存量缺口与设计决定冻结 | ChatGPT；负责人确认 | 无 | In progress |
-| PLAN-02 | [#102](https://github.com/insanetoto/nuochong-page/issues/102) | P1命令与数据契约实现前冻结 | ChatGPT；DeepSeek评估可实现性 | PLAN-01 | Planned |
-| PLAN-03 | [#103](https://github.com/insanetoto/nuochong-page/issues/103) | 实现准入与执行任务登记 | ChatGPT；负责人批准 | PLAN-01, PLAN-02 | Planned |
+| PLAN-01 | [#101](https://github.com/insanetoto/nuochong-page/issues/101) | 知识库交接、存量缺口与设计决定冻结 | ChatGPT；负责人确认 | 无 | In review |
+| PLAN-02 | [#102](https://github.com/insanetoto/nuochong-page/issues/102) | P1命令与数据契约实现前冻结 | ChatGPT；DeepSeek评估可实现性 | PLAN-01 | In review |
+| PLAN-03 | [#103](https://github.com/insanetoto/nuochong-page/issues/103) | 实现准入与执行任务登记 | ChatGPT；负责人批准 | PLAN-01, PLAN-02 | In review |
 | KBV2-01 | [#104](https://github.com/insanetoto/nuochong-page/issues/104) | 本体注册表与版本治理 | DeepSeek；ChatGPT预审；负责人验收 | PLAN-03 | Planned |
 | KBV2-02 | [#105](https://github.com/insanetoto/nuochong-page/issues/105) | 数据模型扩展与迁移 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-01 | Planned |
 | KBV2-03 | [#106](https://github.com/insanetoto/nuochong-page/issues/106) | 知识空间管理 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-02 | Planned |

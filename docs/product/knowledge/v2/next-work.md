@@ -1,10 +1,12 @@
-# 知识库 v2 执行计划与任务卡（2026-11-08 · r3）
+# 知识库 v2 执行计划与任务卡（2026-11-08 · r4（W0候选））
 
-负责人已确认 **v0人工验收和v2原型评审通过**。本次把原型逐页映射为交付任务：共20项（18项知识库工作、2项其他产品设计），其中PLAN-01进行中，其余19项Planned。未开始v2代码实现，已创建20项Issues，具体成员尚未分配；具体成员与日历排期未虚构。
+负责人已确认 **v0人工验收和v2原型评审通过**。本次把原型逐页映射为交付任务：共20项（18项知识库工作、2项其他产品设计），其中PLAN-01/02/03设计交付待确认（In review），其余17项Planned。未开始v2代码实现，已创建20项Issues，具体成员尚未分配；具体成员与日历排期未虚构。
 
 - [原型确认记录](prototype-acceptance-2026-11-08.md)：批准版本 `5a172f5`；HTML和截图保持原批准内容。
 - [任务JSON](execution-plan.json)：本文件表格/任务卡与之对应；[负责人路线图](execution-roadmap.md)提供快速查看入口。
 - ChatGPT负责设计规划、页面原型、交互设计、契约和预审；DeepSeek只负责按确认设计实现代码、迁移及自动化测试；负责人确认设计/人工验收/发布。
+
+本轮W0已补齐[决策、契约与有限准入确认单](w0/README.md)。#104仍Blocked，R1仅为建议，负责人批准前不改变现有依赖；新v2命令/允许目录变化见契约候选，不把旧草稿字段直接用于实现。
 
 ## 1. 本次调整
 
@@ -35,9 +37,9 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 
 | ID | Issue | 工作 | 波次 | 依赖 | 状态 |
 | --- | --- | --- | --- | --- | --- |
-| PLAN-01 | [#101](https://github.com/insanetoto/nuochong-page/issues/101) | 知识库交接、存量缺口与设计决定冻结 | W0 | 无 | In progress |
-| PLAN-02 | [#102](https://github.com/insanetoto/nuochong-page/issues/102) | P1命令与数据契约实现前冻结 | W0 | PLAN-01 | Planned |
-| PLAN-03 | [#103](https://github.com/insanetoto/nuochong-page/issues/103) | 实现准入与执行任务登记 | W0 | PLAN-01, PLAN-02 | Planned |
+| PLAN-01 | [#101](https://github.com/insanetoto/nuochong-page/issues/101) | 知识库交接、存量缺口与设计决定冻结 | W0 | 无 | In review |
+| PLAN-02 | [#102](https://github.com/insanetoto/nuochong-page/issues/102) | P1命令与数据契约实现前冻结 | W0 | PLAN-01 | In review |
+| PLAN-03 | [#103](https://github.com/insanetoto/nuochong-page/issues/103) | 实现准入与执行任务登记 | W0 | PLAN-01, PLAN-02 | In review |
 | KBV2-01 | [#104](https://github.com/insanetoto/nuochong-page/issues/104) | 本体注册表与版本治理 | W1 | PLAN-03 | Planned |
 | KBV2-02 | [#105](https://github.com/insanetoto/nuochong-page/issues/105) | 数据模型扩展与迁移 | W1 | KBV2-01 | Planned |
 | KBV2-03 | [#106](https://github.com/insanetoto/nuochong-page/issues/106) | 知识空间管理 | W2 | KBV2-02 | Planned |
@@ -63,7 +65,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### PLAN-01 知识库交接、存量缺口与设计决定冻结
 
 - 主责：ChatGPT；负责人确认；优先级：P0；波次：W0。
-- 状态：In progress；依赖：无；Issue：[#101](https://github.com/insanetoto/nuochong-page/issues/101)。
+- 状态：In review；依赖：无；Issue：[#101](https://github.com/insanetoto/nuochong-page/issues/101)。
 - 范围：复用已验收v0和已通过原型，核对实际schema/权限差异；冻结P1范围、关系与审校规则、性能/文件额度及ADR决定。
 - 不做：不代替#85人工验收，不改运行代码，不合并或发布。
 - 允许目录/文件：`docs/product/`、`docs/refactor/`、`docs/adr/`。
@@ -81,7 +83,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### PLAN-02 P1命令与数据契约实现前冻结
 
 - 主责：ChatGPT；DeepSeek评估可实现性；优先级：P0；波次：W0。
-- 状态：Planned；依赖：PLAN-01；Issue：[#102](https://github.com/insanetoto/nuochong-page/issues/102)。
+- 状态：In review；依赖：PLAN-01；Issue：[#102](https://github.com/insanetoto/nuochong-page/issues/102)。
 - 范围：按contracts.md逐命令确定字段、版本、权限、审批、幂等、错误及CLI映射，提前冻结公共schema。 以原型逐页核对命令，冻结旧v1兼容方案、错误/响应及发布hash规范；原型字段名不直接作为运行时契约。
 - 不做：不等到KBV2-10才决定接口，不修改实际能力注册。
 - 允许目录/文件：`docs/product/`、`docs/refactor/`、`docs/adr/`。
@@ -97,7 +99,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### PLAN-03 实现准入与执行任务登记
 
 - 主责：ChatGPT；负责人批准；优先级：P0；波次：W0。
-- 状态：Planned；依赖：PLAN-01, PLAN-02；Issue：[#103](https://github.com/insanetoto/nuochong-page/issues/103)。
+- 状态：In review；依赖：PLAN-01, PLAN-02；Issue：[#103](https://github.com/insanetoto/nuochong-page/issues/103)。
 - 范围：核对#99/#100的合并与批准证据、PLAN-01/02及#94，固定refactor/integration真实SHA，准备可分配任务及文件责任。
 - 不做：不直接推main/test，不批准生产迁移，不共享同一可写目录。
 - 允许目录/文件：`docs/product/`、`docs/refactor/`、`docs/adr/`。
