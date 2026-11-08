@@ -275,6 +275,111 @@ test('version upgrades and rollbacks are accepted and recorded', () => {
   assert.equal(registry.getNamespace('nc.kb:').version, '1.0.0');
 });
 
+test('version upgrades reject removed or tightened structure and allow additive changes', () => {
+  const registry = new OntologyRegistry().load(entries());
+  const originalHash = registry.ontologyHash;
+
+  const removedClass = clone(knowledgeOntologyFragment);
+  removedClass.version = '1.1.0';
+  removedClass.classes = removedClass.classes.filter((entry) => entry.id !== 'nc.kb:EntryRevision');
+  removedClass.relations = removedClass.relations.filter((entry) => entry.id !== 'nc.kb:supersedes');
+  expectCode(() => registry.load([entries()[0], { pluginId: 'knowledge', fragment: removedClass }]), ONTOLOGY_ERRORS.VERSION_CONFLICT);
+  assert.equal(registry.ontologyHash, originalHash);
+
+  const removedProperty = clone(knowledgeOntologyFragment);
+  removedProperty.version = '1.1.0';
+  removedProperty.classes[0].properties = [];
+  expectCode(() => registry.load([entries()[0], { pluginId: 'knowledge', fragment: removedProperty }]), ONTOLOGY_ERRORS.VERSION_CONFLICT);
+
+  const changedType = clone(knowledgeOntologyFragment);
+  changedType.version = '1.1.0';
+  changedType.classes[0].properties[0].valueType = 'string';
+  expectCode(() => registry.load([entries()[0], { pluginId: 'knowledge', fragment: changedType }]), ONTOLOGY_ERRORS.VERSION_CONFLICT);
+
+  const requiredAdded = clone(knowledgeOntologyFragment);
+  requiredAdded.version = '1.1.0';
+  requiredAdded.classes[0].properties.push({ name: 'note', valueType: 'string', required: true });
+  expectCode(() => registry.load([entries()[0], { pluginId: 'knowledge', fragment: requiredAdded }]), ONTOLOGY_ERRORS.VERSION_CONFLICT);
+
+  const removedRelation = clone(knowledgeOntologyFragment);
+  removedRelation.version = '1.1.0';
+  removedRelation.relations = removedRelation.relations.filter((entry) => entry.id !== 'nc.kb:supersedes');
+  expectCode(() => registry.load([entries()[0], { pluginId: 'knowledge', fragment: removedRelation }]), ONTOLOGY_ERRORS.VERSION_CONFLICT);
+
+  const changedDirection = clone(knowledgeOntologyFragment);
+  changedDirection.version = '1.1.0';
+  changedDirection.relations[0].direction = 'directed';
+  expectCode(() => registry.load([entries()[0], { pluginId: 'knowledge', fragment: changedDirection }]), ONTOLOGY_ERRORS.VERSION_CONFLICT);
+
+  const removedConstraint = clone(knowledgeOntologyFragment);
+  removedConstraint.version = '1.1.0';
+  removedConstraint.constraints = ['KB-C4', 'KB-C8'];
+  expectCode(() => registry.load([entries()[0], { pluginId: 'knowledge', fragment: removedConstraint }]), ONTOLOGY_ERRORS.VERSION_CONFLICT);
+
+  const removedRequirement = clone(knowledgeOntologyFragment);
+  removedRequirement.version = '1.1.0';
+  removedRequirement.requires = [];
+  expectCode(() => registry.load([entries()[0], { pluginId: 'knowledge', fragment: removedRequirement }]), ONTOLOGY_ERRORS.VERSION_CONFLICT);
+
+  const additive = clone(knowledgeOntologyFragment);
+  additive.version = '1.1.0';
+  additive.classes.push({
+    id: 'nc.kb:Concept', label: '概念', kind: 'entity', status: 'planned',
+    properties: [{ name: 'prefLabel', valueType: 'string', required: true }],
+  });
+  additive.classes[0].properties.push({ name: 'note', valueType: 'string', required: false });
+  additive.relations.push({
+    id: 'nc.kb:about', from: 'nc.kb:KnowledgeEntry', to: 'nc.kb:Concept',
+    direction: 'directed', evidenceRequired: false, authorizationPropagation: false,
+  });
+  additive.constraints.push('KB-C5');
+  registry.load([entries()[0], { pluginId: 'knowledge', fragment: additive }]);
+  assert.equal(registry.getNamespace('nc.kb:').version, '1.1.0');
+  assert.equal(registry.getClass('nc.kb:Concept').label, '概念');
+  assert.equal(registry.getRelation('nc.kb:about').to, 'nc.kb:Concept');
+  assert.deepEqual(registry.listConstraints(), ['KB-C3', 'KB-C4', 'KB-C5', 'KB-C8']);
+  assert.equal(registry.history.at(-1).direction, 'upgrade');
+
+  const tightenedAfterAdditive = clone(additive);
+  tightenedAfterAdditive.version = '1.2.0';
+  tightenedAfterAdditive.classes.find((entry) => entry.id === 'nc.kb:KnowledgeEntry').properties
+    .find((property) => property.name === 'note').required = true;
+  expectCode(() => registry.load([entries()[0], { pluginId: 'knowledge', fragment: tightenedAfterAdditive }]), ONTOLOGY_ERRORS.VERSION_CONFLICT);
+  assert.equal(registry.getNamespace('nc.kb:').version, '1.1.0');
+});
+
+test('registered version history rejects forged rollback and accepts exact rollback', () => {
+  const registry = new OntologyRegistry().load(entries());
+  const original = clone(knowledgeOntologyFragment);
+  const upgraded = clone(knowledgeOntologyFragment);
+  upgraded.version = '1.1.0';
+  registry.load([entries()[0], { pluginId: 'knowledge', fragment: upgraded }]);
+  const upgradedHash = registry.ontologyHash;
+  assert.equal(registry.history.length, 1);
+
+  const forged = clone(original);
+  forged.classes[0].label = 'forged rollback';
+  expectCode(() => registry.load([entries()[0], { pluginId: 'knowledge', fragment: forged }]), ONTOLOGY_ERRORS.VERSION_CONFLICT);
+  assert.equal(registry.ontologyHash, upgradedHash);
+  assert.equal(registry.history.length, 1);
+
+  registry.load([entries()[0], { pluginId: 'knowledge', fragment: original }]);
+  assert.equal(registry.getNamespace('nc.kb:').version, '1.0.0');
+  assert.equal(registry.history.length, 2);
+  assert.equal(registry.history.at(-1).direction, 'rollback');
+  assert.equal(registry.history.at(-1).toVersion, '1.0.0');
+});
+
+test('registry construction and empty history are immutable', () => {
+  assert.throws(() => new OntologyRegistry({}), TypeError);
+  assert.throws(() => new OntologyRegistry({}, []), TypeError);
+  const empty = new OntologyRegistry();
+  empty.load([]);
+  assert.ok(Object.isFrozen(empty.history));
+  assert.throws(() => empty.history.push({ namespace: 'forged' }), TypeError);
+  assert.equal(empty.history.length, 0);
+});
+
 test('a failed load keeps the previous snapshot and history intact', () => {
   const registry = new OntologyRegistry().load(entries());
   const hash = registry.ontologyHash;

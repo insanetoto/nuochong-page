@@ -317,11 +317,60 @@ function deepFreeze(value) {
   return value;
 }
 
-function build(entries, previous, previousHistory) {
+function copyVersions(previous) {
+  const next = new Map();
+  for (const [namespace, versions] of previous) next.set(namespace, new Map(versions));
+  return next;
+}
+
+function assertCompatible(previous, next) {
+  const previousClasses = new Map(previous.classes.map((entry) => [entry.id, entry]));
+  const nextClasses = new Map(next.classes.map((entry) => [entry.id, entry]));
+  for (const [id, prior] of previousClasses) {
+    const current = nextClasses.get(id);
+    if (!current) fail(CODE.VERSION_CONFLICT, `class removed: ${id}`);
+    if (prior.kind !== current.kind) fail(CODE.VERSION_CONFLICT, `class kind changed: ${id}`);
+    const priorProperties = new Map(prior.properties.map((entry) => [entry.name, entry]));
+    const currentProperties = new Map(current.properties.map((entry) => [entry.name, entry]));
+    for (const [name, property] of priorProperties) {
+      const replacement = currentProperties.get(name);
+      if (!replacement) fail(CODE.VERSION_CONFLICT, `property removed: ${id}.${name}`);
+      if (replacement.valueType !== property.valueType) fail(CODE.VERSION_CONFLICT, `property type changed: ${id}.${name}`);
+      if (!property.required && replacement.required) fail(CODE.VERSION_CONFLICT, `property became required: ${id}.${name}`);
+    }
+    for (const property of current.properties) {
+      if (!priorProperties.has(property.name) && property.required) {
+        fail(CODE.VERSION_CONFLICT, `required property added: ${id}.${property.name}`);
+      }
+    }
+  }
+
+  const previousRelations = new Map(previous.relations.map((entry) => [entry.id, entry]));
+  const nextRelations = new Map(next.relations.map((entry) => [entry.id, entry]));
+  for (const [id, prior] of previousRelations) {
+    const current = nextRelations.get(id);
+    if (!current) fail(CODE.VERSION_CONFLICT, `relation removed: ${id}`);
+    if (prior.from !== current.from || prior.to !== current.to || prior.direction !== current.direction ||
+        prior.evidenceRequired !== current.evidenceRequired) {
+      fail(CODE.VERSION_CONFLICT, `relation semantics changed: ${id}`);
+    }
+  }
+
+  for (const constraint of previous.constraints) {
+    if (!next.constraints.includes(constraint)) fail(CODE.VERSION_CONFLICT, `constraint removed: ${constraint}`);
+  }
+  for (const requirement of previous.requires) {
+    if (!next.requires.some((entry) => entry.namespace === requirement.namespace && entry.major === requirement.major)) {
+      fail(CODE.VERSION_CONFLICT, `required namespace removed: ${requirement.namespace}`);
+    }
+  }
+}
+
+function build(entries, previous, previousHistory, previousVersions) {
   const normalized = normalizeEntries(entries);
   if (normalized.length === 0) {
     if (previous.namespaces.length > 0) fail(CODE.VERSION_CONFLICT, 'cannot remove registered namespaces');
-    return { snapshot: EMPTY, history: previousHistory };
+    return { snapshot: EMPTY, history: deepFreeze([...previousHistory]), versions: copyVersions(previousVersions) };
   }
 
   const byNamespace = new Map();
@@ -336,12 +385,31 @@ function build(entries, previous, previousHistory) {
   const fragments = [...byNamespace.values()];
   assertDependencies(fragments);
 
-  // Version reconciliation against the previous snapshot. A same-version
-  // reload is idempotent only when its canonical content is identical.
+  // Version reconciliation: every registered (namespace, version) content is
+  // retained for the lifetime of this registry. Re-using a version with any
+  // other content is rejected even after later upgrades; rolling back is only
+  // allowed to the exact content already registered.
+  const versions = copyVersions(previousVersions);
   const history = [...previousHistory];
   for (const fragment of fragments) {
     const prior = previous.namespaces.find((entry) => entry.namespace === fragment.namespace);
-    if (!prior) {
+    const known = versions.get(fragment.namespace)?.get(fragment.version);
+    if (known) {
+      if (known.fragmentHash !== fragment.fragmentHash) {
+        fail(CODE.VERSION_CONFLICT, `${fragment.namespace}@${fragment.version} changed content`);
+      }
+      if (!prior) fail(CODE.VERSION_CONFLICT, `inactive namespace history: ${fragment.namespace}`);
+      if (prior.version !== fragment.version) {
+        history.push({
+          namespace: fragment.namespace,
+          fromVersion: prior.version,
+          toVersion: fragment.version,
+          fromHash: prior.fragmentHash,
+          toHash: fragment.fragmentHash,
+          direction: compareVersions(fragment.version, prior.version) > 0 ? 'upgrade' : 'rollback',
+        });
+      }
+    } else if (!prior) {
       if (previous.namespaces.length > 0) {
         history.push({
           namespace: fragment.namespace,
@@ -352,22 +420,26 @@ function build(entries, previous, previousHistory) {
           direction: 'initial',
         });
       }
-      continue;
-    }
-    if (prior.version === fragment.version) {
-      if (prior.fragmentHash !== fragment.fragmentHash) {
-        fail(CODE.VERSION_CONFLICT, `${fragment.namespace}@${fragment.version} changed content`);
+    } else {
+      if (fragment.version === prior.version) fail(CODE.VERSION_CONFLICT, `missing registered content: ${fragment.namespace}@${fragment.version}`);
+      if (compareVersions(fragment.version, prior.version) < 0) {
+        fail(CODE.VERSION_CONFLICT, `rollback to unknown content: ${fragment.namespace}@${fragment.version}`);
       }
-      continue;
+      const previousFragment = versions.get(fragment.namespace)?.get(prior.version)?.fragment;
+      if (!previousFragment) fail(CODE.VERSION_CONFLICT, `missing prior content: ${fragment.namespace}@${prior.version}`);
+      assertCompatible(previousFragment, fragment);
+      history.push({
+        namespace: fragment.namespace,
+        fromVersion: prior.version,
+        toVersion: fragment.version,
+        fromHash: prior.fragmentHash,
+        toHash: fragment.fragmentHash,
+        direction: 'upgrade',
+      });
     }
-    history.push({
-      namespace: fragment.namespace,
-      fromVersion: prior.version,
-      toVersion: fragment.version,
-      fromHash: prior.fragmentHash,
-      toHash: fragment.fragmentHash,
-      direction: compareVersions(fragment.version, prior.version) > 0 ? 'upgrade' : 'rollback',
-    });
+    const namespaceVersions = versions.get(fragment.namespace) ?? new Map();
+    namespaceVersions.set(fragment.version, { fragment: deepFreeze(fragment), fragmentHash: fragment.fragmentHash });
+    versions.set(fragment.namespace, namespaceVersions);
   }
   for (const prior of previous.namespaces) {
     if (!byNamespace.has(prior.namespace)) fail(CODE.VERSION_CONFLICT, `cannot remove ${prior.namespace}`);
@@ -412,16 +484,19 @@ function build(entries, previous, previousHistory) {
     constraints: [...constraints].sort(),
   };
   const snapshot = deepFreeze({ ...payload, ontologyHash: sha256Hex(canonicalJson(payload)) });
-  return { snapshot, history: deepFreeze(history) };
+  return { snapshot, history: deepFreeze(history), versions };
 }
 
 export class OntologyRegistry {
   #snapshot;
   #history;
+  #versions;
 
-  constructor(snapshot = EMPTY, history = []) {
-    this.#snapshot = snapshot;
-    this.#history = history;
+  constructor(...args) {
+    if (args.length > 0) throw new TypeError('ONTOLOGY_RESTORE_NOT_SUPPORTED');
+    this.#snapshot = EMPTY;
+    this.#history = deepFreeze([]);
+    this.#versions = new Map();
   }
 
   static load(entries, options = {}) {
@@ -434,7 +509,7 @@ export class OntologyRegistry {
     const logger = typeof options.logger === 'function' ? options.logger : null;
     let next;
     try {
-      next = build(entries, this.#snapshot, this.#history);
+      next = build(entries, this.#snapshot, this.#history, this.#versions);
     } catch (error) {
       if (logger) {
         try { logger({ code: error.code ?? 'ONTOLOGY_LOAD_FAILED' }); } catch { /* logging must not affect registry state */ }
@@ -443,6 +518,7 @@ export class OntologyRegistry {
     }
     this.#snapshot = next.snapshot;
     this.#history = next.history;
+    this.#versions = next.versions;
     if (logger) {
       for (const namespace of next.snapshot.namespaces) {
         try { logger({ namespace: namespace.namespace, version: namespace.version, hash: namespace.fragmentHash, code: 'OK' }); } catch { /* logging must not affect registry state */ }
