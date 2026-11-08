@@ -79,7 +79,7 @@ t~525   recoverExpired()：running + lease_until <= now -> failed(unavailable)�
 
 | 检查 | 结果 |
 | --- | --- |
-| PR #132 control-api（PG 17.11 / Node 24.21.0） | 54/54 pass；`credential revocation...` 437ms；`lease expiry...` 721ms |
+| PR #132 control-api（PG 17.11 / Node 24.21.0，run `42486432393`） | 54/54 pass；`credential revocation...` 385ms；`lease expiry...` 1042ms |
 | `npx eslint apps/control-api/test/control-api.test.mjs` | pass |
 | `node --check` / `git diff --check` | pass |
 | 既有 25 项平台离线测试 | pass（同 job） |
