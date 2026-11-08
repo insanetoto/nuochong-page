@@ -7,7 +7,19 @@
       94
     ],
     "designPR": 99,
-    "humanAcceptanceRequired": true
+    "humanAcceptanceRequired": true,
+    "v0Acceptance": {
+      "issue": 85,
+      "status": "Accepted",
+      "confirmedAt": "2026-11-08",
+      "evidence": "docs/product/v0/acceptance-2026-11-08.md",
+      "productionReleaseAuthorized": false
+    },
+    "prototype": {
+      "status": "Pending owner review",
+      "artifact": "docs/product/prototypes/knowledge-v2.html",
+      "design": "docs/product/knowledge/v2/prototype-design.md"
+    }
   },
   "tasks": [
     {
@@ -24,7 +36,8 @@
       "acceptance": [
         "输出来源SHA/部署版本/实际实现/未交付/关联任务五列映射，不重复恢复旧B—E任务。",
         "片段审校单位、首期关系类型、图谱上限、发布原子性及豁免治理有明确决定与批准证据；批准前不得标Accepted。",
-        "核验v0固定角色是否满足P1，列出共享IAM最小缺口及独立任务；不得把完整IAM-03默认为已验收。"
+        "核验v0固定角色是否满足P1，列出共享IAM最小缺口及独立任务；不得把完整IAM-03默认为已验收。",
+        "页面原型与交互规范经负责人确认，覆盖正常、空态、权限、失败、审批失效与移动端；固定交给DeepSeek的设计版本。"
       ]
     },
     {
@@ -373,5 +386,27 @@
         "给出领域数据/版本化命令/CLI/页面设计与实现子任务，不重复人员主库。"
       ]
     }
-  ]
+  ],
+  "designResponsibilities": {
+    "ChatGPT": [
+      "product planning",
+      "architecture",
+      "contracts",
+      "task planning",
+      "page prototypes",
+      "interaction design",
+      "prereview"
+    ],
+    "DeepSeek": [
+      "code implementation",
+      "migrations",
+      "automated tests",
+      "implementation PRs"
+    ],
+    "owner": [
+      "design confirmation",
+      "human acceptance",
+      "release authorization"
+    ]
+  }
 }

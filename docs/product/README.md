@@ -1,19 +1,19 @@
 # 诺崇产品体系与企业知识库设计
 
-2026-11-08后续安排：[工作波次与18项任务卡](knowledge/v2/next-work.md)、[机器可读任务台账](knowledge/v2/execution-plan.json)。ChatGPT负责设计与预审，DeepSeek负责实现；当前仅规划，待设计决定及准入确认后领取，不等于已创建远程Issue或开始编码。
+2026-11-08后续安排：[工作波次与18项任务卡](knowledge/v2/next-work.md)、[机器可读任务台账](knowledge/v2/execution-plan.json)。ChatGPT负责设计规划、页面原型、交互设计与预审，DeepSeek只负责按确认设计进行代码实现；当前仅规划，待设计决定及准入确认后领取，不等于已创建远程Issue或开始编码。
 
-2026-11-01 · 规划 v1.1 + 初版工程 v0 · 状态：知识库初版已实施并验证，隔离测试已部署并通过真实模型/浏览器/CLI/MCP 验证；人工产品验收待负责人下一轮确认。
+2026-11-01 · 规划 v1.1 + 初版工程 v0 · 状态：知识库初版已实施并验证，隔离测试已部署并通过真实模型/浏览器/CLI/MCP 验证；负责人已于2026-11-08确认v0已交付范围人工验收（[记录](v0/acceptance-2026-11-08.md)）；生产发布另批。
 
 推荐阅读顺序：
 
-2026-11-08协作约定：ChatGPT负责设计规划与预审，DeepSeek负责代码实现；人工验收和发布由负责人确认。知识库v2预审修订及实现检查清单见 [PR #99交接说明](knowledge/v2/review-handoff.md)。文档合并不代表启动实现或产品验收。
+2026-11-08协作约定：ChatGPT负责设计规划、页面原型、交互设计与预审，DeepSeek只负责按确认设计进行代码实现；人工验收和发布由负责人确认。知识库v2预审修订及实现检查清单见 [PR #99交接说明](knowledge/v2/review-handoff.md)。文档合并不代表启动实现或产品验收。
 
 1. [公司产品体系与三条技术路线](portfolio.md)
 2. [共享组织、人员与角色权限插件](shared-access/design.md)
 3. [插件架构决策 ADR-011](../adr/ADR-011-product-plugins-llm-wiki.md)
 4. [知识库产品与技术设计](knowledge/design.md)
 5. [知识库页面与交互设计](knowledge/pages.md)
-6. [可点击页面原型](prototypes/knowledge.html)（合成数据、界面评审专用，没有连接业务 API）
+6. [v2可点击页面原型](prototypes/knowledge-v2.html)与[页面/交互规范](knowledge/v2/prototype-design.md)（合成数据、界面评审专用，没有连接业务 API）；[v1历史原型](prototypes/knowledge.html)
 7. [任务、依赖及验收](tasks.md)
 8. [演示模型交付记录](demo-delivery.md)
 9. [知识库初版范围、任务与验证](v0/README.md)

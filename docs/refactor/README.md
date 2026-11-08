@@ -1,6 +1,6 @@
 # 当前产品协作入口
 
-2026-11-08协作分工：ChatGPT负责设计规划、契约与预审，DeepSeek负责代码实现；负责人确认设计、人工验收与发布。当前PR #99预审修订与实现负例见 [设计交接清单](../product/knowledge/v2/review-handoff.md)，全部v2能力仍planned。
+2026-11-08协作分工：ChatGPT负责设计规划、契约、页面原型、交互设计与预审，DeepSeek只负责按确认设计进行代码实现；负责人确认设计、人工验收与发布。当前PR #99预审修订与实现负例见 [设计交接清单](../product/knowledge/v2/review-handoff.md)，全部v2能力仍planned。
 
 2026-11-01：公司明确企业知识库、企业 AI 工具、培训和考试三产品体系，共用 DeepSeek Harness，通过插件扩展。**先读 [本轮规划成果](../product/README.md)、[当前路线图](roadmap.md)和[新任务计划](../product/tasks.md)。** 知识库初版已实施并部署隔离测试，见 [v0 实际交付](../product/v0/README.md)；完整方案与人工产品验收仍单列。
 

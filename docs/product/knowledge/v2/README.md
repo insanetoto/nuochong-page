@@ -1,5 +1,7 @@
 # 企业知识库 v2：知识全景与「空间—导入—发布」来源管理
 
+2026-11-08新增：[v2页面与交互原型](../../prototypes/knowledge-v2.html)、[设计交接规范](prototype-design.md)。由ChatGPT负责原型与交互；DeepSeek只负责按确认设计代码实现。原型待评审，业务能力仍planned。
+
 后续工作已细化为 [执行波次与任务卡](next-work.md)（18项，含设计准入、P1实现、P2专项及其他产品设计）和 [JSON台账](execution-plan.json)。全部Planned；实施范围及负责人仍待确认。
 
 2026-11-02 · 设计稿 v1 · 决策更新 2026-11-08 · **planned，先设计不开发**。本文在 [知识库 v1 设计](../design.md) 与 [v0 已交付范围](../../v0/README.md) 基础上，按负责人本轮要求重构知识首页与来源管理，并把公司本体方法落到知识域。所有页面、命令、表结构均为设计建议；未实现能力不得注册为 ready，也不得用原型或 mock 冒充完成。
@@ -126,7 +128,7 @@ P1 不等待音视频：先打通“片段—待审—发布—图谱”闭环�
 - **插件**：知识库 manifest 增加 `ontology` 片段与 `capabilities` 声明；禁用知识插件后不接新写、历史可读、图谱不返回该插件节点。
 - **CLI/API**：新增能力全部有 commandId、输入/输出 schema、CLI 映射、授权/副作用/幂等说明；未实现标 planned，不注册 ready。
 - **发布边界**：本设计不创建 Issue、不排期、不部署；实现需负责人批准后按任务表逐项领取。
-- **原型**：本轮不更新可点击原型；[knowledge.html](../../prototypes/knowledge.html) 仍是 v1 参考，不能据此认为 v2 图谱或三子模块 UI 已交付。
+- **原型（2026-11-08更新）**：已输出[v2可点击原型](../../prototypes/knowledge-v2.html)及[页面/交互交接](prototype-design.md)，待负责人评审。原型为合成数据、无业务API，不代表v2运行UI或图谱能力已交付；原[knowledge.html](../../prototypes/knowledge.html)保留为v1历史参考。
 
 ## 9. 已确认决策（2026-11-08）
 
