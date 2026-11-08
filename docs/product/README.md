@@ -1,5 +1,7 @@
 # 诺崇产品体系与企业知识库设计
 
+2026-11-08 r6最新：[V2整版发布流程](knowledge/v2/release-process.md)、[16条原型验收矩阵](knowledge/v2/release-acceptance.md)、[6项补充任务 #125—#130](knowledge/v2/release-tasks.md)。统一台账现26项；只有KBV2-01离线模块已Released（隔离测试），完整V2尚未实现/验收/发布，FULL/#94仍待处理。以下保留历次阶段记录，当前状态以r6为准。
+
 W0最新交接：[决策、完整契约与KBV2-01有限准入确认单](knowledge/v2/w0/README.md)。#104的R1准入已通过、Ready，完整运行准入仍未完成；本轮只记录合并与开工授权。
 
 2026-11-08后续安排：[工作波次与20项任务卡](knowledge/v2/next-work.md)、[机器可读任务台账](knowledge/v2/execution-plan.json)。ChatGPT负责设计规划、页面原型、交互设计与预审，DeepSeek只负责按确认设计进行代码实现；v2原型评审已通过，当前更新实施规划，待其余设计决定及准入确认后领取，20项Issues已创建（[登记表](knowledge/v2/issue-registration.md)），尚未分配实际成员或开始编码。

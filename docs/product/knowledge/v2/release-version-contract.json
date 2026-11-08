@@ -1,0 +1,31 @@
+{
+  "status": "planned",
+  "approval": "Proposed supplemental release contract; not part of frozen W0 35-command catalogue",
+  "runtimeRegistration": false,
+  "implementationTask": "KBV2-REL-04",
+  "commandId": "platform.release.get.v1",
+  "cli": "nuochong platform release get --input - --json",
+  "sideEffect": "none",
+  "authorization": "Existing trusted company authentication and platform read policy; no caller-supplied identity/role override; API and CLI same policy",
+  "automaticRetry": false,
+  "inputSchema": {"type":"object","additionalProperties":false,"properties":{}},
+  "outputSchema": {
+    "type":"object",
+    "additionalProperties":false,
+    "required":["product","version","releaseScope","sourceSha","artifactDigest","schemaVersion","migrationVersions","cliVersion","requestId"],
+    "properties":{
+      "product":{"type":"string","const":"knowledge"},
+      "version":{"type":"string","minLength":1},
+      "releaseScope":{"enum":["preview","candidate","production"]},
+      "sourceSha":{"type":"string","pattern":"^[0-9a-f]{40}$"},
+      "artifactDigest":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"},
+      "schemaVersion":{"type":"string","minLength":1},
+      "migrationVersions":{"type":"array","items":{"type":"string","minLength":1},"uniqueItems":true},
+      "cliVersion":{"type":"string","minLength":1},
+      "requestId":{"type":"string","minLength":1}
+    }
+  },
+  "negativeCases":["Unauthenticated request rejected","Caller-supplied roles/identity rejected by schema","Missing build provenance returns explicit unavailable error; never mock current version","CLI token with same permissions as API yields same authorization decision","Output must not include credentials, paths, host inventory or user data"],
+  "errors":["UNAUTHORIZED","FORBIDDEN","RELEASE_METADATA_UNAVAILABLE"],
+  "errorCompatibility":"Implementation must use the existing error envelope and freeze schema in contract review before registration"
+}

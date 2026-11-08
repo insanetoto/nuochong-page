@@ -1,5 +1,7 @@
 # v2任务Issue登记与核对（2026-11-08）
 
+最新：原20项加本轮发布流程6项，合计26项，新增[#125—#130](release-tasks.md)。下面20项登记为原始快照；R1/FULL及实际状态看最新台账。
+
 依据负责人指令“将所有任务转换为issue，如果暂时不能转换的，可以暂缓”，已将现有20项任务全部登记为GitHub Issues，**创建20项，暂缓创建0项**。计划来源为PR #100提交856bd4d；创建执行者为ChatGPT / Codex。
 
 全部任务都能表达为设计或受前置条件约束的工程工作，因此无需暂缓创建。创建与启动分开：PLAN-01继续设计核查，其余保持Planned/待依赖；P2与其他产品设计也只登记Backlog，不提前调用外部服务或实现未经批准的业务。
@@ -45,3 +47,17 @@
 远程逐项核对：20个任务ID/标题/Issue编号一一对应、全部Open、无重复、依赖链接指向真实前置Issue；全部包含验收标准、目录和命令/CLI说明；未出现预览占位编号。JSON/任务表/路线图回填一致，依赖仍无环、P1不依赖媒体。仅更新文档和任务元数据，未运行产品测试或更改运行代码。
 
 当前任务来源：[完整任务卡](next-work.md)、[JSON台账](execution-plan.json)、[负责人路线图](execution-roadmap.md)。实际开始工作前读取Issue最新状态与依赖验收证据；本文是登记快照，不代替后续执行事实。
+
+
+## r6补充登记（2026-11-08）
+
+| ID | Issue | 任务 | 依赖 |
+| --- | --- | --- | --- |
+| KBV2-REL-01 | [#125](https://github.com/insanetoto/nuochong-page/issues/125) | V2原型到验收用例追踪与发布规则冻结 | PLAN-01, PLAN-02 |
+| KBV2-REL-02 | [#126](https://github.com/insanetoto/nuochong-page/issues/126) | V2真实业务浏览器E2E与原型验收负例 | KBV2-REL-01, KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08, KBV2-09, KBV2-14, KBV2-15 |
+| KBV2-REL-03 | [#127](https://github.com/insanetoto/nuochong-page/issues/127) | V2 Linux视觉基线、交互可达性与设计一致性门禁 | KBV2-REL-01, KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-09, KBV2-14, KBV2-15 |
+| KBV2-REL-04 | [#128](https://github.com/insanetoto/nuochong-page/issues/128) | V2不可变候选产物、测试部署、版本核验与发布预检 | KBV2-REL-01 |
+| KBV2-REL-05 | [#129](https://github.com/insanetoto/nuochong-page/issues/129) | 独立知识库生产环境方案、隔离配置与恢复演练 | KBV2-REL-01, KBV2-REL-04 |
+| KBV2-REL-06 | [#130](https://github.com/insanetoto/nuochong-page/issues/130) | V2 P1生产发布批准、执行核验与交付记录 | KBV2-11, KBV2-REL-04, KBV2-REL-05 |
+
+#115新增依赖#126/#127/#128，保持Planned；新增6项均已创建，暂缓创建0项，运行准入/部署仍未解除。

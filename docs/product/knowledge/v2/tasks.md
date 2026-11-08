@@ -1,11 +1,16 @@
-# 知识库 v2 任务索引（执行计划 r5（R1已批准））
+# 知识库 v2 任务索引（执行计划 r6（整版发布规划））
+
+**r6 · V2整版发布规划（2026-11-08）：原20项加6项质量/发布任务，共26项，新增Issues #125—#130。仅#104离线模块已Released（隔离测试）；完整V2尚未实现/验收/发布。REL-01设计已输出待评审，#94与PLAN-03:FULL仍待处理。**
+
+[发布流程](release-process.md) · [16条页面/交互验收矩阵](release-acceptance.md) · [6项补充任务卡](release-tasks.md) · [统一台账](execution-plan.json)
+
 
 **2026-11-08 发布更新：KBV2-01 已由负责人验收，PR #123 已合入 integration；官网测试/生产及知识库隔离测试发布成功。知识库 v2 页面与后续业务能力仍 planned，#94 / 完整运行准入保持独立。详见[验收与发布记录](release-2026-11-08.md)。**
 
 
 2026-11-08更新：负责人已确认原型评审通过。当前以[任务卡](next-work.md)、[JSON台账](execution-plan.json)及[负责人路线图](execution-roadmap.md)为唯一执行口径。本页替换原父任务/估算表中相互冲突的阶段与依赖，原始记录仍可从Git提交5a172f5查看。
 
-共20项：3项设计准入、12项P1工程/验收、3项P2后续、2项其他产品设计。新增KBV2-14（搜索/阅读/引用问答）与15（产品壳/任务/兼容），已有任务ID不重编号。PLAN-01/02已Accepted、PLAN-03进行中、KBV2-01 Released（隔离测试），其余Planned；原型Accepted不等于实现Accepted。20项Issues均已创建（见[登记记录](issue-registration.md)），成员与日期待准入登记。
+共26项：原3项设计准入、12项P1工程/验收、3项P2后续、2项其他产品设计，加6项质量/发布工作。新增KBV2-14（搜索/阅读/引用问答）与15（产品壳/任务/兼容），已有任务ID不重编号。PLAN-01/02已Accepted、PLAN-03进行中、KBV2-01 Released（隔离测试），其余Planned；原型Accepted不等于实现Accepted。原20项与新增6项Issues均已创建（见[登记记录](issue-registration.md)），成员与日期待准入登记。
 
 W0设计已补齐，见[一次确认单](w0/admission.md)；#104当前Released（隔离测试），依赖为#103的R1子出口，见[验收记录](w0/r1-acceptance-2026-11-08.md)。
 
@@ -27,12 +32,25 @@ W0设计已补齐，见[一次确认单](w0/admission.md)；#104当前Released�
 | KBV2-09 | [#112](https://github.com/insanetoto/nuochong-page/issues/112) | 知识全景前端 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-08, KBV2-15 | Planned |
 | KBV2-14 | [#113](https://github.com/insanetoto/nuochong-page/issues/113) | 员工搜索、阅读、原文核验与引用问答页面 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-07, KBV2-15 | Planned |
 | KBV2-10 | [#114](https://github.com/insanetoto/nuochong-page/issues/114) | 契约、CLI 与 MCP | DeepSeek；ChatGPT预审；负责人验收 | KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08 | Planned |
-| KBV2-11 | [#115](https://github.com/insanetoto/nuochong-page/issues/115) | P1迁移、评测与试点 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08, KBV2-09, KBV2-10, KBV2-14, KBV2-15 | Planned |
+| KBV2-11 | [#115](https://github.com/insanetoto/nuochong-page/issues/115) | P1迁移、评测与试点 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08, KBV2-09, KBV2-10, KBV2-14, KBV2-15, KBV2-REL-02, KBV2-REL-03, KBV2-REL-04 | Planned |
 | KBV2-05 | [#116](https://github.com/insanetoto/nuochong-page/issues/116) | 音视频/OCR 导入（P2） | DeepSeek；ChatGPT预审；负责人验收 | KBV2-11 | Planned |
 | KBV2-12 | [#117](https://github.com/insanetoto/nuochong-page/issues/117) | P2媒体专项评测与试点 | DeepSeek；负责人验收 | KBV2-05, KBV2-11 | Planned |
 | KBV2-13 | [#118](https://github.com/insanetoto/nuochong-page/issues/118) | 能力运营、排期与跨产品知识快照设计 | ChatGPT；负责人确认 | KBV2-11 | Planned |
 | TOOL-01 | [#119](https://github.com/insanetoto/nuochong-page/issues/119) | 首个企业AI工具产品方案 | ChatGPT；负责人确认 | PLAN-01 | Planned |
 | LEARN-01 | [#120](https://github.com/insanetoto/nuochong-page/issues/120) | 培训考试首期产品方案 | ChatGPT；负责人确认 | PLAN-01 | Planned |
+
+## 新增发布质量与运维任务
+
+| ID | Issue | 工作 | 主责 | 依赖 | 状态 |
+| --- | --- | --- | --- | --- | --- |
+| KBV2-REL-01 | [#125](https://github.com/insanetoto/nuochong-page/issues/125) | V2原型到验收用例追踪与发布规则冻结 | ChatGPT设计；DeepSeek评估可测试性；负责人确认新增规则 | PLAN-01, PLAN-02 | In review |
+| KBV2-REL-02 | [#126](https://github.com/insanetoto/nuochong-page/issues/126) | V2真实业务浏览器E2E与原型验收负例 | DeepSeek实现；ChatGPT设计预审；负责人验收 | KBV2-REL-01, KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-08, KBV2-09, KBV2-14, KBV2-15 | Planned |
+| KBV2-REL-03 | [#127](https://github.com/insanetoto/nuochong-page/issues/127) | V2 Linux视觉基线、交互可达性与设计一致性门禁 | DeepSeek实现；ChatGPT对照原型审查；负责人确认真实Linux基线 | KBV2-REL-01, KBV2-03, KBV2-04, KBV2-06, KBV2-07, KBV2-09, KBV2-14, KBV2-15 | Planned |
+| KBV2-REL-04 | [#128](https://github.com/insanetoto/nuochong-page/issues/128) | V2不可变候选产物、测试部署、版本核验与发布预检 | DeepSeek实现；ChatGPT契约及运维方案预审；负责人批准具体测试部署 | KBV2-REL-01 | Planned |
+| KBV2-REL-05 | [#129](https://github.com/insanetoto/nuochong-page/issues/129) | 独立知识库生产环境方案、隔离配置与恢复演练 | ChatGPT先设计；负责人确认环境及成本；DeepSeek按批准方案建设 | KBV2-REL-01, KBV2-REL-04 | Planned |
+| KBV2-REL-06 | [#130](https://github.com/insanetoto/nuochong-page/issues/130) | V2 P1生产发布批准、执行核验与交付记录 | ChatGPT整理发布单；负责人批准实际版本/环境；DeepSeek执行；ChatGPT核验回填 | KBV2-11, KBV2-REL-04, KBV2-REL-05 | Planned |
+
+KBV2-11 / #115额外依赖REL-02/03/04；生产发布在REL-06完成，不能用#115关闭代替。所有运行实现仍要求FULL。
 
 ## 范围、估算与门槛
 
