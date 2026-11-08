@@ -20,7 +20,7 @@
 | --- | --- |
 | 代码基线 | `b2c14334bdbe519f4ac6d46a4f9fb2ab2dcc8a64`（`refactor/integration`） |
 | 分支 | `codex/issue-94-revocation` |
-| 提交 | `02c7417` |
+| 代码提交 | `02c7417`（证据文档见本文件所在提交） |
 | 运行时 | GitHub Actions Ubuntu、Node 24.21.0、PostgreSQL 17.11 服务容器 |
 | 测试 | `apps/control-api/test/control-api.test.mjs` 的隔离 schema/真实 HTTP/SSE/Worker 夹具 |
 | 数据 | 合成 prompt/成员/凭据；无客户资料、无模型调用、无部署 |
