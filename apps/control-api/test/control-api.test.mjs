@@ -31,6 +31,13 @@ async function fixture(t){
 const immediate=()=>({execute:async()=>({status:'succeeded',text:'synthetic executor result'}),close:async()=>{}});
 function delayed(ms=1000){let finish,timer;return {execute:()=>new Promise(resolve=>{finish=resolve;timer=setTimeout(()=>resolve({status:'succeeded',text:'delayed synthetic result'}),ms);}),close:async()=>{clearTimeout(timer);finish?.({status:'failed',errorCode:'unavailable'});}};}
 async function until(check){for(let i=0;i<100;i++){if(await check())return;await delay(10);}throw new Error('Condition not met.');}
+function deferred(){let resolve,reject;const promise=new Promise((res,rej)=>{resolve=res;reject=rej;});return {promise,resolve,reject};}
+function withTimeout(promise,ms,message){let timer;const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(message)),ms);});return Promise.race([promise,timeout]).finally(()=>clearTimeout(timer));}
+function readSse(response){
+ const reader=response.body.getReader();const decoder=new TextDecoder();let text='';
+ const done=(async()=>{for(;;){const {value,done:closed}=await reader.read();if(closed)break;text+=decoder.decode(value,{stream:true});}})();
+ return {text:()=>text,done,async waitFor(marker,ms=3000){const deadline=Date.now()+ms;while(!text.includes(marker)){if(Date.now()>deadline)throw new Error('SSE marker not observed: '+marker);await delay(20);}}};
+}
 
 test('real bootstrap is single-use; no fake credential/identity fallback and no stored plaintext token',async(t)=>{
  const f=await fixture(t);await assert.rejects(f.identity.bootstrap('duplicate'));
@@ -128,41 +135,60 @@ test('queued/running cancellation, result races and timeout never overwrite a te
  const success=await f.create(a.token);await workOnce({...f,executorFactory:immediate});
  assert.equal((await f.call('/api/ai/runs/'+success+'/cancel',{token:a.token,method:'POST',body:{}})).status,409);
 });
-test('credential revocation terminates an in-flight run and stream without continued disclosure',async(t)=>{
+test('credential revocation closes an open delta stream before later disclosure',async(t)=>{
  const f=await fixture(t);const a=await f.member();const id=await f.create(a.token);
- // This test targets revocation while the worker still owns a live lease.
- // A 300ms lease was below CI PostgreSQL/heartbeat latency and turned the
- // revocation assertion into a lease-expiry race; lease expiry is covered by
- // the explicit recovery case below. Do not lower this to hide a failure.
- const task=workOnce({...f,executorFactory:()=>delayed(),leaseMs:1000});
+ const sendPre=deferred(),finish=deferred();
+ const notify=text=>f.pool.query('SELECT pg_notify($1,$2)',['oa_delta_'+f.pool.oaSchema,JSON.stringify({runId:id,text})]);
+ const executor={execute:async()=>{await sendPre.promise;await notify('pre-revocation-visible-marker');await finish.promise;return {status:'failed',errorCode:'unavailable'};},close:async()=>{finish.resolve();}};
+ // Keep the lease live so the stream-auth path is exercised, not lease expiry.
+ const task=workOnce({...f,executorFactory:()=>executor,leaseMs:1000});
  await until(async()=>(await f.store.ownedRun({id:a.principalId},id)).status==='running');
- const stream=await fetch(f.origin+'/api/ai/runs/'+id+'/events',{headers:{authorization:'Bearer '+a.token}});
+ const response=await fetch(f.origin+'/api/ai/runs/'+id+'/events',{headers:{authorization:'Bearer '+a.token}});
+ const sse=readSse(response);
+ await delay(150); // allow the SSE subscriber to attach before emitting the transient delta
+ sendPre.resolve();
+ await sse.waitFor('pre-revocation-visible-marker');
  await f.call('/api/auth/credentials/'+a.credentialId+'/revoke',{method:'POST',body:{}});
- await task;const text=await stream.text();assert.doesNotMatch(text,/run.completed/);
+ await delay(300); // the SSE loop re-authenticates every 100ms and must close the old stream
+ await notify('post-revocation-secret-marker');
+ await withTimeout(sse.done,3000,'SSE did not close after credential revocation');
+ await task;
+ const text=sse.text();
+ assert.match(text,/pre-revocation-visible-marker/);
+ assert.doesNotMatch(text,/post-revocation-secret-marker/);
+ assert.doesNotMatch(text,/run.completed/);
  assert.equal((await f.store.ownedRun({id:a.principalId},id)).status,'cancelled');
- assert.equal((await f.call('/api/ai/runs/'+id,{token:a.token})).status,401);
+ assert.equal((await f.pool.query('SELECT output FROM runs WHERE id=$1',[id])).rows[0].output,null);
+ assert.equal((await f.call('/api/ai/runs/'+id+'/events',{token:a.token})).status,401);
 });
 test('lease expiry during revocation converges to one terminal state without disclosure',async(t)=>{
  const f=await fixture(t);const a=await f.member();const id=await f.create(a.token);
- const slow=delayed();
+ const started=deferred(),heartbeatEntered=deferred(),releaseHeartbeat=deferred();
+ const slow=delayed(5000);const originalExecute=slow.execute;
+ slow.execute=async()=>{started.resolve();return originalExecute();};
  const originalHeartbeat=f.store.heartbeat.bind(f.store);let first=true;
- // Deterministically lose the 300ms lease: the first heartbeat is held past
- // the lease deadline, as seen under CI database latency.
- f.store.heartbeat=async(...args)=>{if(first){first=false;await delay(450);}return originalHeartbeat(...args);};
+ // Explicit barriers: executor has started and the first heartbeat is inside
+ // the hook before revocation; the heartbeat is released only after the real
+ // database lease has expired.
+ f.store.heartbeat=async(...args)=>{if(first){first=false;heartbeatEntered.resolve();await releaseHeartbeat.promise;}return originalHeartbeat(...args);};
  const task=workOnce({...f,executorFactory:()=>slow,leaseMs:300});
- await until(async()=>(await f.store.ownedRun({id:a.principalId},id)).status==='running');
- const stream=await fetch(f.origin+'/api/ai/runs/'+id+'/events',{headers:{authorization:'Bearer '+a.token}});
+ await started.promise;await heartbeatEntered.promise;
+ await until(async()=>(await f.pool.query('SELECT lease_until <= clock_timestamp() AS expired FROM runs WHERE id=$1',[id])).rows[0].expired);
+ const response=await fetch(f.origin+'/api/ai/runs/'+id+'/events',{headers:{authorization:'Bearer '+a.token}});
+ const sse=readSse(response);
  await f.call('/api/auth/credentials/'+a.credentialId+'/revoke',{method:'POST',body:{}});
+ releaseHeartbeat.resolve();
  await task;
  // Before recovery the run is still running; the original test read this and
  // mistook it for a revocation failure.
  assert.equal((await f.store.ownedRun({id:a.principalId},id)).status,'running');
- await f.store.recoverExpired();
+ assert.equal(await f.store.recoverExpired(),1);
  const terminal=await f.store.ownedRun({id:a.principalId},id);
  assert.equal(terminal.status,'failed');
  assert.equal(terminal.error_code,'unavailable');
  assert.equal((await f.call('/api/ai/runs/'+id,{token:a.token})).status,401);
- const text=await stream.text();assert.doesNotMatch(text,/run.completed/);
+ await withTimeout(sse.done,3000,'SSE did not close after recovery');
+ assert.doesNotMatch(sse.text(),/run.completed/);
  const events=await f.store.replay({id:a.principalId},id);
  const terminals=events.filter(e=>['run.completed','run.failed','run.cancelled'].includes(e.type));
  assert.equal(terminals.length,1);
