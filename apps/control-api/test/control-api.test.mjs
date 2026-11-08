@@ -135,29 +135,37 @@ test('queued/running cancellation, result races and timeout never overwrite a te
  const success=await f.create(a.token);await workOnce({...f,executorFactory:immediate});
  assert.equal((await f.call('/api/ai/runs/'+success+'/cancel',{token:a.token,method:'POST',body:{}})).status,409);
 });
-test('credential revocation closes an open delta stream before later disclosure',async(t)=>{
+test('credential revocation terminates an in-flight run and stream without continued disclosure',async(t)=>{
  const f=await fixture(t);const a=await f.member();const id=await f.create(a.token);
- const sendPre=deferred(),finish=deferred();
- const notify=text=>f.pool.query('SELECT pg_notify($1,$2)',['oa_delta_'+f.pool.oaSchema,JSON.stringify({runId:id,text})]);
- const executor={execute:async()=>{await sendPre.promise;await notify('pre-revocation-visible-marker');await finish.promise;return {status:'failed',errorCode:'unavailable'};},close:async()=>{finish.resolve();}};
- // Keep the lease live so the stream-auth path is exercised, not lease expiry.
- const task=workOnce({...f,executorFactory:()=>executor,leaseMs:1000});
+ // Keep the lease live so worker revocation is exercised; lease expiry has its own test.
+ const task=workOnce({...f,executorFactory:()=>delayed(),leaseMs:1000});
  await until(async()=>(await f.store.ownedRun({id:a.principalId},id)).status==='running');
+ const stream=await fetch(f.origin+'/api/ai/runs/'+id+'/events',{headers:{authorization:'Bearer '+a.token}});
+ await f.call('/api/auth/credentials/'+a.credentialId+'/revoke',{method:'POST',body:{}});
+ await task;const text=await stream.text();assert.doesNotMatch(text,/run.completed/);
+ assert.equal((await f.store.ownedRun({id:a.principalId},id)).status,'cancelled');
+ assert.equal((await f.call('/api/ai/runs/'+id,{token:a.token})).status,401);
+});
+test('revocation closes an open stream before later deltas without a worker terminal',async(t)=>{
+ const f=await fixture(t);const a=await f.member();const id=await f.create(a.token);
+ // No worker runs here: the only mechanism that can close this stream is the
+ // SSE loop's credential revalidation, so removing it must fail this test.
+ assert.equal((await f.store.claim(5000)).id,id);
+ const notify=text=>f.pool.query('SELECT pg_notify($1,$2)',['oa_delta_'+f.pool.oaSchema,JSON.stringify({runId:id,text})]);
  const response=await fetch(f.origin+'/api/ai/runs/'+id+'/events',{headers:{authorization:'Bearer '+a.token}});
  const sse=readSse(response);
- await delay(150); // allow the SSE subscriber to attach before emitting the transient delta
- sendPre.resolve();
+ await delay(150); // allow the SSE subscriber to attach
+ await notify('pre-revocation-visible-marker');
  await sse.waitFor('pre-revocation-visible-marker');
  await f.call('/api/auth/credentials/'+a.credentialId+'/revoke',{method:'POST',body:{}});
- await delay(300); // the SSE loop re-authenticates every 100ms and must close the old stream
+ await delay(300); // SSE revalidates every 100ms
  await notify('post-revocation-secret-marker');
+ await delay(200);
+ assert.doesNotMatch(sse.text(),/post-revocation-secret-marker/);
  await withTimeout(sse.done,3000,'SSE did not close after credential revocation');
- await task;
- const text=sse.text();
- assert.match(text,/pre-revocation-visible-marker/);
- assert.doesNotMatch(text,/post-revocation-secret-marker/);
- assert.doesNotMatch(text,/run.completed/);
- assert.equal((await f.store.ownedRun({id:a.principalId},id)).status,'cancelled');
+ assert.match(sse.text(),/pre-revocation-visible-marker/);
+ assert.doesNotMatch(sse.text(),/run.completed/);
+ assert.equal((await f.store.ownedRun({id:a.principalId},id)).status,'running');
  assert.equal((await f.pool.query('SELECT output FROM runs WHERE id=$1',[id])).rows[0].output,null);
  assert.equal((await f.call('/api/ai/runs/'+id+'/events',{token:a.token})).status,401);
 });
