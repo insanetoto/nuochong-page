@@ -5,12 +5,23 @@ on:
     branches: [feature/oa-test-native-deploy]
     paths: ['.github/workflows/oa-server-inspect.yml']
   workflow_dispatch:
+    inputs:
+      operation:
+        description: Read-only inspection or owner-authorized KBV2-01 existing-test update
+        type: choice
+        options: [inspect, kbv2-01-update-test]
+        default: inspect
 
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ inputs.operation == 'kbv2-01-update-test' && 'oa-test-server-deploy' || 'oa-server-inspect' }}
+  cancel-in-progress: false
+
 jobs:
   inspect:
+    if: inputs.operation != 'kbv2-01-update-test'
     name: Read-only server capabilities
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -92,3 +103,124 @@ jobs:
       - name: Remove temporary SSH identity
         if: always()
         run: rm -f ~/.ssh/oa_deploy_key
+
+  update-ontology-test:
+    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'kbv2-01-update-test'
+    name: Update accepted KBV2-01 on existing knowledge test only
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      CODE_SHA: 99d651f73fd0af8a51a503c08c1d91a0eed92866
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Package exact accepted source and unchanged-file baseline
+        run: |
+          python3 - <<'PYCODE'
+          import hashlib, os, pathlib, subprocess
+          sha = os.environ['CODE_SHA']
+          patch = ['packages/platform/canonical-json.mjs', 'packages/platform/ontology-fragments.mjs', 'packages/platform/ontology-registry.mjs', 'packages/platform/plugin-registry.mjs', 'packages/platform/test/ontology-registry.test.mjs', 'plugins/knowledge/ontology.mjs', 'docs/product/knowledge/v2/w0/canonical-vectors.json', 'docs/product/knowledge/v2/w0/ontology-fragment.example.json']
+          paths = ['apps/control-api/src', 'apps/control-api/package.json', 'apps/control-api/package-lock.json', 'apps/product-web', 'plugins', 'packages/platform', 'tools/nuochong-cli/src', 'apps/oa/deploy/gateway.mjs', 'apps/oa/deploy/service.mjs']
+          tracked = subprocess.check_output(['git','ls-tree','-r','--name-only',sha,'--',*paths],text=True).splitlines()
+          def manifest(files, name):
+              lines=[]
+              for path in files:
+                  data=subprocess.check_output(['git','show',sha+':'+path])
+                  lines.append(hashlib.sha256(data).hexdigest()+'  '+path+'\n')
+              pathlib.Path(os.environ['RUNNER_TEMP'],name).write_text(''.join(lines))
+          manifest(patch, 'kbv2-patch.sha256')
+          manifest([p for p in tracked if p not in patch], 'kbv2-base.sha256')
+          subprocess.run(['git','archive','--format=tar.gz','-o',os.environ['RUNNER_TEMP']+'/kbv2-source.tgz',sha,*patch],check=True)
+          PYCODE
+      - name: Backup, update exact files, verify and rollback code on failure
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$DEPLOY_HOST" && test -n "$DEPLOY_SSH_KEY"
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/kbv2_deploy_key
+          chmod 600 ~/.ssh/kbv2_deploy_key
+          ssh-keyscan -T 10 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+          tag="$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          remote_base=.local/share/nuochong-knowledge-test
+          ssh -i ~/.ssh/kbv2_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=15 deploy@"$DEPLOY_HOST" "test -L $remote_base/current"
+          scp -i ~/.ssh/kbv2_deploy_key -o IdentitiesOnly=yes "$RUNNER_TEMP/kbv2-source.tgz" deploy@"$DEPLOY_HOST":"$remote_base/incoming-$tag.tgz"
+          scp -i ~/.ssh/kbv2_deploy_key -o IdentitiesOnly=yes "$RUNNER_TEMP/kbv2-base.sha256" deploy@"$DEPLOY_HOST":"$remote_base/incoming-$tag-base.sha256"
+          scp -i ~/.ssh/kbv2_deploy_key -o IdentitiesOnly=yes "$RUNNER_TEMP/kbv2-patch.sha256" deploy@"$DEPLOY_HOST":"$remote_base/incoming-$tag-patch.sha256"
+          ssh -i ~/.ssh/kbv2_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "bash -s -- $CODE_SHA $tag" <<'REMOTE'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          umask 077
+          sha=${1:?code SHA}; run_tag=${2:?run tag}
+          [[ "$sha" == 99d651f73fd0af8a51a503c08c1d91a0eed92866 ]]
+          [[ "$run_tag" =~ ^[0-9]+-[0-9]+$ ]]
+          base="$HOME/.local/share/nuochong-knowledge-test"
+          state="$HOME/.local/state/nuochong-knowledge-test"
+          export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+          node="$HOME/.local/share/nuochong-oa-test/current/runtime/bin/node"
+          previous=$(readlink -f "$base/current")
+          [[ "$previous" == "$base/releases/"* ]]
+          test -f "$state/runtime.env" && test -f "$state/model.env" && test -s "$state/release-sha"
+          old_sha=$(cat "$state/release-sha"); [[ "$old_sha" =~ ^[0-9a-f]{40}$ ]]
+          for unit in db api worker; do systemctl --user is-active --quiet "nuochong-knowledge-$unit.service"; done
+          systemctl --user is-active --quiet nuochong-oa-test.service
+          [[ "$("$node" --version)" == v24.21.0 ]]
+          # Verify every unchanged service file against the accepted repository version.
+          (cd "$previous" && sha256sum --quiet -c "$base/incoming-$run_tag-base.sha256")
+          printf 'PASS existing service source matches accepted baseline outside six ontology files.\n'
+          # Existing private paired backup; never upload database, objects or model state.
+          bash "$previous/apps/control-api/deploy/product/backup.sh"
+          printf 'PASS private paired pre-update backup.\n'
+          release="$base/releases/$sha-kbv2-$run_tag"
+          test ! -e "$release"
+          staging=$(mktemp -d "$base/releases/.kbv2-$run_tag.XXXXXX")
+          cp -a "$previous/." "$staging/"
+          tar -xzf "$base/incoming-$run_tag.tgz" -C "$staging"
+          (cd "$staging" && sha256sum --quiet -c "$base/incoming-$run_tag-patch.sha256")
+          (cd "$staging" && "$node" --test packages/platform/test/*.test.mjs)
+          mv "$staging" "$release"
+          switched=false
+          finish() {
+            status=$?
+            trap - EXIT
+            if (( status != 0 )) && [[ "$switched" == true ]]; then
+              printf 'Update verification failed; restoring previous code release.\n' >&2
+              ln -s "$previous" "$base/rollback-$run_tag"
+              mv -Tf "$base/rollback-$run_tag" "$base/current"
+              printf '%s\n' "$old_sha" > "$state/release-sha"
+              systemctl --user restart nuochong-knowledge-api.service nuochong-knowledge-worker.service
+            fi
+            exit "$status"
+          }
+          trap finish EXIT
+          ln -s "$release" "$base/current-$run_tag.next"
+          mv -Tf "$base/current-$run_tag.next" "$base/current"
+          switched=true
+          systemctl --user restart nuochong-knowledge-api.service nuochong-knowledge-worker.service
+          healthy=false
+          for attempt in {1..30}; do
+            if curl --max-time 3 -fsS http://127.0.0.1:3081/product/ -o /dev/null; then healthy=true; break; fi
+            sleep 1
+          done
+          [[ "$healthy" == true ]]
+          for unit in db api worker; do systemctl --user is-active --quiet "nuochong-knowledge-$unit.service"; done
+          systemctl --user is-active --quiet nuochong-oa-test.service
+          "$node" --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          for (const url of ['http://127.0.0.1:3081/product/','https://www.nuochong.net/oa-test/product/']) {
+            const r=await fetch(url,{signal:AbortSignal.timeout(15000)});assert.equal(r.status,200);assert.match(r.headers.get('content-type')??'',/text\/html/);console.log('PASS product HTML HTTP 200:',url);
+          }
+          const r=await fetch('https://www.nuochong.net/oa-test/product/api/commands/identity.me.v1',{method:'POST',headers:{'content-type':'application/json'},body:'{}',signal:AbortSignal.timeout(15000)});
+          assert.equal(r.status,401);assert.equal((await r.json()).code,'UNAUTHORIZED');console.log('PASS public company API rejects unauthenticated request with 401.');
+          JS
+          (cd "$base/current" && sha256sum --quiet -c "$base/incoming-$run_tag-patch.sha256")
+          printf '%s\n' "$previous" > "$state/previous-release"
+          printf '%s\n' "$sha" > "$state/release-sha"
+          printf 'PASS activated existing knowledge test release: %s; source hashes,25 offline tests,services,public HTML and unauthorized rejection verified.\n' "$sha"
+          REMOTE
+      - name: Cleanup temporary runner SSH identity
+        if: always()
+        run: rm -f ~/.ssh/kbv2_deploy_key
