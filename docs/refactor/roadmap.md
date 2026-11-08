@@ -1,5 +1,9 @@
 # 诺崇产品路线图：Harness 基座与三产品插件体系
 
+## 2026-11-08 下一轮工作安排（提案）
+
+已细化 [18项后续任务](../product/knowledge/v2/next-work.md)。优先进行v0交接/缺口核查、#85人工产品验收与#94稳定性调查、PR #99设计确认及P1契约冻结；随后由DeepSeek按依赖实现文本来源—片段审校—发布快照—图谱闭环。ChatGPT负责设计与预审，负责人保留人工验收和发布决定。AI工具与培训考试可并行开展首期设计，不提前启动其运行代码。媒体能力及其真实验收单列P2；本轮全部任务仍Planned，未创建实现Issues或授权部署。以下保留总体路线与历史状态。
+
 更新：2026-11-01。负责人明确公司三条产品线：**企业知识库、企业 AI 工具、培训和考试**，统一使用 DeepSeek Harness 技术基座，通过插件扩展业务。部门、人员、角色权限作为共享插件组合使用，详见[统一组织与权限设计](../product/shared-access/design.md)。知识库优先，以规章制度为首个知识域，采用 LLM Wiki 持续编译/审校/维护思路，并提供外部集成能力。
 
 本轮已形成[整体规划设计成果](../product/README.md)、[三产品技术路线](../product/portfolio.md)、[知识库详细设计](../product/knowledge/design.md)、[页面设计](../product/knowledge/pages.md)、[可点击原型](../product/prototypes/knowledge.html)和[任务计划](../product/tasks.md)。**用户随后授权知识库初版建设；已按 [KBV0-01—07 台账](../product/v0/tasks.json) 依次实施。** 已有真实业务 API/工作台，初版范围和工程证据见 [v0 基线](../product/v0/README.md)；人工产品验收仍待负责人确认。
