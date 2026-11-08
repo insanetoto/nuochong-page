@@ -400,6 +400,13 @@ function build(entries, previous, previousHistory, previousVersions) {
       }
       if (!prior) fail(CODE.VERSION_CONFLICT, `inactive namespace history: ${fragment.namespace}`);
       if (prior.version !== fragment.version) {
+        // Being registered earlier does not make a version a safe successor:
+        // every ascending activation is checked against the current content.
+        if (compareVersions(fragment.version, prior.version) > 0) {
+          const priorFragment = versions.get(fragment.namespace)?.get(prior.version)?.fragment;
+          if (!priorFragment) fail(CODE.VERSION_CONFLICT, `missing current content: ${fragment.namespace}@${prior.version}`);
+          assertCompatible(priorFragment, fragment);
+        }
         history.push({
           namespace: fragment.namespace,
           fromVersion: prior.version,

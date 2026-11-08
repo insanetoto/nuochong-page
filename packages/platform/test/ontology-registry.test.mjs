@@ -370,6 +370,43 @@ test('registered version history rejects forged rollback and accepts exact rollb
   assert.equal(registry.history.at(-1).toVersion, '1.0.0');
 });
 
+test('known higher versions cannot bypass compatibility after rollback and intermediate registration', () => {
+  const registry = new OntologyRegistry().load(entries());
+  const v12 = clone(knowledgeOntologyFragment);
+  v12.version = '1.2.0';
+  v12.classes[0].properties.push({ name: 'note', valueType: 'string', required: false });
+  registry.load([entries()[0], { pluginId: 'knowledge', fragment: v12 }]);
+
+  registry.load(entries());
+  const v11 = clone(knowledgeOntologyFragment);
+  v11.version = '1.1.0';
+  v11.classes[0].properties.push({ name: 'note', valueType: 'integer', required: false });
+  registry.load([entries()[0], { pluginId: 'knowledge', fragment: v11 }]);
+  const hash = registry.ontologyHash;
+  const historyLength = registry.history.length;
+
+  expectCode(() => registry.load([entries()[0], { pluginId: 'knowledge', fragment: v12 }]), ONTOLOGY_ERRORS.VERSION_CONFLICT);
+  assert.equal(registry.ontologyHash, hash);
+  assert.equal(registry.history.length, historyLength);
+  assert.equal(registry.getNamespace('nc.kb:').version, '1.1.0');
+  assert.equal(registry.getClass('nc.kb:KnowledgeEntry').properties.find((property) => property.name === 'note').valueType, 'integer');
+});
+
+test('exact known rollback and re-upgrade remain allowed', () => {
+  const registry = new OntologyRegistry().load(entries());
+  const v11 = clone(knowledgeOntologyFragment);
+  v11.version = '1.1.0';
+  registry.load([entries()[0], { pluginId: 'knowledge', fragment: v11 }]);
+  registry.load(entries());
+  assert.equal(registry.getNamespace('nc.kb:').version, '1.0.0');
+  assert.equal(registry.history.at(-1).direction, 'rollback');
+
+  registry.load([entries()[0], { pluginId: 'knowledge', fragment: v11 }]);
+  assert.equal(registry.getNamespace('nc.kb:').version, '1.1.0');
+  assert.equal(registry.history.at(-1).direction, 'upgrade');
+  assert.equal(registry.history.at(-1).fromVersion, '1.0.0');
+});
+
 test('registry construction and empty history are immutable', () => {
   assert.throws(() => new OntologyRegistry({}), TypeError);
   assert.throws(() => new OntologyRegistry({}, []), TypeError);
