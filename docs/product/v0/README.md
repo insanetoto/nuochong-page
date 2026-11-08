@@ -1,5 +1,9 @@
 # 知识库初版执行基线
 
+**2026-11-08 当前状态：负责人已明确确认v0已交付范围人工验收，Accepted。** 见[验收记录](acceptance-2026-11-08.md)及[#85](https://github.com/insanetoto/nuochong-page/issues/85)。不包含真实资料试点、全员开放或生产发布授权；以下2026-11-01内容保留为工程交付历史。
+
+> **v2 设计（2026-11-02，planned）**：知识全景图谱、来源管理三子模块、多格式导入与片段待审、发布能力输出、产品本体方法，见 [知识库 v2 设计](../knowledge/v2/README.md)。v2 不改变本文已交付的 v0 范围，也不把设计当成验收。
+
 2026-11-01：用户授权开始逐项建设可用初版，所有澄清留下一轮。规划 PR #69 已合入集成分支；历史 OA 基座仍为已验收。初版切片任务见 [Issues 台账](tasks.json)，对应原 PLAT/IAM/KB 任务，不将部分实现计作完整原任务验收。
 
 ## 本轮执行规则
@@ -44,5 +48,5 @@
 
 - 工程切片：Issues #71—77，PR #78—84；集成目标 `refactor/integration`，未发布 main/test 官网或生产。
 - 测试产品版本：`51ed85e09c3bb56b2aba53156876f194851681a9`；[真实公网运行](https://github.com/insanetoto/nuochong-page/actions/runs/41314069131)，[详细验证](validation.md)。后续文档/验证脚本更新不冒充已部署运行版本。
-- [产品人工验收与下一轮需求澄清 #85](https://github.com/insanetoto/nuochong-page/issues/85)。工程结项不是 Accepted；真实制度导入、全员开放和生产 Go 仍待后续明确范围。
+- [产品人工验收 #85](https://github.com/insanetoto/nuochong-page/issues/85)：负责人于2026-11-08明确确认，v0已交付范围为 Accepted，见[验收记录](acceptance-2026-11-08.md)。真实制度导入、全员开放和生产 Go 仍待后续明确范围，#94调查继续保留。
 - 服务器临时初始化文件和验证用 GitHub Secret 已删除；保留公司账号的加盐校验与原有服务器模型凭据，不要求访客填 Key。

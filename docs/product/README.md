@@ -1,19 +1,37 @@
 # 诺崇产品体系与企业知识库设计
 
-2026-11-01 · 规划 v1.1 + 初版工程 v0 · 状态：知识库初版已实施并验证，隔离测试已部署并通过真实模型/浏览器/CLI/MCP 验证；人工产品验收待负责人下一轮确认。
+W0最新交接：[决策、完整契约与KBV2-01有限准入确认单](knowledge/v2/w0/README.md)。#104仍受准入阻塞，R1建议待负责人确认；本轮没有启动实现。
+
+2026-11-08后续安排：[工作波次与20项任务卡](knowledge/v2/next-work.md)、[机器可读任务台账](knowledge/v2/execution-plan.json)。ChatGPT负责设计规划、页面原型、交互设计与预审，DeepSeek只负责按确认设计进行代码实现；v2原型评审已通过，当前更新实施规划，待其余设计决定及准入确认后领取，20项Issues已创建（[登记表](knowledge/v2/issue-registration.md)），尚未分配实际成员或开始编码。
+
+2026-11-01 · 规划 v1.1 + 初版工程 v0 · 状态：知识库初版已实施并验证，隔离测试已部署并通过真实模型/浏览器/CLI/MCP 验证；负责人已于2026-11-08确认v0已交付范围人工验收（[记录](v0/acceptance-2026-11-08.md)）；生产发布另批。
+
+当前原型已评审通过；[确认记录](knowledge/v2/prototype-acceptance-2026-11-08.md)与[负责人任务路线图](knowledge/v2/execution-roadmap.md)为本次更新入口。
 
 推荐阅读顺序：
+
+2026-11-08协作约定：ChatGPT负责设计规划、页面原型、交互设计与预审，DeepSeek只负责按确认设计进行代码实现；人工验收和发布由负责人确认。知识库v2预审修订及实现检查清单见 [PR #99交接说明](knowledge/v2/review-handoff.md)。文档合并不代表启动实现或产品验收。
 
 1. [公司产品体系与三条技术路线](portfolio.md)
 2. [共享组织、人员与角色权限插件](shared-access/design.md)
 3. [插件架构决策 ADR-011](../adr/ADR-011-product-plugins-llm-wiki.md)
 4. [知识库产品与技术设计](knowledge/design.md)
 5. [知识库页面与交互设计](knowledge/pages.md)
-6. [可点击页面原型](prototypes/knowledge.html)（合成数据、界面评审专用，没有连接业务 API）
+6. [v2可点击页面原型](prototypes/knowledge-v2.html)与[页面/交互规范](knowledge/v2/prototype-design.md)（合成数据、界面评审专用，没有连接业务 API）；[v1历史原型](prototypes/knowledge.html)
 7. [任务、依赖及验收](tasks.md)
 8. [演示模型交付记录](demo-delivery.md)
 9. [知识库初版范围、任务与验证](v0/README.md)
-10. [整体产品路线图](../refactor/roadmap.md)
+10. [产品本体方法论](ontology/README.md)与[产品套件本体](ontology/suite-ontology.md)
+11. [知识库 v2 功能设计](knowledge/v2/README.md)：知识全景图谱、空间/导入/发布重构
+12. [整体产品路线图](../refactor/roadmap.md)
+
+## 2026-11-02 知识库 v2 设计（先设计，不开发）
+
+负责人要求：知识首页以类似 Obsidian 的关系图谱展示知识全景；空间创建移入来源管理，来源管理拆为知识空间、知识导入、知识发布；导入支持文本/视频/语音并生成可追溯片段进入条目待审区；发布输出知识能力。本轮只形成设计，全部能力仍为 planned，不创建实现任务、不部署。
+
+- [知识库 v2 总览](knowledge/v2/README.md)｜[知识首页图谱](knowledge/v2/home-graph.md)｜[来源管理](knowledge/v2/source-management.md)｜[导入管线](knowledge/v2/import-pipeline.md)｜[发布与能力](knowledge/v2/publication.md)｜[契约](knowledge/v2/contracts.md)｜[任务拆分](knowledge/v2/tasks.md)
+- [本体方法论](ontology/README.md)｜[套件本体](ontology/suite-ontology.md)｜[ADR-012](../adr/ADR-012-product-ontology-and-knowledge-graph.md)（Proposed）
+- ASR/OCR 由外部大模型适配器提供；测试阶段只用 DeepSeek 识别文本类来源，音视频/扫描件不纳入测试；v0 的 Markdown/TXT 能力与已部署测试继续有效。
 
 ## 本轮范围和依据
 
