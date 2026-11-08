@@ -1,5 +1,12 @@
 // First-party plugin composition only. This registry never imports client-selected code.
 const namespaces = new Map([['identity-company','identity'],['organization','organization'],['access-management','access'],['knowledge','knowledge'],['enterprise-tools','enterprise-tools'],['learning','learning']]);
+// Explicit allowlist for future approved command versions. Do not widen this
+// to a generic regex: an unlisted major must fail closed.
+export const ALLOWED_COMMAND_MAJORS = Object.freeze([1, 2]);
+const commandMajor = (id) => {
+  const match = /\.v(\d+)$/.exec(id);
+  return match ? Number(match[1]) : null;
+};
 export class PluginRegistry {
   constructor(manifests, platformMajor=1) {
     this.entries = new Map(); this.commandOwners = new Map();
@@ -9,7 +16,7 @@ export class PluginRegistry {
       if (!['registered','enabled','draining','disabled'].includes(state)) throw new Error('INVALID_PLUGIN_STATE');
       const entry=Object.freeze({...manifest,requires:Object.freeze([...(manifest.requires??[])]),commands:Object.freeze([...(manifest.commands??[])]),state});
       for(const id of entry.commands){
-        if(!id.startsWith(namespaces.get(entry.id)+'.') || !/\.v1$/.test(id) || this.commandOwners.has(id))throw new Error('COMMAND_NAMESPACE_CONFLICT');
+        if(!id.startsWith(namespaces.get(entry.id)+'.') || !ALLOWED_COMMAND_MAJORS.includes(commandMajor(id)) || this.commandOwners.has(id))throw new Error('COMMAND_NAMESPACE_CONFLICT');
         this.commandOwners.set(id,entry.id);
       }
       this.entries.set(entry.id,entry);
