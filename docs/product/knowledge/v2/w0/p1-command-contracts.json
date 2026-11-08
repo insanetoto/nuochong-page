@@ -1,0 +1,6714 @@
+{
+  "contractVersion": "2.0.0-proposed.1",
+  "status": "design-delivered-pending-owner-confirmation",
+  "runtimeRegistration": false,
+  "sourceCommit": "e9fa89f51cde1586c0d43e6008d470918c774683",
+  "schemaDraft": "http://json-schema.org/draft-07/schema#",
+  "commands": [
+    {
+      "commandId": "knowledge.spaces.get.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-03",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.spaces.get.v1",
+      "cli": "nuochong knowledge spaces get --input - --json",
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "read",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "spaceId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "space": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "domainType": {
+                "enum": [
+                  "policy",
+                  "procedure",
+                  "reference"
+                ]
+              },
+              "departmentIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "maxItems": 100,
+                "minItems": 0
+              },
+              "status": {
+                "enum": [
+                  "active",
+                  "read-only",
+                  "archived"
+                ]
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "publicationPolicyRevision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "allowSelfPublish": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "spaceId",
+              "code",
+              "title",
+              "domainType",
+              "departmentIds",
+              "status",
+              "revision",
+              "publicationPolicyRevision",
+              "allowSelfPublish"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "space",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "explicit-allowlist-only",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.spaces.create.v2",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-03",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.spaces.create.v2",
+      "cli": "nuochong knowledge spaces create --input - --json --command-version 2",
+      "scope": "product:write",
+      "permission": "knowledge:publish",
+      "scopeField": null,
+      "approval": "required-global",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "domainType": {
+            "enum": [
+              "policy",
+              "procedure",
+              "reference"
+            ]
+          },
+          "departmentIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "maxItems": 100,
+            "minItems": 0
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "approvalId",
+          "code",
+          "title",
+          "domainType",
+          "departmentIds"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "space": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "domainType": {
+                "enum": [
+                  "policy",
+                  "procedure",
+                  "reference"
+                ]
+              },
+              "departmentIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "maxItems": 100,
+                "minItems": 0
+              },
+              "status": {
+                "enum": [
+                  "active",
+                  "read-only",
+                  "archived"
+                ]
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "publicationPolicyRevision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "allowSelfPublish": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "spaceId",
+              "code",
+              "title",
+              "domainType",
+              "departmentIds",
+              "status",
+              "revision",
+              "publicationPolicyRevision",
+              "allowSelfPublish"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "space",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.spaces.update.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-03",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.spaces.update.v1",
+      "cli": "nuochong knowledge spaces update --input - --json",
+      "scope": "product:write",
+      "permission": "knowledge:publish",
+      "scopeField": "spaceId",
+      "approval": "required-all-changes",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "departmentIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "maxItems": 100,
+            "minItems": 0
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "expectedRevision",
+          "title",
+          "departmentIds",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "space": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "domainType": {
+                "enum": [
+                  "policy",
+                  "procedure",
+                  "reference"
+                ]
+              },
+              "departmentIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "maxItems": 100,
+                "minItems": 0
+              },
+              "status": {
+                "enum": [
+                  "active",
+                  "read-only",
+                  "archived"
+                ]
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "publicationPolicyRevision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "allowSelfPublish": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "spaceId",
+              "code",
+              "title",
+              "domainType",
+              "departmentIds",
+              "status",
+              "revision",
+              "publicationPolicyRevision",
+              "allowSelfPublish"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "space",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.spaces.archive.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-03",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.spaces.archive.v1",
+      "cli": "nuochong knowledge spaces archive --input - --json",
+      "scope": "product:write",
+      "permission": "knowledge:publish",
+      "scopeField": "spaceId",
+      "approval": "required",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 1000
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "expectedRevision",
+          "reason",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "space": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "domainType": {
+                "enum": [
+                  "policy",
+                  "procedure",
+                  "reference"
+                ]
+              },
+              "departmentIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "maxItems": 100,
+                "minItems": 0
+              },
+              "status": {
+                "enum": [
+                  "active",
+                  "read-only",
+                  "archived"
+                ]
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "publicationPolicyRevision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "allowSelfPublish": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "spaceId",
+              "code",
+              "title",
+              "domainType",
+              "departmentIds",
+              "status",
+              "revision",
+              "publicationPolicyRevision",
+              "allowSelfPublish"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "space",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.spaces.publication-policy.set.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-03",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.spaces.publication-policy.set.v1",
+      "cli": "nuochong knowledge spaces publication-policy set --input - --json",
+      "scope": "product:write",
+      "permission": "access:manage",
+      "scopeField": "spaceId",
+      "approval": "independent-governance",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "allowSelfPublish": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 1000
+          },
+          "expectedPolicyRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "proposalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "allowSelfPublish",
+          "reason",
+          "expectedPolicyRevision",
+          "approvalId",
+          "proposalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "allowSelfPublish": {
+            "type": "boolean"
+          },
+          "policyRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "spaceId",
+          "allowSelfPublish",
+          "policyRevision",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation",
+        "trusted-platform-governor",
+        "global-access-manage",
+        "eligible-space",
+        "independent-governance-proposal"
+      ]
+    },
+    {
+      "commandId": "knowledge.objects.upload.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-04",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.objects.upload.v1",
+      "cli": "nuochong knowledge objects upload --input - --file <local-file> --json",
+      "scope": "product:write",
+      "permission": "knowledge:edit",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "mediaType": {
+            "enum": [
+              "text/plain",
+              "text/markdown",
+              "application/pdf",
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            ]
+          },
+          "byteLength": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20971520
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "filename",
+          "mediaType",
+          "byteLength",
+          "sha256"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "objectRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "byteLength": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20971520
+          },
+          "status": {
+            "enum": [
+              "ready",
+              "quarantined"
+            ]
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "objectRef",
+          "sha256",
+          "byteLength",
+          "status",
+          "expiresAt",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "transport": {
+        "encoding": "multipart/form-data",
+        "metadataPart": "metadata",
+        "binaryPart": "file",
+        "binaryMaxBytes": 20971520,
+        "metadataMaxBytes": 8192,
+        "serverGeneratedObjectRef": true,
+        "notes": "CLI --input - carries JSON metadata and --file carries local bytes; filesystem path is never sent as authorization input. Route-local streaming limits; do not raise global JSON body limit."
+      },
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.imports.create.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-04",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.imports.create.v1",
+      "cli": "nuochong knowledge imports create --input - --json",
+      "scope": "product:write",
+      "permission": "knowledge:edit",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "objectRef": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "policyCode": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "version": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64
+                },
+                "validFrom": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "validUntil": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "objectRef",
+                "title",
+                "policyCode",
+                "version",
+                "validFrom"
+              ]
+            },
+            "maxItems": 20,
+            "minItems": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "files"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "batch": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "batchId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "status": {
+                "enum": [
+                  "created",
+                  "parsing",
+                  "completed",
+                  "partial",
+                  "failed",
+                  "cancelled"
+                ]
+              },
+              "files": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "fileId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "objectRef": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "filename": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "status": {
+                      "enum": [
+                        "uploaded",
+                        "validated",
+                        "parsing",
+                        "parsed",
+                        "failed",
+                        "quarantined",
+                        "cancelled"
+                      ]
+                    },
+                    "jobId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "errorCode": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    }
+                  },
+                  "required": [
+                    "fileId",
+                    "objectRef",
+                    "filename",
+                    "status"
+                  ]
+                },
+                "maxItems": 20,
+                "minItems": 0
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "batchId",
+              "spaceId",
+              "status",
+              "files",
+              "revision"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "batch",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.imports.list.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-04",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.imports.list.v1",
+      "cli": "nuochong knowledge imports list --input - --json",
+      "scope": "product:read",
+      "permission": "knowledge:edit",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "read",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "after": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "spaceId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "batchId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "spaceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "status": {
+                  "enum": [
+                    "created",
+                    "parsing",
+                    "completed",
+                    "partial",
+                    "failed",
+                    "cancelled"
+                  ]
+                },
+                "files": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "fileId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                      },
+                      "objectRef": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                      },
+                      "filename": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "status": {
+                        "enum": [
+                          "uploaded",
+                          "validated",
+                          "parsing",
+                          "parsed",
+                          "failed",
+                          "quarantined",
+                          "cancelled"
+                        ]
+                      },
+                      "jobId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                      },
+                      "errorCode": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "fileId",
+                      "objectRef",
+                      "filename",
+                      "status"
+                    ]
+                  },
+                  "maxItems": 20,
+                  "minItems": 0
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "batchId",
+                "spaceId",
+                "status",
+                "files",
+                "revision"
+              ]
+            },
+            "maxItems": 200,
+            "minItems": 0
+          },
+          "nextCursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "items",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "explicit-allowlist-only",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.imports.get.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-04",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.imports.get.v1",
+      "cli": "nuochong knowledge imports get --input - --json",
+      "scope": "product:read",
+      "permission": "knowledge:edit",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "read",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "batchId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "spaceId",
+          "batchId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "batch": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "batchId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "status": {
+                "enum": [
+                  "created",
+                  "parsing",
+                  "completed",
+                  "partial",
+                  "failed",
+                  "cancelled"
+                ]
+              },
+              "files": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "fileId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "objectRef": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "filename": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "status": {
+                      "enum": [
+                        "uploaded",
+                        "validated",
+                        "parsing",
+                        "parsed",
+                        "failed",
+                        "quarantined",
+                        "cancelled"
+                      ]
+                    },
+                    "jobId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "errorCode": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    }
+                  },
+                  "required": [
+                    "fileId",
+                    "objectRef",
+                    "filename",
+                    "status"
+                  ]
+                },
+                "maxItems": 20,
+                "minItems": 0
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "batchId",
+              "spaceId",
+              "status",
+              "files",
+              "revision"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "batch",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "explicit-allowlist-only",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.imports.cancel.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-04",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.imports.cancel.v1",
+      "cli": "nuochong knowledge imports cancel --input - --json",
+      "scope": "product:write",
+      "permission": "knowledge:edit",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "batchId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "fileIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "maxItems": 20,
+            "minItems": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "batchId",
+          "fileIds"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "batchId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "cancelRequested": {
+            "const": true
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "batchId",
+          "cancelRequested",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.imports.retry.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-04",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.imports.retry.v1",
+      "cli": "nuochong knowledge imports retry --input - --json",
+      "scope": "product:write",
+      "permission": "knowledge:edit",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "batchId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "fileIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "maxItems": 20,
+            "minItems": 1
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "batchId",
+          "fileIds",
+          "expectedRevision"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "batch": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "batchId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "status": {
+                "enum": [
+                  "created",
+                  "parsing",
+                  "completed",
+                  "partial",
+                  "failed",
+                  "cancelled"
+                ]
+              },
+              "files": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "fileId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "objectRef": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "filename": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "status": {
+                      "enum": [
+                        "uploaded",
+                        "validated",
+                        "parsing",
+                        "parsed",
+                        "failed",
+                        "quarantined",
+                        "cancelled"
+                      ]
+                    },
+                    "jobId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "errorCode": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    }
+                  },
+                  "required": [
+                    "fileId",
+                    "objectRef",
+                    "filename",
+                    "status"
+                  ]
+                },
+                "maxItems": 20,
+                "minItems": 0
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "batchId",
+              "spaceId",
+              "status",
+              "files",
+              "revision"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "batch",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.fragments.list.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-06",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.fragments.list.v1",
+      "cli": "nuochong knowledge fragments list --input - --json",
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "read",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "after": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "view": {
+            "enum": [
+              "published",
+              "manage"
+            ]
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "accepted",
+              "rejected",
+              "merged",
+              "superseded"
+            ]
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "spaceId",
+          "view"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "fragmentId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "spaceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "sourceRevisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "locator": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "const": "line"
+                        },
+                        "lineStart": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "lineEnd": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "lineStart",
+                        "lineEnd"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "const": "page"
+                        },
+                        "page": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        "paragraph": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "page",
+                        "paragraph"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "const": "paragraph"
+                        },
+                        "paragraph": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "heading": {
+                          "type": "string",
+                          "maxLength": 512
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "paragraph"
+                      ]
+                    }
+                  ]
+                },
+                "excerpt": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 20000
+                },
+                "textHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "status": {
+                  "enum": [
+                    "pending",
+                    "accepted",
+                    "rejected",
+                    "merged",
+                    "superseded"
+                  ]
+                }
+              },
+              "required": [
+                "fragmentId",
+                "spaceId",
+                "sourceRevisionId",
+                "locator",
+                "excerpt",
+                "textHash",
+                "revision",
+                "status"
+              ]
+            },
+            "maxItems": 200,
+            "minItems": 0
+          },
+          "nextCursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "items",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "explicit-allowlist-only",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation",
+        "manage-view-requires-edit-review-or-publish; published-view-requires-current-publication"
+      ]
+    },
+    {
+      "commandId": "knowledge.fragments.review.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-06",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.fragments.review.v1",
+      "cli": "nuochong knowledge fragments review --input - --json",
+      "scope": "product:write",
+      "permission": "knowledge:review",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "fragmentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "decision": {
+            "enum": [
+              "accept",
+              "reject",
+              "merge",
+              "split"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 1000
+          },
+          "relatedFragmentIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "maxItems": 50,
+            "minItems": 0
+          },
+          "splitRanges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "start": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "end": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "start",
+                "end"
+              ]
+            },
+            "maxItems": 50,
+            "minItems": 0
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "fragmentId",
+          "expectedRevision",
+          "decision",
+          "reason",
+          "relatedFragmentIds",
+          "splitRanges"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fragments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "fragmentId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "spaceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "sourceRevisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "locator": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "const": "line"
+                        },
+                        "lineStart": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "lineEnd": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "lineStart",
+                        "lineEnd"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "const": "page"
+                        },
+                        "page": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        "paragraph": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "page",
+                        "paragraph"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "const": "paragraph"
+                        },
+                        "paragraph": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "heading": {
+                          "type": "string",
+                          "maxLength": 512
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "paragraph"
+                      ]
+                    }
+                  ]
+                },
+                "excerpt": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 20000
+                },
+                "textHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "status": {
+                  "enum": [
+                    "pending",
+                    "accepted",
+                    "rejected",
+                    "merged",
+                    "superseded"
+                  ]
+                }
+              },
+              "required": [
+                "fragmentId",
+                "spaceId",
+                "sourceRevisionId",
+                "locator",
+                "excerpt",
+                "textHash",
+                "revision",
+                "status"
+              ]
+            },
+            "maxItems": 50,
+            "minItems": 0
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "fragments",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.concepts.list.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-06",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.concepts.list.v1",
+      "cli": "nuochong knowledge concepts list --input - --json",
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "read",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "after": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "spaceId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "conceptId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "spaceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "parentId": {
+                  "type": "string",
+                  "minLength": 0,
+                  "maxLength": 128
+                },
+                "revisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "conceptId",
+                "spaceId",
+                "label",
+                "parentId",
+                "revisionId",
+                "revision"
+              ]
+            },
+            "maxItems": 200,
+            "minItems": 0
+          },
+          "nextCursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "items",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "explicit-allowlist-only",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation",
+        "reader-only-published-concepts; no-draft-label-or-count-leak"
+      ]
+    },
+    {
+      "commandId": "knowledge.concepts.upsert.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-06",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.concepts.upsert.v1",
+      "cli": "nuochong knowledge concepts upsert --input - --json",
+      "scope": "product:write",
+      "permission": "knowledge:edit",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "conceptId": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 128
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "parentId": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "conceptId",
+          "expectedRevision",
+          "label",
+          "parentId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "concept": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "conceptId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "parentId": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 128
+              },
+              "revisionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "conceptId",
+              "spaceId",
+              "label",
+              "parentId",
+              "revisionId",
+              "revision"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "concept",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.entries.list.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-06",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.entries.list.v1",
+      "cli": "nuochong knowledge entries list --input - --json",
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "read",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "after": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "view": {
+            "enum": [
+              "published",
+              "manage"
+            ]
+          },
+          "status": {
+            "enum": [
+              "draft",
+              "pending_review",
+              "reviewed",
+              "published",
+              "withdrawn",
+              "stale"
+            ]
+          }
+        },
+        "required": [
+          "spaceId",
+          "view"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entryId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "spaceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "revisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "entryType": {
+                  "enum": [
+                    "policy",
+                    "topic",
+                    "faq",
+                    "entity"
+                  ]
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "body": {
+                  "type": "string",
+                  "minLength": 0,
+                  "maxLength": 20000
+                },
+                "status": {
+                  "enum": [
+                    "draft",
+                    "pending_review",
+                    "reviewed",
+                    "published",
+                    "withdrawn",
+                    "superseded",
+                    "stale"
+                  ]
+                },
+                "fragmentIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "maxItems": 500,
+                  "minItems": 0
+                }
+              },
+              "required": [
+                "entryId",
+                "spaceId",
+                "revisionId",
+                "revision",
+                "entryType",
+                "title",
+                "body",
+                "status",
+                "fragmentIds"
+              ]
+            },
+            "maxItems": 200,
+            "minItems": 0
+          },
+          "nextCursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "items",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "explicit-allowlist-only",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation",
+        "manage-view-requires-edit-review-or-publish; published-view-requires-current-publication"
+      ]
+    },
+    {
+      "commandId": "knowledge.entries.get.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-06",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.entries.get.v1",
+      "cli": "nuochong knowledge entries get --input - --json",
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "read",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "entryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "view": {
+            "enum": [
+              "published",
+              "manage"
+            ]
+          }
+        },
+        "required": [
+          "spaceId",
+          "entryId",
+          "view"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "entry": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entryId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "revisionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "entryType": {
+                "enum": [
+                  "policy",
+                  "topic",
+                  "faq",
+                  "entity"
+                ]
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "body": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 20000
+              },
+              "status": {
+                "enum": [
+                  "draft",
+                  "pending_review",
+                  "reviewed",
+                  "published",
+                  "withdrawn",
+                  "superseded",
+                  "stale"
+                ]
+              },
+              "fragmentIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "maxItems": 500,
+                "minItems": 0
+              }
+            },
+            "required": [
+              "entryId",
+              "spaceId",
+              "revisionId",
+              "revision",
+              "entryType",
+              "title",
+              "body",
+              "status",
+              "fragmentIds"
+            ]
+          },
+          "fragments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "fragmentId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "spaceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "sourceRevisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "locator": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "const": "line"
+                        },
+                        "lineStart": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "lineEnd": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "lineStart",
+                        "lineEnd"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "const": "page"
+                        },
+                        "page": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        "paragraph": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "page",
+                        "paragraph"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "type": {
+                          "const": "paragraph"
+                        },
+                        "paragraph": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "heading": {
+                          "type": "string",
+                          "maxLength": 512
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "paragraph"
+                      ]
+                    }
+                  ]
+                },
+                "excerpt": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 20000
+                },
+                "textHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "status": {
+                  "enum": [
+                    "pending",
+                    "accepted",
+                    "rejected",
+                    "merged",
+                    "superseded"
+                  ]
+                }
+              },
+              "required": [
+                "fragmentId",
+                "spaceId",
+                "sourceRevisionId",
+                "locator",
+                "excerpt",
+                "textHash",
+                "revision",
+                "status"
+              ]
+            },
+            "maxItems": 500,
+            "minItems": 0
+          },
+          "relations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "relationId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "relationRevisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "fromEntryRevisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "toEntryRevisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "type": {
+                  "enum": [
+                    "relatedTo",
+                    "conflictsWith"
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                },
+                "weight": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "relationId",
+                "relationRevisionId",
+                "fromEntryRevisionId",
+                "toEntryRevisionId",
+                "type",
+                "reason",
+                "weight",
+                "revision"
+              ]
+            },
+            "maxItems": 500,
+            "minItems": 0
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "entry",
+          "fragments",
+          "relations",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "explicit-allowlist-only",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation",
+        "manage-view-requires-edit-review-or-publish; published-view-requires-current-publication"
+      ]
+    },
+    {
+      "commandId": "knowledge.entries.draft.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-06",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.entries.draft.v1",
+      "cli": "nuochong knowledge entries draft --input - --json",
+      "scope": "product:write",
+      "permission": "knowledge:edit",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "entryId": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 128
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "entryType": {
+            "enum": [
+              "policy",
+              "topic",
+              "faq",
+              "entity"
+            ]
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "fragmentIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "maxItems": 500,
+            "minItems": 1
+          },
+          "conceptRevisionIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "maxItems": 100,
+            "minItems": 0
+          },
+          "relationRevisionIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "maxItems": 100,
+            "minItems": 0
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "entryId",
+          "expectedRevision",
+          "title",
+          "entryType",
+          "body",
+          "fragmentIds",
+          "conceptRevisionIds",
+          "relationRevisionIds"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "entry": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entryId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "revisionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "entryType": {
+                "enum": [
+                  "policy",
+                  "topic",
+                  "faq",
+                  "entity"
+                ]
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "body": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 20000
+              },
+              "status": {
+                "enum": [
+                  "draft",
+                  "pending_review",
+                  "reviewed",
+                  "published",
+                  "withdrawn",
+                  "superseded",
+                  "stale"
+                ]
+              },
+              "fragmentIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "maxItems": 500,
+                "minItems": 0
+              }
+            },
+            "required": [
+              "entryId",
+              "spaceId",
+              "revisionId",
+              "revision",
+              "entryType",
+              "title",
+              "body",
+              "status",
+              "fragmentIds"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "entry",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.entries.submit.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-06",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.entries.submit.v1",
+      "cli": "nuochong knowledge entries submit --input - --json",
+      "scope": "product:write",
+      "permission": "knowledge:edit",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "entryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "entryId",
+          "expectedRevision"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "entry": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entryId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "revisionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "entryType": {
+                "enum": [
+                  "policy",
+                  "topic",
+                  "faq",
+                  "entity"
+                ]
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "body": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 20000
+              },
+              "status": {
+                "enum": [
+                  "draft",
+                  "pending_review",
+                  "reviewed",
+                  "published",
+                  "withdrawn",
+                  "superseded",
+                  "stale"
+                ]
+              },
+              "fragmentIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "maxItems": 500,
+                "minItems": 0
+              }
+            },
+            "required": [
+              "entryId",
+              "spaceId",
+              "revisionId",
+              "revision",
+              "entryType",
+              "title",
+              "body",
+              "status",
+              "fragmentIds"
+            ]
+          },
+          "reviewTargetHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "entry",
+          "reviewTargetHash",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.entries.review.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-06",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.entries.review.v1",
+      "cli": "nuochong knowledge entries review --input - --json",
+      "scope": "product:write",
+      "permission": "knowledge:review",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "entryRevisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reviewTargetHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "decision": {
+            "enum": [
+              "approve",
+              "reject"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "entryRevisionId",
+          "expectedRevision",
+          "reviewTargetHash",
+          "decision",
+          "reason"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "entry": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entryId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "revisionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "entryType": {
+                "enum": [
+                  "policy",
+                  "topic",
+                  "faq",
+                  "entity"
+                ]
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "body": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 20000
+              },
+              "status": {
+                "enum": [
+                  "draft",
+                  "pending_review",
+                  "reviewed",
+                  "published",
+                  "withdrawn",
+                  "superseded",
+                  "stale"
+                ]
+              },
+              "fragmentIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "maxItems": 500,
+                "minItems": 0
+              }
+            },
+            "required": [
+              "entryId",
+              "spaceId",
+              "revisionId",
+              "revision",
+              "entryType",
+              "title",
+              "body",
+              "status",
+              "fragmentIds"
+            ]
+          },
+          "reviewId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "entry",
+          "reviewId",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.relations.upsert.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-06",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.relations.upsert.v1",
+      "cli": "nuochong knowledge relations upsert --input - --json",
+      "scope": "product:write",
+      "permission": "knowledge:edit",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "relationId": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 128
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "fromEntryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "toEntryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "type": {
+            "enum": [
+              "relatedTo",
+              "conflictsWith"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 1000
+          },
+          "weight": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "evidenceFragmentIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "maxItems": 100,
+            "minItems": 0
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "relationId",
+          "expectedRevision",
+          "fromEntryId",
+          "toEntryId",
+          "type",
+          "reason",
+          "weight",
+          "evidenceFragmentIds"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "relation": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "relationId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "relationRevisionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "fromEntryRevisionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "toEntryRevisionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "type": {
+                "enum": [
+                  "relatedTo",
+                  "conflictsWith"
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "weight": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "relationId",
+              "relationRevisionId",
+              "fromEntryRevisionId",
+              "toEntryRevisionId",
+              "type",
+              "reason",
+              "weight",
+              "revision"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "relation",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.publications.publish.v2",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-07",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.publications.publish.v2",
+      "cli": "nuochong knowledge publications publish --input - --json --command-version 2",
+      "scope": "product:write",
+      "permission": "knowledge:publish",
+      "scopeField": "spaceId",
+      "approval": "required-independent-content",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "entryRevisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "baseSnapshotId": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 128
+          },
+          "reviewTargetHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "graphHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "expectedPolicyRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "entryRevisionId",
+          "expectedRevision",
+          "baseSnapshotId",
+          "reviewTargetHash",
+          "graphHash",
+          "expectedPolicyRevision",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "publicationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "snapshotId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "entryRevisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "graphHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "effectiveAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "publicationId",
+          "snapshotId",
+          "spaceId",
+          "entryRevisionId",
+          "graphHash",
+          "effectiveAt",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.publications.withdraw.v2",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-07",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.publications.withdraw.v2",
+      "cli": "nuochong knowledge publications withdraw --input - --json --command-version 2",
+      "scope": "product:write",
+      "permission": "knowledge:publish",
+      "scopeField": "spaceId",
+      "approval": "required",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "publicationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "baseSnapshotId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 1000
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "publicationId",
+          "expectedRevision",
+          "baseSnapshotId",
+          "reason",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "publicationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "withdrawn": {
+            "const": true
+          },
+          "snapshotId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "publicationId",
+          "withdrawn",
+          "snapshotId",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.publications.rollback.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-07",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.publications.rollback.v1",
+      "cli": "nuochong knowledge publications rollback --input - --json",
+      "scope": "product:write",
+      "permission": "knowledge:publish",
+      "scopeField": "spaceId",
+      "approval": "required-revalidation",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "entryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "targetEntryRevisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "baseSnapshotId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 1000
+          },
+          "approvalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "entryId",
+          "targetEntryRevisionId",
+          "expectedRevision",
+          "baseSnapshotId",
+          "reason",
+          "approvalId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "publicationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "snapshotId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "entryRevisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "graphHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "effectiveAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "publicationId",
+          "snapshotId",
+          "spaceId",
+          "entryRevisionId",
+          "graphHash",
+          "effectiveAt",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.capabilities.list.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-07",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.capabilities.list.v1",
+      "cli": "nuochong knowledge capabilities list --input - --json",
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "read",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "publicationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "spaceId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "capabilityId": {
+                  "enum": [
+                    "knowledge.search@1",
+                    "knowledge.answer@1",
+                    "knowledge.graph@1",
+                    "knowledge.api@1",
+                    "knowledge.cli@1",
+                    "knowledge.mcp@1"
+                  ]
+                },
+                "version": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "status": {
+                  "enum": [
+                    "planned",
+                    "draft",
+                    "active",
+                    "degraded",
+                    "revoked"
+                  ]
+                },
+                "snapshotId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "contractRef": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                }
+              },
+              "required": [
+                "capabilityId",
+                "version",
+                "status",
+                "snapshotId",
+                "contractRef"
+              ]
+            },
+            "maxItems": 200,
+            "minItems": 0
+          },
+          "nextCursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "items",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "explicit-allowlist-only",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.graph.query.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-08",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.graph.query.v1",
+      "cli": "nuochong knowledge graph query --input - --json",
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": null,
+      "approval": "none",
+      "idempotency": "read",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "maxItems": 20,
+            "minItems": 1
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "entry",
+                "concept",
+                "source"
+              ]
+            },
+            "maxItems": 3,
+            "minItems": 1
+          },
+          "relations": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "relatedTo",
+                "conflictsWith",
+                "about",
+                "cites"
+              ]
+            },
+            "maxItems": 4,
+            "minItems": 0
+          },
+          "focusId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "depth": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2
+          },
+          "view": {
+            "enum": [
+              "published",
+              "manage"
+            ]
+          },
+          "asOfSnapshotId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2000
+          }
+        },
+        "required": [
+          "spaceIds",
+          "types",
+          "view"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "nodes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "kind": {
+                  "enum": [
+                    "entry",
+                    "concept",
+                    "source"
+                  ]
+                },
+                "spaceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "revisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "spaceId",
+                "label",
+                "revisionId"
+              ]
+            },
+            "maxItems": 2000,
+            "minItems": 0
+          },
+          "edges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "from": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "to": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "type": {
+                  "enum": [
+                    "relatedTo",
+                    "conflictsWith",
+                    "about",
+                    "cites"
+                  ]
+                },
+                "revisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                }
+              },
+              "required": [
+                "id",
+                "from",
+                "to",
+                "type",
+                "revisionId"
+              ]
+            },
+            "maxItems": 5000,
+            "minItems": 0
+          },
+          "stats": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "nodeCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2000
+              },
+              "edgeCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5000
+              }
+            },
+            "required": [
+              "nodeCount",
+              "edgeCount"
+            ]
+          },
+          "truncated": {
+            "type": "boolean"
+          },
+          "graphVersion": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "nodes",
+          "edges",
+          "stats",
+          "truncated",
+          "graphVersion",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "explicit-allowlist-only",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation",
+        "manage-view-requires-edit-review-or-publish; published-view-requires-current-publication"
+      ]
+    },
+    {
+      "commandId": "knowledge.search.v2",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-14",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.search.v2",
+      "cli": "nuochong knowledge search --input - --json --command-version 2",
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "read",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "after": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "spaceId",
+          "query"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entryId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "spaceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "revisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "entryType": {
+                  "enum": [
+                    "policy",
+                    "topic",
+                    "faq",
+                    "entity"
+                  ]
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "body": {
+                  "type": "string",
+                  "minLength": 0,
+                  "maxLength": 20000
+                },
+                "status": {
+                  "enum": [
+                    "draft",
+                    "pending_review",
+                    "reviewed",
+                    "published",
+                    "withdrawn",
+                    "superseded",
+                    "stale"
+                  ]
+                },
+                "fragmentIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "maxItems": 500,
+                  "minItems": 0
+                }
+              },
+              "required": [
+                "entryId",
+                "spaceId",
+                "revisionId",
+                "revision",
+                "entryType",
+                "title",
+                "body",
+                "status",
+                "fragmentIds"
+              ]
+            },
+            "maxItems": 200,
+            "minItems": 0
+          },
+          "snapshotId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "nextCursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "items",
+          "snapshotId",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "explicit-allowlist-only",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.sources.get.v2",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-14",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.sources.get.v2",
+      "cli": "nuochong knowledge sources get --input - --json --command-version 2",
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "read",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "sourceRevisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "fragmentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "spaceId",
+          "sourceRevisionId",
+          "fragmentId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "sourceRevisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "mediaType": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "fragment": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "fragmentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "sourceRevisionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "locator": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "type": {
+                        "const": "line"
+                      },
+                      "lineStart": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "lineEnd": {
+                        "type": "integer",
+                        "minimum": 1
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "lineStart",
+                      "lineEnd"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "type": {
+                        "const": "page"
+                      },
+                      "page": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                      },
+                      "paragraph": {
+                        "type": "integer",
+                        "minimum": 1
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "page",
+                      "paragraph"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "type": {
+                        "const": "paragraph"
+                      },
+                      "paragraph": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "heading": {
+                        "type": "string",
+                        "maxLength": 512
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "paragraph"
+                    ]
+                  }
+                ]
+              },
+              "excerpt": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 20000
+              },
+              "textHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "status": {
+                "enum": [
+                  "pending",
+                  "accepted",
+                  "rejected",
+                  "merged",
+                  "superseded"
+                ]
+              }
+            },
+            "required": [
+              "fragmentId",
+              "spaceId",
+              "sourceRevisionId",
+              "locator",
+              "excerpt",
+              "textHash",
+              "revision",
+              "status"
+            ]
+          },
+          "downloadRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "sourceRevisionId",
+          "title",
+          "mediaType",
+          "fragment",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "explicit-allowlist-only",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.answers.ask.v2",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-14",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.answers.ask.v2",
+      "cli": "nuochong knowledge answers ask --input - --json --command-version 2",
+      "scope": "product:write",
+      "permission": "knowledge:ask",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "spaceId",
+          "idempotencyKey",
+          "query"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "job": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "jobId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "kind": {
+                "enum": [
+                  "compile",
+                  "answer",
+                  "import.parse"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "queued",
+                  "running",
+                  "succeeded",
+                  "failed",
+                  "cancelled"
+                ]
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "cancelRequested": {
+                "type": "boolean"
+              },
+              "resultValid": {
+                "type": "boolean"
+              },
+              "errorCode": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "answer": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "answered",
+                      "insufficient_evidence",
+                      "conflict"
+                    ]
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 12000
+                  },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "fragmentId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128
+                        },
+                        "sourceRevisionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128
+                        },
+                        "locator": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "type": {
+                                  "const": "line"
+                                },
+                                "lineStart": {
+                                  "type": "integer",
+                                  "minimum": 1
+                                },
+                                "lineEnd": {
+                                  "type": "integer",
+                                  "minimum": 1
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "lineStart",
+                                "lineEnd"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "type": {
+                                  "const": "page"
+                                },
+                                "page": {
+                                  "type": "integer",
+                                  "minimum": 1,
+                                  "maximum": 100
+                                },
+                                "paragraph": {
+                                  "type": "integer",
+                                  "minimum": 1
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "page",
+                                "paragraph"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "type": {
+                                  "const": "paragraph"
+                                },
+                                "paragraph": {
+                                  "type": "integer",
+                                  "minimum": 1
+                                },
+                                "heading": {
+                                  "type": "string",
+                                  "maxLength": 512
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "paragraph"
+                              ]
+                            }
+                          ]
+                        },
+                        "quote": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        },
+                        "textHash": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        }
+                      },
+                      "required": [
+                        "fragmentId",
+                        "sourceRevisionId",
+                        "locator",
+                        "quote",
+                        "textHash"
+                      ]
+                    },
+                    "maxItems": 20,
+                    "minItems": 0
+                  },
+                  "snapshotId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                },
+                "required": [
+                  "status",
+                  "text",
+                  "citations",
+                  "snapshotId"
+                ]
+              }
+            },
+            "required": [
+              "jobId",
+              "spaceId",
+              "kind",
+              "status",
+              "version",
+              "cancelRequested",
+              "resultValid"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "job",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation"
+      ]
+    },
+    {
+      "commandId": "knowledge.jobs.get.v2",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-15",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.jobs.get.v2",
+      "cli": "nuochong knowledge jobs get --input - --json --command-version 2",
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "read",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "jobId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "spaceId",
+          "jobId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "job": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "jobId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "kind": {
+                "enum": [
+                  "compile",
+                  "answer",
+                  "import.parse"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "queued",
+                  "running",
+                  "succeeded",
+                  "failed",
+                  "cancelled"
+                ]
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "cancelRequested": {
+                "type": "boolean"
+              },
+              "resultValid": {
+                "type": "boolean"
+              },
+              "errorCode": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "answer": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "answered",
+                      "insufficient_evidence",
+                      "conflict"
+                    ]
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 12000
+                  },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "fragmentId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128
+                        },
+                        "sourceRevisionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128
+                        },
+                        "locator": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "type": {
+                                  "const": "line"
+                                },
+                                "lineStart": {
+                                  "type": "integer",
+                                  "minimum": 1
+                                },
+                                "lineEnd": {
+                                  "type": "integer",
+                                  "minimum": 1
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "lineStart",
+                                "lineEnd"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "type": {
+                                  "const": "page"
+                                },
+                                "page": {
+                                  "type": "integer",
+                                  "minimum": 1,
+                                  "maximum": 100
+                                },
+                                "paragraph": {
+                                  "type": "integer",
+                                  "minimum": 1
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "page",
+                                "paragraph"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "type": {
+                                  "const": "paragraph"
+                                },
+                                "paragraph": {
+                                  "type": "integer",
+                                  "minimum": 1
+                                },
+                                "heading": {
+                                  "type": "string",
+                                  "maxLength": 512
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "paragraph"
+                              ]
+                            }
+                          ]
+                        },
+                        "quote": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        },
+                        "textHash": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        }
+                      },
+                      "required": [
+                        "fragmentId",
+                        "sourceRevisionId",
+                        "locator",
+                        "quote",
+                        "textHash"
+                      ]
+                    },
+                    "maxItems": 20,
+                    "minItems": 0
+                  },
+                  "snapshotId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                },
+                "required": [
+                  "status",
+                  "text",
+                  "citations",
+                  "snapshotId"
+                ]
+              }
+            },
+            "required": [
+              "jobId",
+              "spaceId",
+              "kind",
+              "status",
+              "version",
+              "cancelRequested",
+              "resultValid"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "job",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "explicit-allowlist-only",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation",
+        "task-owner-only"
+      ]
+    },
+    {
+      "commandId": "knowledge.jobs.list.v2",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-15",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.jobs.list.v2",
+      "cli": "nuochong knowledge jobs list --input - --json --command-version 2",
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "read",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "after": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "required": [
+          "spaceId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "jobId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "spaceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "kind": {
+                  "enum": [
+                    "compile",
+                    "answer",
+                    "import.parse"
+                  ]
+                },
+                "status": {
+                  "enum": [
+                    "queued",
+                    "running",
+                    "succeeded",
+                    "failed",
+                    "cancelled"
+                  ]
+                },
+                "version": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "cancelRequested": {
+                  "type": "boolean"
+                },
+                "resultValid": {
+                  "type": "boolean"
+                },
+                "errorCode": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "answer": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "status": {
+                      "enum": [
+                        "answered",
+                        "insufficient_evidence",
+                        "conflict"
+                      ]
+                    },
+                    "text": {
+                      "type": "string",
+                      "minLength": 0,
+                      "maxLength": 12000
+                    },
+                    "citations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "fragmentId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128
+                          },
+                          "sourceRevisionId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128
+                          },
+                          "locator": {
+                            "oneOf": [
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "type": {
+                                    "const": "line"
+                                  },
+                                  "lineStart": {
+                                    "type": "integer",
+                                    "minimum": 1
+                                  },
+                                  "lineEnd": {
+                                    "type": "integer",
+                                    "minimum": 1
+                                  }
+                                },
+                                "required": [
+                                  "type",
+                                  "lineStart",
+                                  "lineEnd"
+                                ]
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "type": {
+                                    "const": "page"
+                                  },
+                                  "page": {
+                                    "type": "integer",
+                                    "minimum": 1,
+                                    "maximum": 100
+                                  },
+                                  "paragraph": {
+                                    "type": "integer",
+                                    "minimum": 1
+                                  }
+                                },
+                                "required": [
+                                  "type",
+                                  "page",
+                                  "paragraph"
+                                ]
+                              },
+                              {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "type": {
+                                    "const": "paragraph"
+                                  },
+                                  "paragraph": {
+                                    "type": "integer",
+                                    "minimum": 1
+                                  },
+                                  "heading": {
+                                    "type": "string",
+                                    "maxLength": 512
+                                  }
+                                },
+                                "required": [
+                                  "type",
+                                  "paragraph"
+                                ]
+                              }
+                            ]
+                          },
+                          "quote": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 1000
+                          },
+                          "textHash": {
+                            "type": "string",
+                            "pattern": "^[a-f0-9]{64}$"
+                          }
+                        },
+                        "required": [
+                          "fragmentId",
+                          "sourceRevisionId",
+                          "locator",
+                          "quote",
+                          "textHash"
+                        ]
+                      },
+                      "maxItems": 20,
+                      "minItems": 0
+                    },
+                    "snapshotId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "text",
+                    "citations",
+                    "snapshotId"
+                  ]
+                }
+              },
+              "required": [
+                "jobId",
+                "spaceId",
+                "kind",
+                "status",
+                "version",
+                "cancelRequested",
+                "resultValid"
+              ]
+            },
+            "maxItems": 200,
+            "minItems": 0
+          },
+          "nextCursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "items",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "explicit-allowlist-only",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation",
+        "task-owner-only"
+      ]
+    },
+    {
+      "commandId": "knowledge.jobs.events.v2",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-15",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.jobs.events.v2",
+      "cli": "nuochong knowledge jobs events --input - --json --command-version 2",
+      "scope": "product:read",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "read",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "jobId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "afterSequence": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "spaceId",
+          "jobId"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "sequence": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "type": {
+                  "enum": [
+                    "job.created",
+                    "job.started",
+                    "job.requeued",
+                    "job.completed",
+                    "job.failed",
+                    "job.cancelled"
+                  ]
+                },
+                "time": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "eventId",
+                "sequence",
+                "type",
+                "time"
+              ]
+            },
+            "maxItems": 200,
+            "minItems": 0
+          },
+          "nextSequence": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "items",
+          "nextSequence",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "explicit-allowlist-only",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation",
+        "task-owner-only"
+      ]
+    },
+    {
+      "commandId": "knowledge.jobs.cancel.v2",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-15",
+      "method": "POST",
+      "path": "/product/api/commands/knowledge.jobs.cancel.v2",
+      "cli": "nuochong knowledge jobs cancel --input - --json --command-version 2",
+      "scope": "product:write",
+      "permission": "knowledge:read",
+      "scopeField": "spaceId",
+      "approval": "none",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "jobId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "spaceId",
+          "jobId",
+          "idempotencyKey"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "job": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "jobId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "kind": {
+                "enum": [
+                  "compile",
+                  "answer",
+                  "import.parse"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "queued",
+                  "running",
+                  "succeeded",
+                  "failed",
+                  "cancelled"
+                ]
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "cancelRequested": {
+                "type": "boolean"
+              },
+              "resultValid": {
+                "type": "boolean"
+              },
+              "errorCode": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "answer": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "answered",
+                      "insufficient_evidence",
+                      "conflict"
+                    ]
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 12000
+                  },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "fragmentId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128
+                        },
+                        "sourceRevisionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128
+                        },
+                        "locator": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "type": {
+                                  "const": "line"
+                                },
+                                "lineStart": {
+                                  "type": "integer",
+                                  "minimum": 1
+                                },
+                                "lineEnd": {
+                                  "type": "integer",
+                                  "minimum": 1
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "lineStart",
+                                "lineEnd"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "type": {
+                                  "const": "page"
+                                },
+                                "page": {
+                                  "type": "integer",
+                                  "minimum": 1,
+                                  "maximum": 100
+                                },
+                                "paragraph": {
+                                  "type": "integer",
+                                  "minimum": 1
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "page",
+                                "paragraph"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "type": {
+                                  "const": "paragraph"
+                                },
+                                "paragraph": {
+                                  "type": "integer",
+                                  "minimum": 1
+                                },
+                                "heading": {
+                                  "type": "string",
+                                  "maxLength": 512
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "paragraph"
+                              ]
+                            }
+                          ]
+                        },
+                        "quote": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        },
+                        "textHash": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        }
+                      },
+                      "required": [
+                        "fragmentId",
+                        "sourceRevisionId",
+                        "locator",
+                        "quote",
+                        "textHash"
+                      ]
+                    },
+                    "maxItems": 20,
+                    "minItems": 0
+                  },
+                  "snapshotId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                },
+                "required": [
+                  "status",
+                  "text",
+                  "citations",
+                  "snapshotId"
+                ]
+              }
+            },
+            "required": [
+              "jobId",
+              "spaceId",
+              "kind",
+              "status",
+              "version",
+              "cancelRequested",
+              "resultValid"
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "job",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation",
+        "task-owner-only"
+      ]
+    },
+    {
+      "commandId": "access.approval-requests.create.v1",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-03",
+      "method": "POST",
+      "path": "/product/api/commands/access.approval-requests.create.v1",
+      "cli": "nuochong access approval-requests create --input - --json",
+      "scope": "product:write",
+      "permission": "access:manage",
+      "scopeField": null,
+      "approval": "server-bound-independent-governance",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "commandId": {
+            "const": "knowledge.spaces.publication-policy.set.v1"
+          },
+          "target": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "spaceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "allowSelfPublish": {
+                "type": "boolean"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 1000
+              },
+              "expectedPolicyRevision": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "spaceId",
+              "allowSelfPublish",
+              "reason",
+              "expectedPolicyRevision"
+            ]
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "commandId",
+          "target"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "proposalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "targetHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "proposalId",
+          "targetHash",
+          "expiresAt",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation",
+        "trusted-platform-governor",
+        "global-access-manage",
+        "eligible-space",
+        "independent-governance-proposal"
+      ]
+    },
+    {
+      "commandId": "access.approvals.create.v2",
+      "status": "planned",
+      "phase": "P1",
+      "taskId": "KBV2-03",
+      "method": "POST",
+      "path": "/product/api/commands/access.approvals.create.v2",
+      "cli": "nuochong access approvals create --input - --json --command-version 2",
+      "scope": "product:approve",
+      "permission": "access:manage",
+      "scopeField": null,
+      "approval": "server-bound-independent-governance",
+      "idempotency": "actor+commandId+idempotencyKey",
+      "automaticRetry": false,
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "proposalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "idempotencyKey",
+          "proposalId",
+          "reason"
+        ]
+      },
+      "outputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "approvalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "targetHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "approvalId",
+          "targetHash",
+          "expiresAt",
+          "requestId"
+        ]
+      },
+      "errors": [
+        "INVALID_INPUT",
+        "UNAUTHORIZED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VERSION_CONFLICT",
+        "IDEMPOTENCY_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_EXPIRED",
+        "REVIEW_REQUIRED",
+        "EVIDENCE_REQUIRED",
+        "EVIDENCE_CHANGED",
+        "CITATION_MISMATCH",
+        "CROSS_SPACE_REFERENCE",
+        "CONFLICT_UNRESOLVED",
+        "INVALID_RELATION",
+        "QUOTA_EXCEEDED",
+        "DEPENDENCY_UNAVAILABLE",
+        "PARSER_UNAVAILABLE",
+        "CAPABILITY_UNAVAILABLE",
+        "REQUEST_FAILED",
+        "CONTRACT_VERSION_REQUIRED"
+      ],
+      "mcp": "not-exposed-by-default",
+      "serverPolicy": [
+        "trusted-context-identity",
+        "current-credential-and-resource-authorization",
+        "no-client-role-escalation",
+        "trusted-platform-governor",
+        "global-access-manage",
+        "eligible-space",
+        "independent-governance-proposal"
+      ]
+    }
+  ],
+  "errorSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "code": {
+        "enum": [
+          "INVALID_INPUT",
+          "UNAUTHORIZED",
+          "FORBIDDEN",
+          "NOT_FOUND",
+          "VERSION_CONFLICT",
+          "IDEMPOTENCY_CONFLICT",
+          "APPROVAL_REQUIRED",
+          "APPROVAL_EXPIRED",
+          "REVIEW_REQUIRED",
+          "EVIDENCE_REQUIRED",
+          "EVIDENCE_CHANGED",
+          "CITATION_MISMATCH",
+          "CROSS_SPACE_REFERENCE",
+          "CONFLICT_UNRESOLVED",
+          "INVALID_RELATION",
+          "QUOTA_EXCEEDED",
+          "DEPENDENCY_UNAVAILABLE",
+          "PARSER_UNAVAILABLE",
+          "CAPABILITY_UNAVAILABLE",
+          "REQUEST_FAILED",
+          "CONTRACT_VERSION_REQUIRED"
+        ]
+      },
+      "requestId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      }
+    },
+    "required": [
+      "code",
+      "requestId"
+    ]
+  },
+  "phase2Deferred": [
+    "knowledge.publications.publish-batch.v1",
+    "knowledge.publications.schedule.v1",
+    "knowledge.capabilities.set.v1",
+    "consumer management",
+    "media ASR/OCR",
+    "training snapshots"
+  ],
+  "compatibility": "v0-command-baseline.json stays exact; changed required inputs/output semantics use .v2; no runtime exports added",
+  "errorHttpStatus": {
+    "INVALID_INPUT": 400,
+    "UNAUTHORIZED": 401,
+    "FORBIDDEN": 403,
+    "NOT_FOUND": 404,
+    "VERSION_CONFLICT": 409,
+    "IDEMPOTENCY_CONFLICT": 409,
+    "APPROVAL_REQUIRED": 409,
+    "APPROVAL_EXPIRED": 409,
+    "REVIEW_REQUIRED": 409,
+    "EVIDENCE_REQUIRED": 422,
+    "EVIDENCE_CHANGED": 409,
+    "CITATION_MISMATCH": 422,
+    "CROSS_SPACE_REFERENCE": 422,
+    "CONFLICT_UNRESOLVED": 422,
+    "INVALID_RELATION": 422,
+    "QUOTA_EXCEEDED": 429,
+    "DEPENDENCY_UNAVAILABLE": 503,
+    "PARSER_UNAVAILABLE": 503,
+    "CAPABILITY_UNAVAILABLE": 503,
+    "REQUEST_FAILED": 500,
+    "CONTRACT_VERSION_REQUIRED": 409
+  }
+}

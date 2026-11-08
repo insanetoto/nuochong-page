@@ -1,0 +1,33 @@
+{
+  "version": "nc-c14n-v1",
+  "cases": [
+    {
+      "value": {
+        "b": 2,
+        "a": 1
+      },
+      "canonical": "{\"a\":1,\"b\":2}",
+      "sha256": "43258cff783fe7036d8a43033f830adfc60ec037382473548ac742b888292777"
+    },
+    {
+      "value": {
+        "name": "知识",
+        "refs": [
+          "b",
+          "a"
+        ]
+      },
+      "canonical": "{\"name\":\"知识\",\"refs\":[\"b\",\"a\"]}",
+      "sha256": "8f5b2fc6ec2faf77dd2c66711eb9037d6bf5d28ff636c7be633090cc8c95d5ed"
+    },
+    {
+      "value": {
+        "x": "line\nquote\"",
+        "active": true,
+        "count": 0
+      },
+      "canonical": "{\"active\":true,\"count\":0,\"x\":\"line\\nquote\\\"\"}",
+      "sha256": "818fbf4b57aeb77142a246ec73860e057650029aacd61f14ee5b1b5a47b16dff"
+    }
+  ]
+}

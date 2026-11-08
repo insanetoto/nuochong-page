@@ -2,9 +2,13 @@
 
 2026-11-08新增：[v2页面与交互原型](../../prototypes/knowledge-v2.html)、[设计交接规范](prototype-design.md)。由ChatGPT负责原型与交互；DeepSeek只负责按确认设计代码实现。原型评审已通过，见[确认记录](prototype-acceptance-2026-11-08.md)；业务能力仍planned。
 
-后续工作已细化为 [执行波次与任务卡](next-work.md)（20项，补齐员工知识页面及产品壳/任务页面）和 [JSON台账](execution-plan.json)。PLAN-01进行中、其余19项Planned；见[负责人任务路线图](execution-roadmap.md)，实际实施范围及成员在准入时登记。
+后续工作已细化为 [执行波次与任务卡](next-work.md)（20项，补齐员工知识页面及产品壳/任务页面）和 [JSON台账](execution-plan.json)。PLAN-01/02/03设计交付待确认、其余17项Planned；见[负责人任务路线图](execution-roadmap.md)，实际实施范围及成员在准入时登记。
 
 2026-11-02 · 设计稿 v1 · 决策更新 2026-11-08 · **planned，先设计不开发**。本文在 [知识库 v1 设计](../design.md) 与 [v0 已交付范围](../../v0/README.md) 基础上，按负责人本轮要求重构知识首页与来源管理，并把公司本体方法落到知识域。所有页面、命令、表结构均为设计建议；未实现能力不得注册为 ready，也不得用原型或 mock 冒充完成。
+
+## W0准入补齐
+
+DeepSeek反馈#104被W0阻塞。当前已提供[完整决策/契约与本体规范](w0/README.md)，并提出[仅KBV2-01的R1有限准入](w0/admission.md)供负责人一次确认。当前仍Blocked，不把原型通过当后端架构批准；#94继续独立调查。
 
 ## 1. 本轮目标
 

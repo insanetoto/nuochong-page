@@ -1,6 +1,6 @@
 {
   "date": "2026-11-08",
-  "status": "20 issues registered; prototype accepted; implementation not started",
+  "status": "W0 design delivered for owner review; KBV2-01 still blocked pending admission",
   "gates": {
     "existingIssues": [
       85,
@@ -42,7 +42,21 @@
     "adrStatus": {
       "ADR-011": "Proposed",
       "ADR-012": "Proposed"
-    }
+    },
+    "w0": {
+      "status": "In review",
+      "artifacts": "docs/product/knowledge/v2/w0/README.md",
+      "ownerConfirmation": "Pending",
+      "fullAdmission": false,
+      "r1": {
+        "status": "Proposed; not active",
+        "taskId": "KBV2-01",
+        "approval": "docs/product/knowledge/v2/w0/admission.md",
+        "risk94Accepted": false,
+        "integrationMergeSha": null
+      }
+    },
+    "contractProposal": "docs/product/knowledge/v2/w0/p1-command-contracts.json"
   },
   "tasks": [
     {
@@ -51,7 +65,7 @@
       "ownerRole": "ChatGPT；负责人确认",
       "priority": "P0",
       "lane": "设计与交接",
-      "status": "In progress",
+      "status": "In review",
       "issue": 101,
       "dependsOn": [],
       "scope": "复用已验收v0和已通过原型，核对实际schema/权限差异；冻结P1范围、关系与审校规则、性能/文件额度及ADR决定。",
@@ -64,7 +78,8 @@
       ],
       "progressEvidence": [
         "v0人工验收：#85已关闭",
-        "v2原型评审通过：prototype-acceptance-2026-11-08.md"
+        "v2原型评审通过：prototype-acceptance-2026-11-08.md",
+        "W0设计交付：docs/product/knowledge/v2/w0/README.md"
       ],
       "wave": "W0",
       "commandIds": [],
@@ -76,7 +91,7 @@
         "docs/adr/"
       ],
       "delivery": "设计/契约/决定/任务证据；不提交运行代码",
-      "readiness": "可继续设计核查；原型确认已完成，技术/范围决定尚待冻结",
+      "readiness": "W0设计成果已交付，等待负责人确认；未伪造Accepted或集成merge SHA。",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/101",
       "issueState": "OPEN",
       "registeredAt": "2026-11-08"
@@ -87,7 +102,7 @@
       "ownerRole": "ChatGPT；DeepSeek评估可实现性",
       "priority": "P0",
       "lane": "设计与交接",
-      "status": "Planned",
+      "status": "In review",
       "issue": 102,
       "dependsOn": [
         "PLAN-01"
@@ -109,10 +124,13 @@
         "docs/adr/"
       ],
       "delivery": "设计/契约/决定/任务证据；不提交运行代码",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "readiness": "W0设计成果已交付，等待负责人确认；未伪造Accepted或集成merge SHA。",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/102",
       "issueState": "OPEN",
-      "registeredAt": "2026-11-08"
+      "registeredAt": "2026-11-08",
+      "progressEvidence": [
+        "W0设计交付：docs/product/knowledge/v2/w0/README.md"
+      ]
     },
     {
       "id": "PLAN-03",
@@ -120,7 +138,7 @@
       "ownerRole": "ChatGPT；负责人批准",
       "priority": "P0",
       "lane": "设计与交接",
-      "status": "Planned",
+      "status": "In review",
       "issue": 103,
       "dependsOn": [
         "PLAN-01",
@@ -144,12 +162,13 @@
         "docs/adr/"
       ],
       "delivery": "设计/契约/决定/任务证据；不提交运行代码",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "readiness": "W0设计成果已交付，等待负责人确认；未伪造Accepted或集成merge SHA。",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/103",
       "issueState": "OPEN",
       "registeredAt": "2026-11-08",
       "progressEvidence": [
-        "20项Issue已登记并回填；人员、集成SHA与实施准入仍未完成"
+        "20项Issue已登记并回填；人员、集成SHA与实施准入仍未完成",
+        "W0设计交付：docs/product/knowledge/v2/w0/README.md"
       ]
     },
     {
@@ -180,10 +199,12 @@
         "apps/control-api/test/"
       ],
       "delivery": "注册/加载校验与兼容测试；只读内部模块不强行新增业务命令",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "readiness": "仍Blocked：PLAN-03完整准入未完成；R1有限准入候选待负责人批准和设计合入。",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/104",
       "issueState": "OPEN",
-      "registeredAt": "2026-11-08"
+      "registeredAt": "2026-11-08",
+      "proposedDependencyExit": "PLAN-03:R1; not active until owner approval and integration SHA recorded",
+      "designSpec": "docs/product/knowledge/v2/w0/ontology-spec.md"
     },
     {
       "id": "KBV2-02",
@@ -265,7 +286,22 @@
       "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/106",
       "issueState": "OPEN",
-      "registeredAt": "2026-11-08"
+      "registeredAt": "2026-11-08",
+      "proposedCommandIds": [
+        "knowledge.spaces.get.v1",
+        "knowledge.spaces.create.v2",
+        "knowledge.spaces.update.v1",
+        "knowledge.spaces.archive.v1",
+        "knowledge.spaces.publication-policy.set.v1",
+        "access.approval-requests.create.v1",
+        "access.approvals.create.v2"
+      ],
+      "proposedAllowedPaths": [
+        "plugins/access-management/service.mjs",
+        "tools/nuochong-cli/src/product-commands.mjs",
+        "apps/control-api/src/migrations/"
+      ],
+      "scopeGap": "独立治理proposal/approval及可信资格是v0未交付的最小共享核心扩展；待本轮决策确认。"
     },
     {
       "id": "KBV2-04",
@@ -314,7 +350,15 @@
       "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/107",
       "issueState": "OPEN",
-      "registeredAt": "2026-11-08"
+      "registeredAt": "2026-11-08",
+      "proposedCommandIds": [
+        "knowledge.objects.upload.v1",
+        "knowledge.imports.create.v1",
+        "knowledge.imports.list.v1",
+        "knowledge.imports.get.v1",
+        "knowledge.imports.cancel.v1",
+        "knowledge.imports.retry.v1"
+      ]
     },
     {
       "id": "KBV2-15",
@@ -364,7 +408,13 @@
       "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/108",
       "issueState": "OPEN",
-      "registeredAt": "2026-11-08"
+      "registeredAt": "2026-11-08",
+      "proposedCommandIds": [
+        "knowledge.jobs.get.v2",
+        "knowledge.jobs.list.v2",
+        "knowledge.jobs.events.v2",
+        "knowledge.jobs.cancel.v2"
+      ]
     },
     {
       "id": "KBV2-06",
@@ -410,7 +460,19 @@
       "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/109",
       "issueState": "OPEN",
-      "registeredAt": "2026-11-08"
+      "registeredAt": "2026-11-08",
+      "proposedCommandIds": [
+        "knowledge.fragments.list.v1",
+        "knowledge.fragments.review.v1",
+        "knowledge.concepts.list.v1",
+        "knowledge.concepts.upsert.v1",
+        "knowledge.entries.list.v1",
+        "knowledge.entries.get.v1",
+        "knowledge.entries.draft.v1",
+        "knowledge.entries.submit.v1",
+        "knowledge.entries.review.v1",
+        "knowledge.relations.upsert.v1"
+      ]
     },
     {
       "id": "KBV2-07",
@@ -456,7 +518,13 @@
       "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/110",
       "issueState": "OPEN",
-      "registeredAt": "2026-11-08"
+      "registeredAt": "2026-11-08",
+      "proposedCommandIds": [
+        "knowledge.publications.publish.v2",
+        "knowledge.publications.withdraw.v2",
+        "knowledge.publications.rollback.v1",
+        "knowledge.capabilities.list.v1"
+      ]
     },
     {
       "id": "KBV2-08",
@@ -496,7 +564,10 @@
       "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/111",
       "issueState": "OPEN",
-      "registeredAt": "2026-11-08"
+      "registeredAt": "2026-11-08",
+      "proposedCommandIds": [
+        "knowledge.graph.query.v1"
+      ]
     },
     {
       "id": "KBV2-09",
@@ -595,7 +666,12 @@
       "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/113",
       "issueState": "OPEN",
-      "registeredAt": "2026-11-08"
+      "registeredAt": "2026-11-08",
+      "proposedCommandIds": [
+        "knowledge.search.v2",
+        "knowledge.sources.get.v2",
+        "knowledge.answers.ask.v2"
+      ]
     },
     {
       "id": "KBV2-10",
@@ -885,7 +961,7 @@
       "release authorization"
     ]
   },
-  "revision": "v2-execution-r3",
+  "revision": "v2-execution-r4-w0-proposal",
   "taskCount": 20,
   "scopeDecisionStatus": "P1 implementation scope proposal requires PLAN-01 confirmation; prototype accepted",
   "estimation": "Re-estimate after PLAN-01/02; historic 47-75 person-days is not the updated scope estimate"
