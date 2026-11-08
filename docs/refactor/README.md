@@ -1,8 +1,8 @@
 # 当前产品协作入口
 
-W0最新交接：[决策、完整契约与KBV2-01有限准入确认单](../product/knowledge/v2/w0/README.md)。#104仍受准入阻塞，R1建议待负责人确认；本轮没有启动实现。
+W0最新交接：[决策、完整契约与KBV2-01有限准入确认单](../product/knowledge/v2/w0/README.md)。#104的R1准入已通过、Ready，完整运行准入仍未完成；本轮只记录合并与开工授权。
 
-2026-11-08接续：v0人工验收与v2原型评审已确认；执行计划更新为[20项任务](../product/knowledge/v2/next-work.md)，见[负责人路线图](../product/knowledge/v2/execution-roadmap.md)。20项Issues已登记（[入口](../product/knowledge/v2/issue-registration.md)）；PLAN-01/02/03设计成果待确认，v2运行代码未开工，#94独立调查。
+2026-11-08接续：v0人工验收与v2原型评审已确认；执行计划更新为[20项任务](../product/knowledge/v2/next-work.md)，见[负责人路线图](../product/knowledge/v2/execution-roadmap.md)。20项Issues已登记（[入口](../product/knowledge/v2/issue-registration.md)）；PLAN-01/02设计已Accepted，PLAN-03仅R1通过，v2运行代码未开工，#94独立调查。
 
 2026-11-08协作分工：ChatGPT负责设计规划、契约、页面原型、交互设计与预审，DeepSeek只负责按确认设计进行代码实现；负责人确认设计、人工验收与发布。当前PR #99预审修订与实现负例见 [设计交接清单](../product/knowledge/v2/review-handoff.md)，全部v2能力仍planned。
 
@@ -19,7 +19,7 @@ W0最新交接：[决策、完整契约与KBV2-01有限准入确认单](../produ
 3. [OA执行跟踪](oa-tracking.md)：负责人查看实际状态和Issue入口。
 4. [原生首页运行说明](../../apps/oa/README.md)：启动官方页面、模型配置及入口边界。
 5. [产品CLI规范](cli-native.md)与[可执行客户端](../../tools/nuochong-cli/README.md)。
-6. [范围决策ADR-010](../adr/ADR-010-oa-harness-product-scope.md)、[CLI决策ADR-009](../adr/ADR-009-cli-native-capabilities.md)、[产品插件ADR-011](../adr/ADR-011-product-plugins-llm-wiki.md)（Proposed）、[产品本体ADR-012](../adr/ADR-012-product-ontology-and-knowledge-graph.md)（Proposed）。
+6. [范围决策ADR-010](../adr/ADR-010-oa-harness-product-scope.md)、[CLI决策ADR-009](../adr/ADR-009-cli-native-capabilities.md)、[产品插件ADR-011](../adr/ADR-011-product-plugins-llm-wiki.md)（P1方向Accepted）、[产品本体ADR-012](../adr/ADR-012-product-ontology-and-knowledge-graph.md)（P1方向Accepted）。
 7. [团队协作](collaboration.md)、[个人开发指南](developer-onboarding.md)。
 
 官网保持独立。原生管理员测试首页、正式控制API/Worker、公司身份和基座/产品CLI契约（59项已注册能力）已交付；MCP与外部AI集成按OA-03推进，业务模块仍未规划。新控制API尚未公网发布，main未发布。

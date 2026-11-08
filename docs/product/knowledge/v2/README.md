@@ -1,5 +1,7 @@
 # 企业知识库 v2：知识全景与「空间—导入—发布」来源管理
 
+**2026-11-08最新状态：负责人已批准W0确认单并允许合并。R1已验收、#104 Ready；其余运行任务仍有完整准入门槛。** 见[批准与准入记录](w0/r1-acceptance-2026-11-08.md)。
+
 2026-11-08新增：[v2页面与交互原型](../../prototypes/knowledge-v2.html)、[设计交接规范](prototype-design.md)。由ChatGPT负责原型与交互；DeepSeek只负责按确认设计代码实现。原型评审已通过，见[确认记录](prototype-acceptance-2026-11-08.md)；业务能力仍planned。
 
 后续工作已细化为 [执行波次与任务卡](next-work.md)（20项，补齐员工知识页面及产品壳/任务页面）和 [JSON台账](execution-plan.json)。PLAN-01/02/03设计交付待确认、其余17项Planned；见[负责人任务路线图](execution-roadmap.md)，实际实施范围及成员在准入时登记。
@@ -8,7 +10,7 @@
 
 ## W0准入补齐
 
-DeepSeek反馈#104被W0阻塞。当前已提供[完整决策/契约与本体规范](w0/README.md)，并提出[仅KBV2-01的R1有限准入](w0/admission.md)供负责人一次确认。当前仍Blocked，不把原型通过当后端架构批准；#94继续独立调查。
+DeepSeek反馈#104被W0阻塞。已提供[完整决策/契约与本体规范](w0/README.md)，负责人随后批准[仅KBV2-01的R1有限准入](w0/admission.md)；当前#104 Ready，#94继续独立调查，其他运行任务仍保留门槛。
 
 ## 1. 本轮目标
 
@@ -164,7 +166,7 @@ P1 不等待音视频：先打通“片段—待审—发布—图谱”闭环�
 - [数据模型、命令与权限契约](contracts.md)
 - [任务拆分与依赖](tasks.md)
 - [本体方法论](../../ontology/README.md) 与 [产品套件本体](../../ontology/suite-ontology.md)
-- [ADR-012 产品本体与知识图谱](../../../adr/ADR-012-product-ontology-and-knowledge-graph.md)（Proposed）
+- [ADR-012 产品本体与知识图谱](../../../adr/ADR-012-product-ontology-and-knowledge-graph.md)（P1方向Accepted）
 
 
 ## 2026-11-08 预审修订

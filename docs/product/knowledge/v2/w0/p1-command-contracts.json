@@ -1,6 +1,6 @@
 {
-  "contractVersion": "2.0.0-proposed.1",
-  "status": "design-delivered-pending-owner-confirmation",
+  "contractVersion": "2.0.0-design.1",
+  "status": "design-accepted; runtime capabilities remain planned",
   "runtimeRegistration": false,
   "sourceCommit": "e9fa89f51cde1586c0d43e6008d470918c774683",
   "schemaDraft": "http://json-schema.org/draft-07/schema#",
@@ -6710,5 +6710,6 @@
     "CAPABILITY_UNAVAILABLE": 503,
     "REQUEST_FAILED": 500,
     "CONTRACT_VERSION_REQUIRED": 409
-  }
+  },
+  "ownerApprovalEvidence": "https://github.com/insanetoto/nuochong-page/issues/103#issuecomment-6717796754"
 }

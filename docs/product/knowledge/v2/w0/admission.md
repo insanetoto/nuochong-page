@@ -1,25 +1,27 @@
 # PLAN-03：W0准入与KBV2-01有限开工确认单
 
-2026-11-08 · ChatGPT / Codex · 对应[#103](https://github.com/insanetoto/nuochong-page/issues/103)、[#104](https://github.com/insanetoto/nuochong-page/issues/104)。**当前完整W0未通过，KBV2-01仍Blocked；本文件给出可以一次确认的具体成果与R1建议，不代签验收。**
+**2026-11-08最新状态：本确认单已获负责人批准，设计已合入并固定基线；R1已验收、#104 Ready。下文保留原确认单与原门槛，实际状态以验收记录为准。** 见[批准与准入记录](r1-acceptance-2026-11-08.md)。
+
+2026-11-08 · ChatGPT / Codex · 对应[#103](https://github.com/insanetoto/nuochong-page/issues/103)、[#104](https://github.com/insanetoto/nuochong-page/issues/104)。**当前完整运行W0未通过，R1已批准并验收，KBV2-01 Ready；本文件保留确认单内容，批准及固定基线见上方验收记录。**
 
 ## 1. 阻塞原因及本轮补齐
 
 之前只登记了20项任务，PLAN-01/02/03仍是占位门槛，缺少冻结决策与可验证契约；这部分属于ChatGPT设计交付，不能交由DeepSeek猜测。
 
-| 门槛 | 已补齐成果 | 尚待事实 |
+| 门槛 | 已补齐成果 | 最新事实/后续 |
 | --- | --- | --- |
-| PLAN-01 / #101 | [14项明确决定与v0差异映射](decisions.md)，共享IAM最小缺口、配额/性能与阶段边界 | 负责人确认新增业务/技术决定；原型无需重审 |
-| PLAN-02 / #102 | [35项P1完整输入输出契约](p1-command-contracts.json)、[23项旧契约快照](v0-command-baseline.json)、[hash/兼容/审批语义](hash-and-compatibility.md) | 负责人设计确认及DeepSeek可实现性复核；不以结构测试代替授权/业务测试 |
-| KBV2-01所需最小契约 | [本体实现规范](ontology-spec.md)、schema、例子、稳定错误与验收矩阵 | 负责人批准本体架构方向及R1范围 |
+| PLAN-01 / #101 | [14项明确决定与v0差异映射](decisions.md)，共享IAM最小缺口、配额/性能与阶段边界 | 新增决定已获确认；原型无需重审 |
+| PLAN-02 / #102 | [35项P1完整输入输出契约](p1-command-contracts.json)、[23项旧契约快照](v0-command-baseline.json)、[hash/兼容/审批语义](hash-and-compatibility.md) | 负责人已确认；实现反馈走变更，不以结构测试代替业务验证 |
+| KBV2-01所需最小契约 | [本体实现规范](ontology-spec.md)、schema、例子、稳定错误与验收矩阵 | 本体架构与R1已获批准 |
 | #94 | 保留原失败证据与调查任务 | 仍Open、无调查结论；不默认接受完整运行风险 |
-| 集成基线 | 远程integration=b090e0846c301e67edfd941014d13b2bc57941c8；#99=6197d4e；#100=e9fa89f | 设计分支仍未合入integration；批准后按顺序合并并回填真实merge SHA |
-| 责任分配 | 设计/预审ChatGPT；代码实现DeepSeek；产品与发布确认由负责人 | R1批准可同时明确DeepSeek为#104执行角色，无须把GitHub共享账号当执行者 |
+| 集成基线 | 远程integration=b090e0846c301e67edfd941014d13b2bc57941c8；#99=6197d4e；#100=e9fa89f | 原核查基线如左；已完成三次合并，实际integration SHA见R1验收记录 |
+| 责任分配 | 设计/预审ChatGPT；代码实现DeepSeek；产品与发布确认由负责人 | R1已批准，DeepSeek为#104执行角色，无须把GitHub共享账号当执行者 |
 
 所有上列“已补齐”指设计文件交付，不是产品实现或人工批准。新目录均为文档/设计schema/合成夹具/设计QA，不修改官网、服务端授权或运行时能力清单。
 
-## 2. 建议批准的R1有限准入
+## 2. 已批准的R1有限准入
 
-R1为#103的明确子出口，仅解锁#104，不把#103完整W0标Done。若负责人同意：
+R1为#103的明确子出口，仅解锁#104，不把#103完整W0标Done。负责人已明确同意以下范围：
 
 1. 接受本次D01—D14为实施设计决定，接受ADR-011/012用于本轮P1的架构方向；P2功能不因此批准实现。35项契约进入冻结版本；DeepSeek发现可实现性缺口先回设计修订，不静默变更。
 2. 允许先实现KBV2-01：纯离线本体/schema/manifest注册、命名空间/版本/依赖/只读加载、明确command major allowlist及既有插件回归。运行时命令总数仍59；不得注册新的业务处理器。
@@ -27,15 +29,15 @@ R1为#103的明确子出口，仅解锁#104，不把#103完整W0标Done。若负
 4. 允许将本W0设计PR、#100、#99按顺序合并到refactor/integration，核验CI和实际merge SHA后，以该SHA为DeepSeek的独立实现分支起点；不推送main/test、不改变生产配置。
 5. 批准后ChatGPT将#101/102的设计确认与交付分别回填；#103记录R1批准且保留完整W0未完成；#104的依赖明确为“#103 R1子出口已验收”，改Ready后由DeepSeek领取。不能通过直接关闭#103伪造全阶段完成。
 
-在收到明确确认前，以上都只是建议，不修改#104现有启动门槛。批准后再登记`requiredDependencyExit: PLAN-03:R1`，不能只改状态却让Issue/JSON仍要求完整#103关闭。
+已收到明确确认，登记`requiredDependencyExit: PLAN-03:R1`，Issue/JSON只要求R1分项验收，不要求整个#103关闭。此例外仅适用于#104。
 
 ## 3. R1准入证据清单（批准后执行）
 
-- [ ] 负责人对本确认单的明确批准原文、日期和链接。
-- [ ] 记录批准的W0提交、原型5a172f5及ADR决定；没有重复审批同一原型。
-- [ ] W0设计PR → #100 → #99依次合并；检查head/base和冲突，不覆盖DeepSeek变更；失败则停止合并并记录。
-- [ ] 取得真实integration merge SHA；记录准入只针对#104纯离线范围。
-- [ ] #103、#104、任务JSON/路线图的R1依赖和状态一致；#94保持独立Open。
+- [x] 负责人对本确认单的明确批准原文、日期和链接。
+- [x] 记录批准的W0提交、原型5a172f5及ADR决定；没有重复审批同一原型。
+- [x] W0设计PR → #100 → #99依次合并；检查head/base和冲突，不覆盖DeepSeek变更；失败则停止合并并记录。
+- [x] 取得真实integration merge SHA；记录准入只针对#104纯离线范围。
+- [x] #103、#104、任务JSON/路线图的R1依赖和状态一致；#94保持独立Open。
 - [ ] DeepSeek在独立分支执行#104，PR目标integration；提交测试与未运行项，由ChatGPT预审。
 
 ## 4. 完整W0仍需的运行准入

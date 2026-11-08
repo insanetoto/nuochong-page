@@ -1,12 +1,12 @@
-# 知识库 v2 执行计划与任务卡（2026-11-08 · r4（W0候选））
+# 知识库 v2 执行计划与任务卡（2026-11-08 · r5（R1已批准））
 
-负责人已确认 **v0人工验收和v2原型评审通过**。本次把原型逐页映射为交付任务：共20项（18项知识库工作、2项其他产品设计），其中PLAN-01/02/03设计交付待确认（In review），其余17项Planned。未开始v2代码实现，已创建20项Issues，具体成员尚未分配；具体成员与日历排期未虚构。
+负责人已确认 **v0人工验收和v2原型评审通过**。本次把原型逐页映射为交付任务：共20项（18项知识库工作、2项其他产品设计），其中PLAN-01/02已Accepted，PLAN-03完整准入进行中、R1已通过，KBV2-01 Ready，其余16项Planned。未开始v2代码实现，已创建20项Issues，具体成员尚未分配；具体成员与日历排期未虚构。
 
 - [原型确认记录](prototype-acceptance-2026-11-08.md)：批准版本 `5a172f5`；HTML和截图保持原批准内容。
 - [任务JSON](execution-plan.json)：本文件表格/任务卡与之对应；[负责人路线图](execution-roadmap.md)提供快速查看入口。
 - ChatGPT负责设计规划、页面原型、交互设计、契约和预审；DeepSeek只负责按确认设计实现代码、迁移及自动化测试；负责人确认设计/人工验收/发布。
 
-本轮W0已补齐[决策、契约与有限准入确认单](w0/README.md)。#104仍Blocked，R1仅为建议，负责人批准前不改变现有依赖；新v2命令/允许目录变化见契约候选，不把旧草稿字段直接用于实现。
+本轮W0已补齐[决策、契约与有限准入确认单](w0/README.md)。负责人已批准并完成R1准入，#104 Ready；其依赖为#103的R1子出口，完整运行准入仍未完成；新v2命令/允许目录变化见契约候选，不把旧草稿字段直接用于实现。
 
 ## 1. 本次调整
 
@@ -29,7 +29,7 @@
 | 后续P2 | 11 → 05 → 12；11 → 13设计 | 媒体供应/真实评测、能力运营与跨产品范围分别批准 |
 | 其他产品设计 | PLAN-01 → TOOL-01、LEARN-01 | ChatGPT分别输出方案/原型/任务，不启动两产品运行代码 |
 
-P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组装 → 审批发布 → 图谱/搜索/引用问答；保留v0命令与行号引用。音视频/扫描件、排期、消费者管理、培训快照、向量集群和跨空间证据引用不进入本轮P1实现建议。该范围建议待PLAN-01确认，不因原型通过推定全部技术范围已批准。
+P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组装 → 审批发布 → 图谱/搜索/引用问答；保留v0命令与行号引用。音视频/扫描件、排期、消费者管理、培训快照、向量集群和跨空间证据引用不进入本轮P1实现建议。该范围已随W0确认单获批；设计确认不自动扩大R1开工范围。
 
 共享文件（`product.mjs`、`plugins/knowledge/service.mjs`、`apps/product-web/plugins/knowledge.mjs`、CLI注册、迁移序号、npm锁文件）先在PLAN-03确定唯一修改人；逻辑可并行不等于可同时改同一文件。允许目录是任务边界，新增文件名和迁移编号实施前登记。官网/上游核心/生产配置不在任务允许范围。
 
@@ -37,10 +37,10 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 
 | ID | Issue | 工作 | 波次 | 依赖 | 状态 |
 | --- | --- | --- | --- | --- | --- |
-| PLAN-01 | [#101](https://github.com/insanetoto/nuochong-page/issues/101) | 知识库交接、存量缺口与设计决定冻结 | W0 | 无 | In review |
-| PLAN-02 | [#102](https://github.com/insanetoto/nuochong-page/issues/102) | P1命令与数据契约实现前冻结 | W0 | PLAN-01 | In review |
-| PLAN-03 | [#103](https://github.com/insanetoto/nuochong-page/issues/103) | 实现准入与执行任务登记 | W0 | PLAN-01, PLAN-02 | In review |
-| KBV2-01 | [#104](https://github.com/insanetoto/nuochong-page/issues/104) | 本体注册表与版本治理 | W1 | PLAN-03 | Planned |
+| PLAN-01 | [#101](https://github.com/insanetoto/nuochong-page/issues/101) | 知识库交接、存量缺口与设计决定冻结 | W0 | 无 | Accepted |
+| PLAN-02 | [#102](https://github.com/insanetoto/nuochong-page/issues/102) | P1命令与数据契约实现前冻结 | W0 | PLAN-01 | Accepted |
+| PLAN-03 | [#103](https://github.com/insanetoto/nuochong-page/issues/103) | 实现准入与执行任务登记 | W0 | PLAN-01, PLAN-02 | In progress |
+| KBV2-01 | [#104](https://github.com/insanetoto/nuochong-page/issues/104) | 本体注册表与版本治理 | W1 | PLAN-03:R1 | Ready |
 | KBV2-02 | [#105](https://github.com/insanetoto/nuochong-page/issues/105) | 数据模型扩展与迁移 | W1 | KBV2-01 | Planned |
 | KBV2-03 | [#106](https://github.com/insanetoto/nuochong-page/issues/106) | 知识空间管理 | W2 | KBV2-02 | Planned |
 | KBV2-04 | [#107](https://github.com/insanetoto/nuochong-page/issues/107) | 文本/PDF/DOCX 导入与片段任务 | W2 | KBV2-02 | Planned |
@@ -65,7 +65,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### PLAN-01 知识库交接、存量缺口与设计决定冻结
 
 - 主责：ChatGPT；负责人确认；优先级：P0；波次：W0。
-- 状态：In review；依赖：无；Issue：[#101](https://github.com/insanetoto/nuochong-page/issues/101)。
+- 状态：Accepted；依赖：无；Issue：[#101](https://github.com/insanetoto/nuochong-page/issues/101)。
 - 范围：复用已验收v0和已通过原型，核对实际schema/权限差异；冻结P1范围、关系与审校规则、性能/文件额度及ADR决定。
 - 不做：不代替#85人工验收，不改运行代码，不合并或发布。
 - 允许目录/文件：`docs/product/`、`docs/refactor/`、`docs/adr/`。
@@ -83,7 +83,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### PLAN-02 P1命令与数据契约实现前冻结
 
 - 主责：ChatGPT；DeepSeek评估可实现性；优先级：P0；波次：W0。
-- 状态：In review；依赖：PLAN-01；Issue：[#102](https://github.com/insanetoto/nuochong-page/issues/102)。
+- 状态：Accepted；依赖：PLAN-01；Issue：[#102](https://github.com/insanetoto/nuochong-page/issues/102)。
 - 范围：按contracts.md逐命令确定字段、版本、权限、审批、幂等、错误及CLI映射，提前冻结公共schema。 以原型逐页核对命令，冻结旧v1兼容方案、错误/响应及发布hash规范；原型字段名不直接作为运行时契约。
 - 不做：不等到KBV2-10才决定接口，不修改实际能力注册。
 - 允许目录/文件：`docs/product/`、`docs/refactor/`、`docs/adr/`。
@@ -99,7 +99,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### PLAN-03 实现准入与执行任务登记
 
 - 主责：ChatGPT；负责人批准；优先级：P0；波次：W0。
-- 状态：In review；依赖：PLAN-01, PLAN-02；Issue：[#103](https://github.com/insanetoto/nuochong-page/issues/103)。
+- 状态：In progress；依赖：PLAN-01, PLAN-02；Issue：[#103](https://github.com/insanetoto/nuochong-page/issues/103)。
 - 范围：核对#99/#100的合并与批准证据、PLAN-01/02及#94，固定refactor/integration真实SHA，准备可分配任务及文件责任。
 - 不做：不直接推main/test，不批准生产迁移，不共享同一可写目录。
 - 允许目录/文件：`docs/product/`、`docs/refactor/`、`docs/adr/`。
@@ -116,7 +116,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 ### KBV2-01 本体注册表与版本治理
 
 - 主责：DeepSeek；ChatGPT预审；负责人验收；优先级：P1；波次：W1。
-- 状态：Planned；依赖：PLAN-03；Issue：[#104](https://github.com/insanetoto/nuochong-page/issues/104)。
+- 状态：Ready；依赖：PLAN-03:R1（分项已验收，父任务仍Open）；Issue：[#104](https://github.com/insanetoto/nuochong-page/issues/104)。
 - 范围：类/关系/约束注册、manifest 片段、版本兼容、只读加载、审计；不建推理机
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`packages/platform/`、`plugins/knowledge/`、`apps/control-api/test/`。
@@ -154,7 +154,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`plugins/knowledge/`、`apps/product-web/plugins/knowledge.mjs`、`apps/control-api/src/product.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
 - 交付：代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列。
-- 命令引用：`knowledge.spaces.list.v1`、`knowledge.spaces.get.v1`、`knowledge.spaces.create.v1`、`knowledge.spaces.update.v1`、`knowledge.spaces.archive.v1`、`knowledge.spaces.publication-policy.set.v1`。
+- 命令引用：`knowledge.spaces.get.v1`、`knowledge.spaces.create.v2`、`knowledge.spaces.update.v1`、`knowledge.spaces.archive.v1`、`knowledge.spaces.publication-policy.set.v1`、`access.approval-requests.create.v1`、`access.approvals.create.v2`。
 
 验收标准：
 
@@ -172,7 +172,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`plugins/knowledge/`、`apps/product-web/plugins/knowledge.mjs`、`apps/control-api/src/product.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
 - 交付：代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列。
-- 命令引用：`knowledge.imports.create.v1`、`knowledge.imports.list.v1`、`knowledge.imports.get.v1`、`knowledge.imports.cancel.v1`、`knowledge.imports.retry.v1`、`knowledge.fragments.list.v1`、`knowledge.jobs.get.v1`、`knowledge.jobs.events.v1`。
+- 命令引用：`knowledge.objects.upload.v1`、`knowledge.imports.create.v1`、`knowledge.imports.list.v1`、`knowledge.imports.get.v1`、`knowledge.imports.cancel.v1`、`knowledge.imports.retry.v1`。
 
 验收标准：
 
@@ -190,7 +190,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 - 不做：不创建人员角色主库，不把原型角色/状态切换器或原生owner入口带入正式页面；不实现AI工具/培训业务。
 - 允许目录/文件：`apps/product-web/`、`apps/control-api/src/product-web.mjs`、`apps/control-api/test/product-web.browser.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
 - 交付：真实UI与共享API集成、适用契约/CLI、浏览器/负例证据及PR。
-- 命令引用：`knowledge.spaces.list.v1`、`knowledge.jobs.list.v1`、`knowledge.jobs.get.v1`、`knowledge.jobs.events.v1`、`knowledge.jobs.cancel.v1`。
+- 命令引用：`knowledge.jobs.get.v2`、`knowledge.jobs.list.v2`、`knowledge.jobs.events.v2`、`knowledge.jobs.cancel.v2`。
 
 验收标准：
 
@@ -210,7 +210,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`plugins/knowledge/`、`apps/product-web/plugins/knowledge.mjs`、`apps/control-api/src/product.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
 - 交付：代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列。
-- 命令引用：`knowledge.fragments.review.v1`、`knowledge.entries.draft.v1`、`knowledge.entries.submit.v1`、`knowledge.changes.review.v1`。
+- 命令引用：`knowledge.fragments.list.v1`、`knowledge.fragments.review.v1`、`knowledge.concepts.list.v1`、`knowledge.concepts.upsert.v1`、`knowledge.entries.list.v1`、`knowledge.entries.get.v1`、`knowledge.entries.draft.v1`、`knowledge.entries.submit.v1`、`knowledge.entries.review.v1`、`knowledge.relations.upsert.v1`。
 
 验收标准：
 
@@ -229,7 +229,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 - 不做：不恢复旧演示，不改官网，不扩权，不将planned注册为成功。
 - 允许目录/文件：`plugins/knowledge/`、`apps/product-web/plugins/knowledge.mjs`、`apps/control-api/src/product.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
 - 交付：代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列。
-- 命令引用：`knowledge.publications.publish.v1`、`knowledge.publications.withdraw.v1`、`knowledge.capabilities.list.v1`。
+- 命令引用：`knowledge.publications.publish.v2`、`knowledge.publications.withdraw.v2`、`knowledge.publications.rollback.v1`、`knowledge.capabilities.list.v1`。
 
 验收标准：
 
@@ -285,7 +285,7 @@ P1范围建议：Markdown/TXT、文本层PDF、DOCX → 片段审校与条目组
 - 不做：不另造检索/授权/任务状态机，不重复建设语义检索或向量数据库，不改官网。
 - 允许目录/文件：`apps/product-web/`、`apps/control-api/src/product-web.mjs`、`apps/control-api/test/product-web.browser.mjs`、`tools/nuochong-cli/src/`、`tools/nuochong-cli/test/`、`apps/control-api/test/`。
 - 交付：真实UI与共享API集成、适用契约/CLI、浏览器/负例证据及PR。
-- 命令引用：`knowledge.search.v1`、`knowledge.pages.list.v1`、`knowledge.pages.get.v1`、`knowledge.sources.get.v1`、`knowledge.answers.ask.v1`、`knowledge.jobs.get.v1`、`knowledge.jobs.cancel.v1`、`knowledge.jobs.events.v1`。
+- 命令引用：`knowledge.search.v2`、`knowledge.sources.get.v2`、`knowledge.answers.ask.v2`。
 
 验收标准：
 
@@ -424,3 +424,5 @@ DeepSeek领取后用独立分支/目录实现；发现设计缺口先交ChatGPT�
 状态为Planned → Ready（批准与依赖齐）→ In progress → In review → Implemented → Accepted（负责人确认）→ Released（独立发布记录）。设计原型Accepted与实现任务Accepted分开；工程合并不能冒充产品验收。PR目标refactor/integration，main/test无发布授权不得推送。
 
 原47–75工程人日含历史范围，未涵盖本次全部UI/治理调整，不再用于新版排期。PLAN-01/02后由DeepSeek按最终范围评估，负责人配置人员，再制定日历计划。当前不承诺虚构完成日期。
+
+R1最新准入以[验收与固定基线](w0/r1-acceptance-2026-11-08.md)为准；#104只依赖#103的R1子出口，不等待父Issue关闭。其余任务不据此跳过完整前置。
