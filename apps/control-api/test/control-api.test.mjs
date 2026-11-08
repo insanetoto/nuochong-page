@@ -130,13 +130,43 @@ test('queued/running cancellation, result races and timeout never overwrite a te
 });
 test('credential revocation terminates an in-flight run and stream without continued disclosure',async(t)=>{
  const f=await fixture(t);const a=await f.member();const id=await f.create(a.token);
- const task=workOnce({...f,executorFactory:()=>delayed(),leaseMs:300});
+ // This test targets revocation while the worker still owns a live lease.
+ // A 300ms lease was below CI PostgreSQL/heartbeat latency and turned the
+ // revocation assertion into a lease-expiry race; lease expiry is covered by
+ // the explicit recovery case below. Do not lower this to hide a failure.
+ const task=workOnce({...f,executorFactory:()=>delayed(),leaseMs:1000});
  await until(async()=>(await f.store.ownedRun({id:a.principalId},id)).status==='running');
  const stream=await fetch(f.origin+'/api/ai/runs/'+id+'/events',{headers:{authorization:'Bearer '+a.token}});
  await f.call('/api/auth/credentials/'+a.credentialId+'/revoke',{method:'POST',body:{}});
  await task;const text=await stream.text();assert.doesNotMatch(text,/run.completed/);
  assert.equal((await f.store.ownedRun({id:a.principalId},id)).status,'cancelled');
  assert.equal((await f.call('/api/ai/runs/'+id,{token:a.token})).status,401);
+});
+test('lease expiry during revocation converges to one terminal state without disclosure',async(t)=>{
+ const f=await fixture(t);const a=await f.member();const id=await f.create(a.token);
+ const slow=delayed();
+ const originalHeartbeat=f.store.heartbeat.bind(f.store);let first=true;
+ // Deterministically lose the 300ms lease: the first heartbeat is held past
+ // the lease deadline, as seen under CI database latency.
+ f.store.heartbeat=async(...args)=>{if(first){first=false;await delay(450);}return originalHeartbeat(...args);};
+ const task=workOnce({...f,executorFactory:()=>slow,leaseMs:300});
+ await until(async()=>(await f.store.ownedRun({id:a.principalId},id)).status==='running');
+ const stream=await fetch(f.origin+'/api/ai/runs/'+id+'/events',{headers:{authorization:'Bearer '+a.token}});
+ await f.call('/api/auth/credentials/'+a.credentialId+'/revoke',{method:'POST',body:{}});
+ await task;
+ // Before recovery the run is still running; the original test read this and
+ // mistook it for a revocation failure.
+ assert.equal((await f.store.ownedRun({id:a.principalId},id)).status,'running');
+ await f.store.recoverExpired();
+ const terminal=await f.store.ownedRun({id:a.principalId},id);
+ assert.equal(terminal.status,'failed');
+ assert.equal(terminal.error_code,'unavailable');
+ assert.equal((await f.call('/api/ai/runs/'+id,{token:a.token})).status,401);
+ const text=await stream.text();assert.doesNotMatch(text,/run.completed/);
+ const events=await f.store.replay({id:a.principalId},id);
+ const terminals=events.filter(e=>['run.completed','run.failed','run.cancelled'].includes(e.type));
+ assert.equal(terminals.length,1);
+ assert.equal(terminals[0].type,'run.failed');
 });
 test('expired lease fencing rejects stale completion; pre-dispatch failure can retry',async(t)=>{
  const f=await fixture(t);const a=await f.member();const id=await f.create(a.token);
