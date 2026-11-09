@@ -205,3 +205,23 @@ test('full knowledge schema restore preserves identity, approvals, snapshots and
  assert.equal(read.status,200);assert.equal(read.data.title,published.title);
  assert.equal(await new PrivateObjects(objectBackup).read(f.pool,(await f.pool.query('SELECT object_hash FROM knowledge_sources WHERE id=$1',[source.id])).rows[0].object_hash),f.content);
 });
+
+test('immutable revisions and identity bindings reject mutation or mismatched references',async(t)=>{
+ const f=await v0Schema(t);await migrate(f.pool,f.schema);
+ const c1='concept-'+randomUUID(),c2='concept-'+randomUUID(),cr1='concept-revision-'+randomUUID(),cr2='concept-revision-'+randomUUID();
+ await f.pool.query('INSERT INTO knowledge_concepts(id,space_id) VALUES($1,$2),($3,$2)',[c1,f.spaceId,c2]);
+ await f.pool.query(`INSERT INTO knowledge_concept_revisions(id,concept_id,space_id,revision,label,content_hash)
+  VALUES($1,$2,$3,1,'Concept one',repeat('c',64)),($4,$5,$3,1,'Concept two',repeat('d',64))`,[cr1,c1,f.spaceId,cr2,c2]);
+ const assignment='assignment-'+randomUUID();
+ await f.pool.query(`INSERT INTO knowledge_entry_concept_assignments(id,space_id,entry_id,concept_id,concept_revision_id,revision,status,content_hash)
+  VALUES($1,$2,$3,$4,$5,1,'suggested',repeat('e',64))`,[assignment,f.spaceId,f.pageId,c1,cr1]);
+ await assert.rejects(f.pool.query(`INSERT INTO knowledge_entry_concept_assignments(id,space_id,entry_id,concept_id,concept_revision_id,revision,status,content_hash)
+  VALUES($1,$2,$3,$4,$5,1,'suggested',repeat('e',64))`,[randomUUID(),f.spaceId,f.pageId,c1,cr2]),/foreign key|violates/i);
+ await assert.rejects(f.pool.query("UPDATE knowledge_concept_revisions SET label='changed' WHERE id=$1",[cr1]),/IMMUTABLE_REVISION|check/i);
+ await assert.rejects(f.pool.query('DELETE FROM knowledge_concept_revisions WHERE id=$1',[cr1]),/IMMUTABLE_REVISION|check/i);
+ await assert.rejects(f.pool.query("UPDATE knowledge_entry_concept_assignments SET status='confirmed' WHERE id=$1",[assignment]),/IMMUTABLE_REVISION|check/i);
+
+ const fragmentWrong=randomUUID();
+ await assert.rejects(f.pool.query(`INSERT INTO knowledge_fragments(id,space_id,source_id,source_revision,locator,locator_key,excerpt,text_hash,status,revision,entry_id)
+  VALUES($1,$2,$3,1,'{"type":"line","lineStart":1,"lineEnd":1}'::jsonb,'line:1:1','wrong entry',repeat('f',64),'pending',1,$4)`,[fragmentWrong,f.spaceId,f.sourceId,'page-'+randomUUID()]),/foreign key|violates/i);
+});
