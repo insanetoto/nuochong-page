@@ -235,7 +235,7 @@ test('immutable revisions and identity bindings reject mutation or mismatched re
   VALUES($1,$2,$3,1,'{"type":"line","lineStart":1,"lineEnd":1}'::jsonb,'line:1:1','wrong entry',repeat('f',64),'pending',1,$4)`,[fragmentWrong,f.spaceId,f.sourceId,'page-'+randomUUID()]),/foreign key|violates/i);
  const fragmentGood=randomUUID();
  await f.pool.query(`INSERT INTO knowledge_fragments(id,space_id,source_id,source_revision,locator,locator_key,excerpt,text_hash,status,revision,entry_id)
-  VALUES($1,$2,$3,1,'{"type":"line","lineStart":1,"lineEnd":1}'::jsonb,'line:1:1','immutable source',repeat('g',64),'pending',1,$4)`,[fragmentGood,f.spaceId,f.sourceId,f.pageId]);
+  VALUES($1,$2,$3,1,'{"type":"line","lineStart":1,"lineEnd":1}'::jsonb,'line:1:1','immutable source',repeat('a',64),'pending',1,$4)`,[fragmentGood,f.spaceId,f.sourceId,f.pageId]);
  await assert.rejects(f.pool.query("UPDATE knowledge_fragments SET excerpt='changed' WHERE id=$1",[fragmentGood]),/IMMUTABLE_FRAGMENT|check/i);
  const secondSpace='space-'+randomUUID();await f.pool.query('INSERT INTO knowledge_spaces(id,title) VALUES($1,$2)',[secondSpace,'second space']);
  await assert.rejects(f.pool.query('UPDATE knowledge_concepts SET space_id=$2 WHERE id=$1',[c1,secondSpace]),/IMMUTABLE_CONCEPT_IDENTITY|foreign key|violates/i);
