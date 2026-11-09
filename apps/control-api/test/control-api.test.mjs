@@ -33,6 +33,11 @@ function delayed(ms=1000){let finish,timer;return {execute:()=>new Promise(resol
 async function until(check){for(let i=0;i<100;i++){if(await check())return;await delay(10);}throw new Error('Condition not met.');}
 function deferred(){let resolve,reject;const promise=new Promise((res,rej)=>{resolve=res;reject=rej;});return {promise,resolve,reject};}
 function withTimeout(promise,ms,message){let timer;const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(message)),ms);});return Promise.race([promise,timeout]).finally(()=>clearTimeout(timer));}
+function assertNoPostRevocationDisclosure(text){
+ assert.match(text,/pre-revocation-visible-marker/);
+ assert.doesNotMatch(text,/post-revocation-secret-marker/);
+ assert.doesNotMatch(text,/run.completed/);
+}
 function readSse(response){
  const reader=response.body.getReader();const decoder=new TextDecoder();let text='';
  const done=(async()=>{for(;;){const {value,done:closed}=await reader.read();if(closed)break;text+=decoder.decode(value,{stream:true});}})();
@@ -161,13 +166,21 @@ test('revocation closes an open stream before later deltas without a worker term
  await delay(300); // SSE revalidates every 100ms
  await notify('post-revocation-secret-marker');
  await delay(200);
- assert.doesNotMatch(sse.text(),/post-revocation-secret-marker/);
  await withTimeout(sse.done,3000,'SSE did not close after credential revocation');
- assert.match(sse.text(),/pre-revocation-visible-marker/);
- assert.doesNotMatch(sse.text(),/run.completed/);
+ assertNoPostRevocationDisclosure(sse.text());
  assert.equal((await f.store.ownedRun({id:a.principalId},id)).status,'running');
  assert.equal((await f.pool.query('SELECT output FROM runs WHERE id=$1',[id])).rows[0].output,null);
  assert.equal((await f.call('/api/ai/runs/'+id+'/events',{token:a.token})).status,401);
+});
+test('a delayed post-revocation marker is caught only by the final-text check',async()=>{
+ const encoder=new TextEncoder();
+ const body=new ReadableStream({start(controller){
+  controller.enqueue(encoder.encode('event: run.delta\ndata: {"text":"pre-revocation-visible-marker"}\n\n'));
+  setTimeout(()=>{controller.enqueue(encoder.encode('event: run.delta\ndata: {"text":"post-revocation-secret-marker"}\n\n'));controller.close();},350);
+ }});
+ const sse=readSse(new Response(body));
+ await withTimeout(sse.done,2000,'simulated stream did not close');
+ assert.throws(()=>assertNoPostRevocationDisclosure(sse.text()),/post-revocation-secret-marker/);
 });
 test('lease expiry during revocation converges to one terminal state without disclosure',async(t)=>{
  const f=await fixture(t);const a=await f.member();const id=await f.create(a.token);
@@ -180,13 +193,15 @@ test('lease expiry during revocation converges to one terminal state without dis
  // database lease has expired.
  f.store.heartbeat=async(...args)=>{if(first){first=false;heartbeatEntered.resolve();await releaseHeartbeat.promise;}return originalHeartbeat(...args);};
  const task=workOnce({...f,executorFactory:()=>slow,leaseMs:300});
- await started.promise;await heartbeatEntered.promise;
+ t.after(()=>{releaseHeartbeat.resolve();return slow.close().catch(()=>{});});
+ await withTimeout(started.promise,3000,'executor did not start');
+ await withTimeout(heartbeatEntered.promise,3000,'heartbeat did not enter');
  await until(async()=>(await f.pool.query('SELECT lease_until <= clock_timestamp() AS expired FROM runs WHERE id=$1',[id])).rows[0].expired);
  const response=await fetch(f.origin+'/api/ai/runs/'+id+'/events',{headers:{authorization:'Bearer '+a.token}});
  const sse=readSse(response);
  await f.call('/api/auth/credentials/'+a.credentialId+'/revoke',{method:'POST',body:{}});
  releaseHeartbeat.resolve();
- await task;
+ await withTimeout(task,5000,'workOnce did not return');
  // Before recovery the run is still running; the original test read this and
  // mistook it for a revocation failure.
  assert.equal((await f.store.ownedRun({id:a.principalId},id)).status,'running');
