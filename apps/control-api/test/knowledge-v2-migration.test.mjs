@@ -241,7 +241,7 @@ test('immutable revisions and identity bindings reject mutation or mismatched re
  await assert.rejects(f.pool.query('UPDATE knowledge_concepts SET space_id=$2 WHERE id=$1',[c1,secondSpace]),/IMMUTABLE_CONCEPT_IDENTITY|foreign key|violates/i);
  const snapshot='snapshot-'+randomUUID();
  await f.pool.query(`INSERT INTO knowledge_publication_snapshots(id,space_id,manifest,graph_hash,policy_revision,effective_at)
-  VALUES($1,$2,'{"version":1}'::jsonb,repeat('h',64),1,clock_timestamp())`,[snapshot,f.spaceId]);
+  VALUES($1,$2,'{"version":1}'::jsonb,repeat('a',64),1,clock_timestamp())`,[snapshot,f.spaceId]);
  await assert.rejects(f.pool.query(`UPDATE knowledge_publication_snapshots SET manifest='{"version":2}'::jsonb WHERE id=$1`,[snapshot]),/IMMUTABLE_SNAPSHOT|check/i);
  await f.pool.query('UPDATE knowledge_publication_snapshots SET current=true WHERE id=$1',[snapshot]);
  await assert.rejects(f.pool.query('DELETE FROM knowledge_publication_snapshots WHERE id=$1',[snapshot]),/IMMUTABLE_SNAPSHOT|check/i);
