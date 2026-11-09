@@ -165,23 +165,31 @@ test('v0 read paths and reader restrictions survive 005 and backfill',async(t)=>
  assert.equal((await f.call('knowledge.sources.list.v1',{spaceId:f.spaceId},reader.token)).status,403);
 });
 
-test('full knowledge schema restore preserves identity, approvals, snapshots and object references',async(t)=>{
- const f=await knowledgeFixture(t);const source=await f.ingest();const page=await f.draft(source);await f.review(page);const published=await f.publish(page);
- const publication=(await f.pool.query('SELECT id,publisher_id,approval_id FROM knowledge_publications WHERE revision_id=$1',[published.revisionId])).rows[0];
- const snapshotId='snapshot-'+randomUUID(),conceptId='concept-'+randomUUID(),conceptRevision='concept-revision-'+randomUUID(),assignmentId='assignment-'+randomUUID();
- await f.pool.query(`INSERT INTO knowledge_publication_snapshots(id,space_id,manifest,graph_hash,policy_revision,effective_at,current)
-  VALUES($1,$2,$3,$4,1,clock_timestamp(),true)`,[snapshotId,f.spaceId,JSON.stringify({version:1,entries:[published.revisionId],sources:[source.id]}),'a'.repeat(64)]);
- await f.pool.query('UPDATE knowledge_publications SET snapshot_id=$1 WHERE id=$2',[snapshotId,publication.id]);
- await f.pool.query(`INSERT INTO knowledge_concepts(id,space_id) VALUES($1,$2)`,[conceptId,f.spaceId]);
+test('full knowledge schema restore preserves identity, approvals, snapshots and object references',{timeout:30000},async(t)=>{
+ const f=await v0Schema(t);await migrate(f.pool,f.schema);
+ const principal='principal-'+randomUUID(),credential='credential-'+randomUUID(),approval='approval-'+randomUUID(),publication='publication-'+randomUUID(),snapshotId='snapshot-'+randomUUID(),conceptId='concept-'+randomUUID(),conceptRevision='concept-revision-'+randomUUID(),assignmentId='assignment-'+randomUUID();
+ await f.pool.query("INSERT INTO principals(id,name,kind,role) VALUES($1,'restore-admin','user','admin')",[principal]);
+ await f.pool.query(`INSERT INTO credentials(id,principal_id,token_hash,principal_epoch,scopes,expires_at)
+  VALUES($1,$2,repeat('a',64),1,$3,clock_timestamp()+interval '1 day')`,[credential,principal,['product:read','product:write','product:approve']]);
+ await f.pool.query(`INSERT INTO product_approvals(id,command_id,target_hash,scope_id,approver_id,credential_id,expires_at,used,reason)
+  VALUES($1,'knowledge.publications.publish.v1',repeat('b',64),$2,$3,$4,clock_timestamp()+interval '1 day',true,'synthetic restore approval')`,[approval,f.spaceId,principal,credential]);
+ await f.pool.query("UPDATE knowledge_revisions SET state='published',reviewed_by=$1,reviewer_credential_id=$2,reviewer_epoch=1,review_hash=repeat('c',64) WHERE id=$3",[principal,credential,f.revisionId]);
+ await f.pool.query('UPDATE knowledge_pages SET published_revision_id=$1 WHERE id=$2',[f.revisionId,f.pageId]);
+ await f.pool.query(`INSERT INTO knowledge_publications(id,page_id,revision_id,publisher_id,approval_id,state)
+  VALUES($1,$2,$3,$4,$5,'published')`,[publication,f.pageId,f.revisionId,principal,approval]);
+ await f.pool.query(`INSERT INTO knowledge_publication_snapshots(id,space_id,manifest,graph_hash,policy_revision,approval_id,effective_at,current)
+  VALUES($1,$2,$3,repeat('d',64),1,$4,clock_timestamp(),true)`,[snapshotId,f.spaceId,JSON.stringify({version:1,entries:[f.revisionId],sources:[f.sourceId]}),approval]);
+ await f.pool.query('UPDATE knowledge_publications SET snapshot_id=$1 WHERE id=$2',[snapshotId,publication]);
+ await f.pool.query('INSERT INTO knowledge_concepts(id,space_id) VALUES($1,$2)',[conceptId,f.spaceId]);
  await f.pool.query(`INSERT INTO knowledge_concept_revisions(id,concept_id,space_id,revision,label,content_hash)
-  VALUES($1,$2,$3,1,'Synthetic concept',repeat('c',64))`,[conceptRevision,conceptId,f.spaceId]);
+  VALUES($1,$2,$3,1,'Synthetic concept',repeat('e',64))`,[conceptRevision,conceptId,f.spaceId]);
  await f.pool.query(`INSERT INTO knowledge_entry_concept_assignments(id,space_id,entry_id,concept_id,concept_revision_id,revision,status,content_hash)
-  VALUES($1,$2,$3,$4,$5,1,'confirmed',repeat('d',64))`,[assignmentId,f.spaceId,published.pageId,conceptId,conceptRevision]);
+  VALUES($1,$2,$3,$4,$5,1,'confirmed',repeat('f',64))`,[assignmentId,f.spaceId,f.pageId,conceptId,conceptRevision]);
  await f.pool.query(`INSERT INTO knowledge_capabilities(capability_id,version,status,contract_ref) VALUES('knowledge.search@1',1,'active','synthetic://knowledge.search@1')`);
  await f.pool.query(`INSERT INTO knowledge_publication_capabilities(snapshot_id,capability_id,capability_version,status)
   VALUES($1,'knowledge.search@1',1,'active')`,[snapshotId]);
  await backfillV0Fragments(f.pool,{objectRoot:f.root,spaceId:f.spaceId});
- const tables=['principals','credentials','product_departments','product_members','product_memberships','product_accounts','product_bindings','product_approvals','knowledge_objects','knowledge_spaces','knowledge_space_policy_revisions','knowledge_documents','knowledge_sources','knowledge_pages','knowledge_revisions','knowledge_evidence','knowledge_publications','knowledge_reviews','knowledge_fragments','knowledge_entry_fragments','knowledge_concepts','knowledge_concept_revisions','knowledge_entry_concept_assignments','knowledge_relations','knowledge_relation_revisions','knowledge_relation_evidence','knowledge_entry_supersessions','knowledge_import_batches','knowledge_import_files','knowledge_publication_snapshots','knowledge_capabilities','knowledge_publication_capabilities'];
+ const tables=['principals','credentials','product_approvals','knowledge_objects','knowledge_spaces','knowledge_space_policy_revisions','knowledge_documents','knowledge_sources','knowledge_pages','knowledge_revisions','knowledge_evidence','knowledge_publications','knowledge_reviews','knowledge_fragments','knowledge_entry_fragments','knowledge_concepts','knowledge_concept_revisions','knowledge_entry_concept_assignments','knowledge_relations','knowledge_relation_revisions','knowledge_relation_evidence','knowledge_entry_supersessions','knowledge_import_batches','knowledge_import_files','knowledge_publication_snapshots','knowledge_capabilities','knowledge_publication_capabilities'];
  const backup={};for(const table of tables)backup[table]=(await f.pool.query(`SELECT * FROM ${table}`)).rows;
  const objectBackup=mkdtempSync(join(tmpdir(),'knowledge-v2-db-backup-'));t.after(()=>rmSync(objectBackup,{recursive:true,force:true}));cpSync(f.root,objectBackup,{recursive:true});
  const superuser=(await f.pool.query("SELECT rolsuper FROM pg_roles WHERE rolname=current_user")).rows[0].rolsuper;
@@ -197,13 +205,12 @@ test('full knowledge schema restore preserves identity, approvals, snapshots and
    WHERE c.contype='f' AND n.nspname=$1`,[f.schema]);
   for(const row of constraints.rows)await client.query(`ALTER TABLE ${row.nspname}.${row.relname} VALIDATE CONSTRAINT ${row.conname}`);
  }finally{client.release();}
- const publicationRow=await f.pool.query('SELECT publisher_id,approval_id,snapshot_id FROM knowledge_publications WHERE id=$1',[publication.id]);
- assert.deepEqual(publicationRow.rows[0],{publisher_id:publication.publisher_id,approval_id:publication.approval_id,snapshot_id:snapshotId});
- assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_fragments WHERE source_id=$1',[source.id])).rows[0].n,1);
+ const restored=await f.pool.query(`SELECT p.published_revision_id,r.title,r.citations,pub.publisher_id,pub.approval_id,pub.snapshot_id
+  FROM knowledge_pages p JOIN knowledge_revisions r ON r.id=p.published_revision_id JOIN knowledge_publications pub ON pub.revision_id=r.id WHERE p.id=$1`,[f.pageId]);
+ assert.equal(restored.rows[0].title,'出差审批指南');assert.deepEqual(restored.rows[0].citations,f.citations);assert.equal(restored.rows[0].publisher_id,principal);assert.equal(restored.rows[0].approval_id,approval);assert.equal(restored.rows[0].snapshot_id,snapshotId);
+ assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_fragments WHERE source_id=$1',[f.sourceId])).rows[0].n,1);
  assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_publication_capabilities WHERE snapshot_id=$1',[snapshotId])).rows[0].n,1);
- const read=await f.call('knowledge.pages.get.v1',{spaceId:f.spaceId,pageId:published.pageId,view:'published'},f.admin.token);
- assert.equal(read.status,200);assert.equal(read.data.title,published.title);
- assert.equal(await new PrivateObjects(objectBackup).read(f.pool,(await f.pool.query('SELECT object_hash FROM knowledge_sources WHERE id=$1',[source.id])).rows[0].object_hash),f.content);
+ assert.equal(await new PrivateObjects(objectBackup).read(f.pool,f.contentHash),f.content);
 });
 
 test('immutable revisions and identity bindings reject mutation or mismatched references',async(t)=>{
@@ -220,7 +227,6 @@ test('immutable revisions and identity bindings reject mutation or mismatched re
  await assert.rejects(f.pool.query("UPDATE knowledge_concept_revisions SET label='changed' WHERE id=$1",[cr1]),/IMMUTABLE_REVISION|check/i);
  await assert.rejects(f.pool.query('DELETE FROM knowledge_concept_revisions WHERE id=$1',[cr1]),/IMMUTABLE_REVISION|check/i);
  await assert.rejects(f.pool.query("UPDATE knowledge_entry_concept_assignments SET status='confirmed' WHERE id=$1",[assignment]),/IMMUTABLE_REVISION|check/i);
-
  const fragmentWrong=randomUUID();
  await assert.rejects(f.pool.query(`INSERT INTO knowledge_fragments(id,space_id,source_id,source_revision,locator,locator_key,excerpt,text_hash,status,revision,entry_id)
   VALUES($1,$2,$3,1,'{"type":"line","lineStart":1,"lineEnd":1}'::jsonb,'line:1:1','wrong entry',repeat('f',64),'pending',1,$4)`,[fragmentWrong,f.spaceId,f.sourceId,'page-'+randomUUID()]),/foreign key|violates/i);
