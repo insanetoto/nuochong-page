@@ -64,12 +64,13 @@ t+       recoverExpired() -> failed(unavailable)，写 run.failed
 - 用 `store.claim(5000)` 直接进入 `running`，**不运行 worker**；因此唯一能关闭该 SSE 的机制就是循环中的 `identity.authenticate(token)`；
 - 通过真实 `pg_notify('oa_delta_<schema>')` 发送 `pre-revocation-visible-marker`，证明连接确实能收到 delta；
 - 撤权后等待 300ms（SSE 每 100ms 重新鉴权），发送 `post-revocation-secret-marker`；
-- 断言旧流关闭、包含 pre、不含 post、无 `run.completed`；run 仍为 `running`（说明不是 worker 终态关闭流）；数据库 `output` 为 null；新 SSE 请求 401。
+- `await withTimeout(sse.done,...)` 成功后再检查**最终完整文本**：包含 pre、不含 post、无 `run.completed`；run 仍为 `running`（说明不是 worker 终态关闭流）；数据库 `output` 为 null；新 SSE 请求 401。
+- 新增模拟延迟负例：post 在 350ms 后才到达并立即关流，最终文本检查会拒绝；证明 200ms 固定窗口的断言盲区已被覆盖。
 
 **Mutation 证据**：在临时分支仅移除 `app.mjs` 的 `await identity.authenticate(token)`，重新运行 control-api：
 
-- run `42489885533` 只失败该测试；
-- 失败信息包含 `post-revocation-secret-marker`，证明移除流鉴权后 delta 会继续透传；
+- run `42545250530` 只失败该 SSE 测试（`SSE did not close after credential revocation`）；post delta 因此可继续留在打开流中；
+- 前一轮 mutation run `42489885533` 在旧断言顺序下也失败并直接输出 post marker；两轮均证明用例敏感；
 - 临时 mutation 分支已删除，未合并。
 
 ## 5. 三条撤权/租约路径的区分
@@ -84,16 +85,16 @@ t+       recoverExpired() -> failed(unavailable)，写 run.failed
 ## 6. 最小修复（本 PR）
 
 - 保留撤权用例并改为 `leaseMs:1000`，只验证“租约仍有效时撤权 → cancelled”，保留无 `run.completed`、401 断言。
-- 新增无 worker 的 SSE 鉴权负例（pre/post delta + mutation 证据）。
-- 新增显式屏障的租约丢失回归，避免用睡眠改变概率；覆盖 transient running → recovery failed 的唯一终态/无披露/401。
+- 新增无 worker 的 SSE 鉴权负例（pre/post delta + 最终文本断言 + 延迟 marker 回归 + mutation 证据）。
+- 新增显式屏障的租约丢失回归，等待 executor 启动、heartbeat 进入、DB 租约过期后才撤权；屏障使用有界超时并在 `t.after` 释放/清理，避免目标路径未进入时占满 CI。
 - 未改生产 Worker、Store、身份、授权或任务状态机；未降低任何安全断言。
 
 ## 7. 验证证据
 
 | 检查 | 结果 |
 | --- | --- |
-| PR #132 control-api（PG 17.11 / Node 24.21.0，run `42489559363`） | 55/55 pass；worker 撤权 447ms；SSE 撤权 1329ms；租约丢失 557ms |
-| Mutation（移除 SSE 鉴权，run `42489885533`） | 仅 `revocation closes an open stream...` 失败，post marker 出现；证明用例敏感 |
+| PR #132 control-api（PG 17.11 / Node 24.21.0，run `42544940315`） | 56/56 pass；worker 撤权 410ms；SSE 撤权 875ms；延迟 marker 353ms；租约丢失 570ms |
+| Mutation（移除 SSE 鉴权，run `42545250530`） | 仅 `revocation closes an open stream...` 失败（SSE did not close）；证明最终断言敏感 |
 | `npx eslint apps/control-api/test/control-api.test.mjs` | pass |
 | `node --check` / `git diff --check` | pass |
 | 既有 25 项平台离线测试 | pass（同 job） |
