@@ -1,6 +1,6 @@
 {
-  "date": "2026-11-08",
-  "status": "KBV2-01 accepted, merged and released to existing knowledge isolated test; website test/production published; full runtime admission pending",
+  "date": "2026-11-09",
+  "status": "Issue94 accepted and merged; PLAN-03:R2 admits KBV2-02 isolated data work Ready; overall FULL and deployments not authorized",
   "gates": {
     "existingIssues": [
       85,
@@ -26,17 +26,19 @@
     "prototypePR": 100,
     "implementationAuthorized": {
       "scope": [
-        "KBV2-01 offline ontology/manifest/schema only"
+        "KBV2-01 offline ontology/manifest/schema only",
+        "KBV2-02 isolated synthetic data model/migration/backfill/compatibility under PLAN-03:R2"
       ],
       "notAuthorized": [
         "identity",
         "jobs/worker",
-        "database migration",
+        "database migration outside isolated synthetic local/CI databases",
         "new business handlers",
         "real company data",
         "deployment"
       ],
-      "ownerEvidence": "https://github.com/insanetoto/nuochong-page/issues/103#issuecomment-6717796754"
+      "ownerEvidence": "https://github.com/insanetoto/nuochong-page/issues/103#issuecomment-6717796754",
+      "r2Evidence": "docs/product/knowledge/v2/w0/r2-data-admission-2026-11-09.md"
     },
     "issueRegistration": {
       "status": "Registered",
@@ -48,16 +50,14 @@
       "assignment": "Unassigned; roles documented",
       "implementationAuthorized": false
     },
-    "blockingIssues": [
-      94
-    ],
+    "blockingIssues": [],
     "designPRsMerged": true,
     "adrStatus": {
       "ADR-011": "Accepted (P1 architecture direction)",
       "ADR-012": "Accepted (P1 architecture direction)"
     },
     "w0": {
-      "status": "R1 accepted; full runtime admission incomplete",
+      "status": "R1 accepted; R2 accepted for KBV2-02 only; full runtime admission incomplete",
       "artifacts": "docs/product/knowledge/v2/w0/README.md",
       "ownerConfirmation": "Approved 2026-11-08: 批准确认单，允许合并",
       "fullAdmission": false,
@@ -69,6 +69,15 @@
         "integrationMergeSha": "ed15df85b834d4a7fbc7637678ab98866c4c9e11",
         "risk94Accepted": false,
         "evidence": "docs/product/knowledge/v2/w0/r1-acceptance-2026-11-08.md"
+      },
+      "r2": {
+        "status": "Accepted",
+        "taskId": "KBV2-02",
+        "scope": "isolated synthetic data model/migration/backfill/compatibility development only",
+        "ownerInstruction": "确认、合并代码，给我一段提示词，安排deepseek进行下一段工作",
+        "integrationBaseSha": "4fce4924a848e4a1e68f058a629678edca9a88cd",
+        "evidence": "docs/product/knowledge/v2/w0/r2-data-admission-2026-11-09.md",
+        "deploymentAuthorized": false
       }
     },
     "contractProposal": "docs/product/knowledge/v2/w0/p1-command-contracts.json",
@@ -104,7 +113,7 @@
         "state": "MERGED"
       }
     ],
-    "dependencyEvaluation": "KBV2-01 consumes only PLAN-03:R1; do not require PLAN-03 issue closed. All other tasks retain full dependency acceptance.",
+    "dependencyEvaluation": "KBV2-01 consumes PLAN-03:R1; KBV2-02 consumes PLAN-03:R2 with accepted KBV2-01. All other runtime tasks retain FULL and task dependency acceptance.",
     "release20261108": {
       "ownerConfirmation": "验收通过，合并代码并部署新版本到测试和生产环境；沿用现有范围：发布官网测试/生产，并更新知识库隔离测试服务",
       "scope": [
@@ -120,6 +129,15 @@
         42477771035,
         42477577103
       ]
+    },
+    "issue94": {
+      "status": "Accepted",
+      "issueState": "CLOSED",
+      "acceptedAt": "2026-11-09",
+      "pr": 132,
+      "acceptedHead": "708488c7b04f5e703c20cce2c9c5a9f898fc7b4a",
+      "mergeSha": "4fce4924a848e4a1e68f058a629678edca9a88cd",
+      "evidence": "docs/product/knowledge/v2/w0/r2-data-admission-2026-11-09.md"
     }
   },
   "tasks": [
@@ -228,13 +246,14 @@
         "docs/adr/"
       ],
       "delivery": "设计/契约/决定/任务证据；不提交运行代码",
-      "readiness": "R1子出口已Accepted，仅解锁KBV2-01；#94及完整运行准入仍未完成，Issue保持Open。",
+      "readiness": "R1/R2分别解锁#104/#105；#94已验收关闭；整体FULL仍未完成，父Issue保持Open。",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/103",
       "issueState": "OPEN",
       "registeredAt": "2026-11-08",
       "progressEvidence": [
         "20项Issue已登记并回填；人员、集成SHA与实施准入仍未完成",
-        "W0设计交付：docs/product/knowledge/v2/w0/README.md"
+        "W0设计交付：docs/product/knowledge/v2/w0/README.md",
+        "docs/product/knowledge/v2/w0/r2-data-admission-2026-11-09.md"
       ],
       "acceptedExits": {
         "R1": {
@@ -244,9 +263,17 @@
           ],
           "integrationSha": "ed15df85b834d4a7fbc7637678ab98866c4c9e11",
           "evidence": "https://github.com/insanetoto/nuochong-page/issues/103#issuecomment-6717796754"
+        },
+        "R2": {
+          "status": "Accepted",
+          "scope": [
+            "KBV2-02"
+          ],
+          "integrationSha": "4fce4924a848e4a1e68f058a629678edca9a88cd",
+          "evidence": "docs/product/knowledge/v2/w0/r2-data-admission-2026-11-09.md"
         }
       },
-      "fullExit": "Pending #94 conclusion or explicit runtime risk decision"
+      "fullExit": "Task-level R2 accepted; other runtime scopes still require explicit full admission evidence"
     },
     {
       "id": "KBV2-01",
@@ -304,13 +331,14 @@
       "ownerRole": "DeepSeek；ChatGPT预审；负责人验收",
       "priority": "P1",
       "lane": "P1实现",
-      "status": "Planned",
+      "status": "Ready",
       "issue": 105,
       "dependsOn": [
-        "KBV2-01"
+        "KBV2-01",
+        "PLAN-03"
       ],
       "scope": "空间 code/type、片段、概念、关系、导入批次/文件、能力表；v0 按段落回填与双读",
-      "notInScope": "不恢复旧演示，不改官网，不扩权，不将planned注册为成功。",
+      "notInScope": "不恢复旧演示，不改官网，不扩权，不将planned注册为成功。 不迁移现有测试/生产库、不部署、不启用新业务命令或改身份/Worker。",
       "acceptance": [
         "真 PostgreSQL 迁移/回滚；回填幂等；旧条目可读；跨空间关系按双方可见裁剪、证据引用拒绝",
         "新关系/概念/分配修订与supersedes模型落库；同条目不同修订合法，同修订自指/跨条目/逆序拒绝。",
@@ -320,18 +348,28 @@
       "wave": "W1",
       "commandIds": [],
       "prototypeViews": [],
-      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "implementationBase": "refactor/integration @ 4fce4924a848e4a1e68f058a629678edca9a88cd",
       "allowedPaths": [
         "apps/control-api/src/migrations/",
         "plugins/knowledge/",
         "apps/control-api/test/"
       ],
       "delivery": "增量迁移、幂等回填、旧数据双读与恢复演练证据",
-      "readiness": "等待全部dependsOn验收及本阶段门槛；当前不得作为已领取/已实现",
+      "readiness": "#104已验收，#94已确认并合并；PLAN-03:R2有限准入已登记，DeepSeek可领取隔离数据工作，无需父Issue关闭。",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/105",
       "issueState": "OPEN",
       "registeredAt": "2026-11-08",
-      "requiredAdmissionExit": "PLAN-03:FULL"
+      "requiredAdmissionExit": "PLAN-03:R2",
+      "requiredDependencyExit": "PLAN-03:R2",
+      "dependencyExits": {
+        "PLAN-03": "R2"
+      },
+      "implementationBaseSha": "4fce4924a848e4a1e68f058a629678edca9a88cd",
+      "executor": "DeepSeek",
+      "reviewer": "ChatGPT / Codex",
+      "acceptanceOwner": "项目负责人",
+      "admissionEvidence": "docs/product/knowledge/v2/w0/r2-data-admission-2026-11-09.md",
+      "sharedFileOwnership": "DeepSeek owns migration005 and task-local knowledge data/backfill/tests; no concurrent shared registration/lockfile changes"
     },
     {
       "id": "KBV2-03",

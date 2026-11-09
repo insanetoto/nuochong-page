@@ -1,5 +1,8 @@
 # 知识库 v2 任务索引（执行计划 r5（R1已批准））
 
+**2026-11-09最新：#94已验收关闭，PR #132已合入integration（4fce492）；#105 / KBV2-02为Ready，明确消费PLAN-03:R2，只允许隔离合成数据开发，不等待#103父Issue关闭。整体FULL及其他任务/部署不自动解锁。见[R2交接](w0/r2-data-admission-2026-11-09.md)。**
+
+
 **2026-11-08 发布更新：KBV2-01 已由负责人验收，PR #123 已合入 integration；官网测试/生产及知识库隔离测试发布成功。知识库 v2 页面与后续业务能力仍 planned，#94 / 完整运行准入保持独立。详见[验收与发布记录](release-2026-11-08.md)。**
 
 
@@ -17,7 +20,7 @@ W0设计已补齐，见[一次确认单](w0/admission.md)；#104当前Released�
 | PLAN-02 | [#102](https://github.com/insanetoto/nuochong-page/issues/102) | P1命令与数据契约实现前冻结 | ChatGPT；DeepSeek评估可实现性 | PLAN-01 | Accepted |
 | PLAN-03 | [#103](https://github.com/insanetoto/nuochong-page/issues/103) | 实现准入与执行任务登记 | ChatGPT；负责人批准 | PLAN-01, PLAN-02 | In progress |
 | KBV2-01 | [#104](https://github.com/insanetoto/nuochong-page/issues/104) | 本体注册表与版本治理 | DeepSeek；ChatGPT预审；负责人验收 | PLAN-03:R1 | Released（隔离测试） |
-| KBV2-02 | [#105](https://github.com/insanetoto/nuochong-page/issues/105) | 数据模型扩展与迁移 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-01 | Planned |
+| KBV2-02 | [#105](https://github.com/insanetoto/nuochong-page/issues/105) | 数据模型扩展与迁移 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-01, PLAN-03:R2 | Ready |
 | KBV2-03 | [#106](https://github.com/insanetoto/nuochong-page/issues/106) | 知识空间管理 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-02 | Planned |
 | KBV2-04 | [#107](https://github.com/insanetoto/nuochong-page/issues/107) | 文本/PDF/DOCX 导入与片段任务 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-02 | Planned |
 | KBV2-15 | [#108](https://github.com/insanetoto/nuochong-page/issues/108) | 产品壳、导航兼容与持久任务页面 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-03, KBV2-04 | Planned |
