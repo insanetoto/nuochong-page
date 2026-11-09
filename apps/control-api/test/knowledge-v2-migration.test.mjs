@@ -135,6 +135,11 @@ test('data constraints reject invalid relations, cross-space evidence and supers
   VALUES($1,$2,$3,1,$4,$5,$6,$7,'relatedTo','cross-space synthetic',50,repeat('a',64))`,[relationRevision,relationId,f.spaceId,f.pageId,pageB,f.revisionId,revisionB]);
  await assert.rejects(f.pool.query(`INSERT INTO knowledge_relation_evidence(relation_revision_id,fragment_id,space_id)
   VALUES($1,$2,$3)`,[relationRevision,fragmentB,f.spaceId]),/foreign key|violates/i);
+ await assert.rejects(f.pool.query(`INSERT INTO knowledge_relation_revisions(id,relation_id,space_id,revision,from_entry_id,to_entry_id,from_entry_revision_id,to_entry_revision_id,type,reason,weight,content_hash)
+  VALUES($1,$2,$3,2,$4,$5,$6,$7,'conflictsWith','wrong type',50,repeat('a',64))`,[randomUUID(),relationId,f.spaceId,f.pageId,pageB,f.revisionId,revisionB]),/foreign key|violates/i);
+ await assert.rejects(f.pool.query(`INSERT INTO knowledge_relation_revisions(id,relation_id,space_id,revision,from_entry_id,to_entry_id,from_entry_revision_id,to_entry_revision_id,type,reason,weight,content_hash)
+  VALUES($1,$2,$3,3,$4,$5,$6,$7,'relatedTo','swapped endpoints',50,repeat('a',64))`,[randomUUID(),relationId,f.spaceId,pageB,f.pageId,revisionB,f.revisionId]),/foreign key|violates/i);
+ await assert.rejects(f.pool.query("UPDATE knowledge_relation_revisions SET reason='changed' WHERE id=$1",[relationRevision]),/IMMUTABLE_REVISION|check/i);
 
  const revision2='revision-'+randomUUID();
  await f.pool.query(`INSERT INTO knowledge_revisions(id,page_id,page_revision,title,body_hash,source_ids,citations,state)
@@ -160,9 +165,23 @@ test('v0 read paths and reader restrictions survive 005 and backfill',async(t)=>
  assert.equal((await f.call('knowledge.sources.list.v1',{spaceId:f.spaceId},reader.token)).status,403);
 });
 
-test('logical knowledge DB restore plus object copy remains readable in an isolated schema',async(t)=>{
- const f=await v0Schema(t);await migrate(f.pool,f.schema);await backfillV0Fragments(f.pool,{objectRoot:f.root});
- const tables=['knowledge_objects','knowledge_spaces','knowledge_space_policy_revisions','knowledge_documents','knowledge_sources','knowledge_pages','knowledge_revisions','knowledge_evidence','knowledge_publications','knowledge_reviews','knowledge_fragments','knowledge_entry_fragments','knowledge_concepts','knowledge_concept_revisions','knowledge_entry_concept_assignments','knowledge_relations','knowledge_relation_revisions','knowledge_relation_evidence','knowledge_entry_supersessions','knowledge_import_batches','knowledge_import_files','knowledge_publication_snapshots','knowledge_capabilities','knowledge_publication_capabilities'];
+test('full knowledge schema restore preserves identity, approvals, snapshots and object references',async(t)=>{
+ const f=await knowledgeFixture(t);const source=await f.ingest();const page=await f.draft(source);await f.review(page);const published=await f.publish(page);
+ const publication=(await f.pool.query('SELECT id,publisher_id,approval_id FROM knowledge_publications WHERE revision_id=$1',[published.revisionId])).rows[0];
+ const snapshotId='snapshot-'+randomUUID(),conceptId='concept-'+randomUUID(),conceptRevision='concept-revision-'+randomUUID(),assignmentId='assignment-'+randomUUID();
+ await f.pool.query(`INSERT INTO knowledge_publication_snapshots(id,space_id,manifest,graph_hash,policy_revision,effective_at,current)
+  VALUES($1,$2,$3,$4,1,clock_timestamp(),true)`,[snapshotId,f.spaceId,JSON.stringify({version:1,entries:[published.revisionId],sources:[source.id]}),'a'.repeat(64)]);
+ await f.pool.query('UPDATE knowledge_publications SET snapshot_id=$1 WHERE id=$2',[snapshotId,publication.id]);
+ await f.pool.query(`INSERT INTO knowledge_concepts(id,space_id) VALUES($1,$2)`,[conceptId,f.spaceId]);
+ await f.pool.query(`INSERT INTO knowledge_concept_revisions(id,concept_id,space_id,revision,label,content_hash)
+  VALUES($1,$2,$3,1,'Synthetic concept',repeat('c',64))`,[conceptRevision,conceptId,f.spaceId]);
+ await f.pool.query(`INSERT INTO knowledge_entry_concept_assignments(id,space_id,entry_id,concept_id,concept_revision_id,revision,status,content_hash)
+  VALUES($1,$2,$3,$4,$5,1,'confirmed',repeat('d',64))`,[assignmentId,f.spaceId,published.pageId,conceptId,conceptRevision]);
+ await f.pool.query(`INSERT INTO knowledge_capabilities(capability_id,version,status,contract_ref) VALUES('knowledge.search@1',1,'active','synthetic://knowledge.search@1')`);
+ await f.pool.query(`INSERT INTO knowledge_publication_capabilities(snapshot_id,capability_id,capability_version,status)
+  VALUES($1,'knowledge.search@1',1,'active')`,[snapshotId]);
+ await backfillV0Fragments(f.pool,{objectRoot:f.root,spaceId:f.spaceId});
+ const tables=['principals','credentials','product_approvals','knowledge_objects','knowledge_spaces','knowledge_space_policy_revisions','knowledge_documents','knowledge_sources','knowledge_pages','knowledge_revisions','knowledge_evidence','knowledge_publications','knowledge_reviews','knowledge_fragments','knowledge_entry_fragments','knowledge_concepts','knowledge_concept_revisions','knowledge_entry_concept_assignments','knowledge_relations','knowledge_relation_revisions','knowledge_relation_evidence','knowledge_entry_supersessions','knowledge_import_batches','knowledge_import_files','knowledge_publication_snapshots','knowledge_capabilities','knowledge_publication_capabilities'];
  const backup={};for(const table of tables)backup[table]=(await f.pool.query(`SELECT * FROM ${table}`)).rows;
  const objectBackup=mkdtempSync(join(tmpdir(),'knowledge-v2-db-backup-'));t.after(()=>rmSync(objectBackup,{recursive:true,force:true}));cpSync(f.root,objectBackup,{recursive:true});
  const superuser=(await f.pool.query("SELECT rolsuper FROM pg_roles WHERE rolname=current_user")).rows[0].rolsuper;
@@ -173,8 +192,16 @@ test('logical knowledge DB restore plus object copy remains readable in an isola
   await client.query('SET session_replication_role=replica');
   for(const table of tables)await client.query(`INSERT INTO ${table} SELECT * FROM jsonb_populate_recordset(NULL::${table},$1::jsonb)`,[JSON.stringify(backup[table])]);
   await client.query('SET session_replication_role=origin');
+  const constraints=await client.query(`SELECT n.nspname,t.relname,c.conname FROM pg_constraint c
+   JOIN pg_class t ON t.oid=c.conrelid JOIN pg_namespace n ON n.oid=t.relnamespace
+   WHERE c.contype='f' AND n.nspname=$1`,[f.schema]);
+  for(const row of constraints.rows)await client.query(`ALTER TABLE ${row.nspname}.${row.relname} VALIDATE CONSTRAINT ${row.conname}`);
  }finally{client.release();}
- assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_fragments WHERE source_id=$1',[f.sourceId])).rows[0].n,1);
- assert.equal((await f.pool.query('SELECT title FROM knowledge_revisions WHERE id=$1',[f.revisionId])).rows[0].title,'出差审批指南');
- assert.equal(await new PrivateObjects(objectBackup).read(f.pool,f.contentHash),f.content);
+ const publicationRow=await f.pool.query('SELECT publisher_id,approval_id,snapshot_id FROM knowledge_publications WHERE id=$1',[publication.id]);
+ assert.deepEqual(publicationRow.rows[0],{publisher_id:publication.publisher_id,approval_id:publication.approval_id,snapshot_id:snapshotId});
+ assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_fragments WHERE source_id=$1',[source.id])).rows[0].n,1);
+ assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_publication_capabilities WHERE snapshot_id=$1',[snapshotId])).rows[0].n,1);
+ const read=await f.call('knowledge.pages.get.v1',{spaceId:f.spaceId,pageId:published.pageId,view:'published'},f.admin.token);
+ assert.equal(read.status,200);assert.equal(read.data.title,published.title);
+ assert.equal(await new PrivateObjects(objectBackup).read(f.pool,(await f.pool.query('SELECT object_hash FROM knowledge_sources WHERE id=$1',[source.id])).rows[0].object_hash),f.content);
 });

@@ -43,7 +43,7 @@ CREATE TABLE knowledge_fragments(
  created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
  UNIQUE(id,space_id),
  FOREIGN KEY(source_id,space_id) REFERENCES knowledge_sources(id,space_id) ON DELETE CASCADE,
- FOREIGN KEY(entry_id) REFERENCES knowledge_pages(id) ON DELETE SET NULL,
+ FOREIGN KEY(entry_id,space_id) REFERENCES knowledge_pages(id,space_id),
  UNIQUE(source_id,locator_key,text_hash)
 );
 CREATE INDEX knowledge_fragments_source ON knowledge_fragments(source_id,locator_key);
@@ -104,6 +104,7 @@ CREATE TABLE knowledge_entry_concept_assignments(
  UNIQUE(entry_id,concept_id,revision),
  UNIQUE(id,space_id),
  FOREIGN KEY(entry_id,space_id) REFERENCES knowledge_pages(id,space_id) ON DELETE CASCADE,
+ FOREIGN KEY(concept_revision_id,concept_id) REFERENCES knowledge_concept_revisions(id,concept_id) ON DELETE CASCADE,
  FOREIGN KEY(concept_revision_id,space_id) REFERENCES knowledge_concept_revisions(id,space_id) ON DELETE CASCADE,
  FOREIGN KEY(concept_id,space_id) REFERENCES knowledge_concepts(id,space_id) ON DELETE CASCADE
 );
@@ -120,7 +121,8 @@ CREATE TABLE knowledge_relations(
  created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
  CHECK(from_entry_id<>to_entry_id),
  UNIQUE(id,space_id),
- FOREIGN KEY(from_entry_id) REFERENCES knowledge_pages(id) ON DELETE CASCADE,
+ UNIQUE(id,space_id,from_entry_id,to_entry_id,type),
+ FOREIGN KEY(from_entry_id,space_id) REFERENCES knowledge_pages(id,space_id) ON DELETE CASCADE,
  FOREIGN KEY(to_entry_id) REFERENCES knowledge_pages(id) ON DELETE CASCADE
 );
 
@@ -141,9 +143,10 @@ CREATE TABLE knowledge_relation_revisions(
  UNIQUE(relation_id,revision),
  UNIQUE(id,space_id),
  UNIQUE(id,relation_id),
- FOREIGN KEY(relation_id,space_id) REFERENCES knowledge_relations(id,space_id) ON DELETE CASCADE,
+ FOREIGN KEY(relation_id,space_id,from_entry_id,to_entry_id,type) REFERENCES knowledge_relations(id,space_id,from_entry_id,to_entry_id,type) ON DELETE CASCADE,
  FOREIGN KEY(from_entry_revision_id,from_entry_id) REFERENCES knowledge_revisions(id,page_id),
  FOREIGN KEY(to_entry_revision_id,to_entry_id) REFERENCES knowledge_revisions(id,page_id),
+ CHECK(from_entry_id<>to_entry_id),
  CHECK(from_entry_revision_id<>to_entry_revision_id)
 );
 ALTER TABLE knowledge_relations ADD CONSTRAINT knowledge_relations_current_revision
@@ -279,3 +282,16 @@ END;
 $$ LANGUAGE plpgsql;
 CREATE TRIGGER knowledge_space_policy_default AFTER INSERT ON knowledge_spaces
  FOR EACH ROW EXECUTE FUNCTION knowledge_space_policy_default();
+
+
+CREATE FUNCTION knowledge_reject_revision_mutation() RETURNS trigger AS $$
+BEGIN
+ RAISE EXCEPTION 'IMMUTABLE_REVISION' USING ERRCODE='23514';
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER knowledge_concept_revisions_immutable BEFORE UPDATE OR DELETE ON knowledge_concept_revisions
+ FOR EACH ROW EXECUTE FUNCTION knowledge_reject_revision_mutation();
+CREATE TRIGGER knowledge_relation_revisions_immutable BEFORE UPDATE OR DELETE ON knowledge_relation_revisions
+ FOR EACH ROW EXECUTE FUNCTION knowledge_reject_revision_mutation();
+CREATE TRIGGER knowledge_entry_concept_assignments_immutable BEFORE UPDATE OR DELETE ON knowledge_entry_concept_assignments
+ FOR EACH ROW EXECUTE FUNCTION knowledge_reject_revision_mutation();
