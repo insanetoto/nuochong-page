@@ -258,3 +258,24 @@ CREATE TABLE knowledge_publication_capabilities(
  FOREIGN KEY(snapshot_id) REFERENCES knowledge_publication_snapshots(id) ON DELETE CASCADE,
  FOREIGN KEY(capability_id,capability_version) REFERENCES knowledge_capabilities(capability_id,version)
 );
+
+CREATE FUNCTION knowledge_space_defaults() RETURNS trigger AS $$
+BEGIN
+ IF NEW.code IS NULL THEN NEW.code='SPACE-'||replace(NEW.id,'-',''); END IF;
+ RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER knowledge_space_defaults BEFORE INSERT ON knowledge_spaces
+ FOR EACH ROW EXECUTE FUNCTION knowledge_space_defaults();
+ALTER TABLE knowledge_spaces ALTER COLUMN code SET NOT NULL;
+
+CREATE FUNCTION knowledge_space_policy_default() RETURNS trigger AS $$
+BEGIN
+ INSERT INTO knowledge_space_policy_revisions(space_id,revision,allow_self_publish)
+ VALUES(NEW.id,NEW.publication_policy_revision,NEW.allow_self_publish)
+ ON CONFLICT(space_id,revision) DO NOTHING;
+ RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER knowledge_space_policy_default AFTER INSERT ON knowledge_spaces
+ FOR EACH ROW EXECUTE FUNCTION knowledge_space_policy_default();

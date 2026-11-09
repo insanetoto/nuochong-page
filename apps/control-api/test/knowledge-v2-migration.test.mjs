@@ -55,6 +55,9 @@ test('005 applies additively to a synthetic v0 schema and backfills paragraphs i
  assert.equal((await f.pool.query("SELECT entry_type FROM knowledge_pages WHERE id=$1",[f.pageId])).rows[0].entry_type,'policy');
  assert.match((await f.pool.query('SELECT code FROM knowledge_spaces WHERE id=$1',[f.spaceId])).rows[0].code,/^SPACE-/);
  assert.equal((await f.pool.query('SELECT allow_self_publish FROM knowledge_spaces WHERE id=$1',[f.spaceId])).rows[0].allow_self_publish,false);
+ const newSpace='space-new-'+randomUUID();await f.pool.query('INSERT INTO knowledge_spaces(id,title) VALUES($1,$2)',[newSpace,'New v0 space']);
+ assert.match((await f.pool.query('SELECT code FROM knowledge_spaces WHERE id=$1',[newSpace])).rows[0].code,/^SPACE-/);
+ assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_space_policy_revisions WHERE space_id=$1',[newSpace])).rows[0].n,1);
  const first=await backfillV0Fragments(f.pool,{objectRoot:f.root,spaceId:f.spaceId});
  assert.equal(first.sources,1);assert.equal(first.fragmentsInserted,1);
  const second=await backfillV0Fragments(f.pool,{objectRoot:f.root,spaceId:f.spaceId});
