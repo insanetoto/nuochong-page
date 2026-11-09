@@ -295,3 +295,60 @@ CREATE TRIGGER knowledge_relation_revisions_immutable BEFORE UPDATE OR DELETE ON
  FOR EACH ROW EXECUTE FUNCTION knowledge_reject_revision_mutation();
 CREATE TRIGGER knowledge_entry_concept_assignments_immutable BEFORE UPDATE OR DELETE ON knowledge_entry_concept_assignments
  FOR EACH ROW EXECUTE FUNCTION knowledge_reject_revision_mutation();
+
+CREATE FUNCTION knowledge_guard_relation_identity() RETURNS trigger AS $$
+BEGIN
+ IF NEW.space_id IS DISTINCT FROM OLD.space_id OR NEW.from_entry_id IS DISTINCT FROM OLD.from_entry_id
+  OR NEW.to_entry_id IS DISTINCT FROM OLD.to_entry_id OR NEW.type IS DISTINCT FROM OLD.type THEN
+  RAISE EXCEPTION 'IMMUTABLE_RELATION_IDENTITY' USING ERRCODE='23514';
+ END IF;
+ RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER knowledge_relations_identity_immutable BEFORE UPDATE OF space_id,from_entry_id,to_entry_id,type ON knowledge_relations
+ FOR EACH ROW EXECUTE FUNCTION knowledge_guard_relation_identity();
+
+CREATE FUNCTION knowledge_guard_concept_identity() RETURNS trigger AS $$
+BEGIN
+ IF NEW.space_id IS DISTINCT FROM OLD.space_id THEN
+  RAISE EXCEPTION 'IMMUTABLE_CONCEPT_IDENTITY' USING ERRCODE='23514';
+ END IF;
+ RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER knowledge_concepts_identity_immutable BEFORE UPDATE OF space_id ON knowledge_concepts
+ FOR EACH ROW EXECUTE FUNCTION knowledge_guard_concept_identity();
+
+CREATE FUNCTION knowledge_guard_fragment_content() RETURNS trigger AS $$
+BEGIN
+ IF NEW.space_id IS DISTINCT FROM OLD.space_id OR NEW.source_id IS DISTINCT FROM OLD.source_id
+  OR NEW.source_revision IS DISTINCT FROM OLD.source_revision OR NEW.locator IS DISTINCT FROM OLD.locator
+  OR NEW.locator_key IS DISTINCT FROM OLD.locator_key OR NEW.excerpt IS DISTINCT FROM OLD.excerpt
+  OR NEW.text_hash IS DISTINCT FROM OLD.text_hash THEN
+  RAISE EXCEPTION 'IMMUTABLE_FRAGMENT' USING ERRCODE='23514';
+ END IF;
+ RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER knowledge_fragments_content_immutable BEFORE UPDATE OF space_id,source_id,source_revision,locator,locator_key,excerpt,text_hash ON knowledge_fragments
+ FOR EACH ROW EXECUTE FUNCTION knowledge_guard_fragment_content();
+
+CREATE FUNCTION knowledge_guard_snapshot_content() RETURNS trigger AS $$
+BEGIN
+ IF TG_OP='DELETE' THEN RAISE EXCEPTION 'IMMUTABLE_SNAPSHOT' USING ERRCODE='23514'; END IF;
+ IF NEW.id IS DISTINCT FROM OLD.id OR NEW.space_id IS DISTINCT FROM OLD.space_id
+  OR NEW.manifest IS DISTINCT FROM OLD.manifest OR NEW.graph_hash IS DISTINCT FROM OLD.graph_hash
+  OR NEW.policy_revision IS DISTINCT FROM OLD.policy_revision OR NEW.approval_id IS DISTINCT FROM OLD.approval_id
+  OR NEW.effective_at IS DISTINCT FROM OLD.effective_at OR NEW.created_at IS DISTINCT FROM OLD.created_at THEN
+  RAISE EXCEPTION 'IMMUTABLE_SNAPSHOT' USING ERRCODE='23514';
+ END IF;
+ RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER knowledge_publication_snapshots_immutable BEFORE UPDATE OR DELETE ON knowledge_publication_snapshots
+ FOR EACH ROW EXECUTE FUNCTION knowledge_guard_snapshot_content();
+
+CREATE TRIGGER knowledge_space_policy_revisions_immutable BEFORE UPDATE OR DELETE ON knowledge_space_policy_revisions
+ FOR EACH ROW EXECUTE FUNCTION knowledge_reject_revision_mutation();
+CREATE TRIGGER knowledge_entry_supersessions_immutable BEFORE UPDATE OR DELETE ON knowledge_entry_supersessions
+ FOR EACH ROW EXECUTE FUNCTION knowledge_reject_revision_mutation();

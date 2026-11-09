@@ -140,6 +140,7 @@ test('data constraints reject invalid relations, cross-space evidence and supers
  await assert.rejects(f.pool.query(`INSERT INTO knowledge_relation_revisions(id,relation_id,space_id,revision,from_entry_id,to_entry_id,from_entry_revision_id,to_entry_revision_id,type,reason,weight,content_hash)
   VALUES($1,$2,$3,3,$4,$5,$6,$7,'relatedTo','swapped endpoints',50,repeat('a',64))`,[randomUUID(),relationId,f.spaceId,pageB,f.pageId,revisionB,f.revisionId]),/foreign key|violates/i);
  await assert.rejects(f.pool.query("UPDATE knowledge_relation_revisions SET reason='changed' WHERE id=$1",[relationRevision]),/IMMUTABLE_REVISION|check/i);
+ await assert.rejects(f.pool.query('UPDATE knowledge_relations SET from_entry_id=$2 WHERE id=$1',[relationId,pageB]),/IMMUTABLE_RELATION_IDENTITY|check/i);
 
  const revision2='revision-'+randomUUID();
  await f.pool.query(`INSERT INTO knowledge_revisions(id,page_id,page_revision,title,body_hash,source_ids,citations,state)
@@ -152,6 +153,8 @@ test('data constraints reject invalid relations, cross-space evidence and supers
   VALUES($1,$2,$3,$4,$4)`,[randomUUID(),f.spaceId,f.pageId,revision2]),/SUPERSESSION_ORDER_INVALID|check|foreign key/i);
  await assert.rejects(f.pool.query(`INSERT INTO knowledge_entry_supersessions(id,space_id,entry_id,from_revision_id,to_revision_id)
   VALUES($1,$2,$3,$4,$5)`,[randomUUID(),f.spaceId,f.pageId,f.revisionId,revisionB]),/SUPERSESSION_ORDER_INVALID|foreign key|violates/i);
+ await assert.rejects(f.pool.query("UPDATE knowledge_entry_supersessions SET to_revision_id=$2 WHERE entry_id=$1",[f.pageId,revisionB]),/IMMUTABLE_REVISION|check/i);
+ await assert.rejects(f.pool.query('DELETE FROM knowledge_entry_supersessions WHERE entry_id=$1',[f.pageId]),/IMMUTABLE_REVISION|check/i);
 });
 
 
@@ -230,4 +233,18 @@ test('immutable revisions and identity bindings reject mutation or mismatched re
  const fragmentWrong=randomUUID();
  await assert.rejects(f.pool.query(`INSERT INTO knowledge_fragments(id,space_id,source_id,source_revision,locator,locator_key,excerpt,text_hash,status,revision,entry_id)
   VALUES($1,$2,$3,1,'{"type":"line","lineStart":1,"lineEnd":1}'::jsonb,'line:1:1','wrong entry',repeat('f',64),'pending',1,$4)`,[fragmentWrong,f.spaceId,f.sourceId,'page-'+randomUUID()]),/foreign key|violates/i);
+ const fragmentGood=randomUUID();
+ await f.pool.query(`INSERT INTO knowledge_fragments(id,space_id,source_id,source_revision,locator,locator_key,excerpt,text_hash,status,revision,entry_id)
+  VALUES($1,$2,$3,1,'{"type":"line","lineStart":1,"lineEnd":1}'::jsonb,'line:1:1','immutable source',repeat('g',64),'pending',1,$4)`,[fragmentGood,f.spaceId,f.sourceId,f.pageId]);
+ await assert.rejects(f.pool.query("UPDATE knowledge_fragments SET excerpt='changed' WHERE id=$1",[fragmentGood]),/IMMUTABLE_FRAGMENT|check/i);
+ const secondSpace='space-'+randomUUID();await f.pool.query('INSERT INTO knowledge_spaces(id,title) VALUES($1,$2)',[secondSpace,'second space']);
+ await assert.rejects(f.pool.query('UPDATE knowledge_concepts SET space_id=$2 WHERE id=$1',[c1,secondSpace]),/IMMUTABLE_CONCEPT_IDENTITY|foreign key|violates/i);
+ const snapshot='snapshot-'+randomUUID();
+ await f.pool.query(`INSERT INTO knowledge_publication_snapshots(id,space_id,manifest,graph_hash,policy_revision,effective_at)
+  VALUES($1,$2,'{"version":1}'::jsonb,repeat('h',64),1,clock_timestamp())`,[snapshot,f.spaceId]);
+ await assert.rejects(f.pool.query(`UPDATE knowledge_publication_snapshots SET manifest='{"version":2}'::jsonb WHERE id=$1`,[snapshot]),/IMMUTABLE_SNAPSHOT|check/i);
+ await f.pool.query('UPDATE knowledge_publication_snapshots SET current=true WHERE id=$1',[snapshot]);
+ await assert.rejects(f.pool.query('DELETE FROM knowledge_publication_snapshots WHERE id=$1',[snapshot]),/IMMUTABLE_SNAPSHOT|check/i);
+ await assert.rejects(f.pool.query('UPDATE knowledge_space_policy_revisions SET allow_self_publish=true WHERE space_id=$1',[f.spaceId]),/IMMUTABLE_REVISION|check/i);
+ await assert.rejects(f.pool.query('DELETE FROM knowledge_space_policy_revisions WHERE space_id=$1',[f.spaceId]),/IMMUTABLE_REVISION|check/i);
 });
