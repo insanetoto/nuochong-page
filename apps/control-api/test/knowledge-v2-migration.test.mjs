@@ -143,7 +143,7 @@ test('data constraints reject invalid relations, cross-space evidence and supers
  await assert.rejects(f.pool.query(`INSERT INTO knowledge_entry_supersessions(id,space_id,entry_id,from_revision_id,to_revision_id)
   VALUES($1,$2,$3,$4,$4)`,[randomUUID(),f.spaceId,f.pageId,revision2]),/SUPERSESSION_ORDER_INVALID|check|foreign key/i);
  await assert.rejects(f.pool.query(`INSERT INTO knowledge_entry_supersessions(id,space_id,entry_id,from_revision_id,to_revision_id)
-  VALUES($1,$2,$3,$4,$5)`,[randomUUID(),f.spaceId,f.pageId,f.revisionId,revisionB]),/foreign key|violates/i);
+  VALUES($1,$2,$3,$4,$5)`,[randomUUID(),f.spaceId,f.pageId,f.revisionId,revisionB]),/SUPERSESSION_ORDER_INVALID|foreign key|violates/i);
 });
 
 
