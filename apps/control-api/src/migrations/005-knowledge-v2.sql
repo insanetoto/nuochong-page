@@ -140,6 +140,7 @@ CREATE TABLE knowledge_relation_revisions(
  created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
  UNIQUE(relation_id,revision),
  UNIQUE(id,space_id),
+ UNIQUE(id,relation_id),
  FOREIGN KEY(relation_id,space_id) REFERENCES knowledge_relations(id,space_id) ON DELETE CASCADE,
  FOREIGN KEY(from_entry_revision_id,from_entry_id) REFERENCES knowledge_revisions(id,page_id),
  FOREIGN KEY(to_entry_revision_id,to_entry_id) REFERENCES knowledge_revisions(id,page_id),
