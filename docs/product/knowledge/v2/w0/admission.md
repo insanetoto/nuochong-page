@@ -1,5 +1,7 @@
 # PLAN-03：W0准入与KBV2-01有限开工确认单
 
+2026-11-09：#94已验收且PR #132已合并；[R2有限准入](r2-data-admission-2026-11-09.md)仅解锁#105隔离数据开发，不要求#103父Issue关闭。下面为R1历史确认单，不能覆盖R2最新限定范围；FULL仍未通过。
+
 **2026-11-08最新状态：本确认单已获负责人批准，设计已合入并固定基线；R1已验收、#104 Ready。下文保留原确认单与原门槛，实际状态以验收记录为准。** 见[批准与准入记录](r1-acceptance-2026-11-08.md)。
 
 2026-11-08 · ChatGPT / Codex · 对应[#103](https://github.com/insanetoto/nuochong-page/issues/103)、[#104](https://github.com/insanetoto/nuochong-page/issues/104)。**当前完整运行W0未通过，R1已批准并验收，KBV2-01 Ready；本文件保留确认单内容，批准及固定基线见上方验收记录。**
