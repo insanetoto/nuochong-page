@@ -1,0 +1,107 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createHash,randomUUID} from 'node:crypto';
+import {cpSync,mkdtempSync,readFileSync,rmSync,unlinkSync,writeFileSync} from 'node:fs';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
+import {poolFor,migrate} from '../src/db.mjs';
+import {PrivateObjects} from '../../../plugins/knowledge/objects.mjs';
+import {backfillV0Fragments,legacyCitationFragments,paragraphRanges} from '../../../plugins/knowledge/backfill.mjs';
+
+const databaseURL=process.env.TEST_DATABASE_URL;
+assert.ok(databaseURL,'TEST_DATABASE_URL must point to an isolated real PostgreSQL database.');
+const sourceFiles={1:'schema.sql',2:'migrations/002-product-access.sql',3:'migrations/003-knowledge.sql',4:'migrations/004-product-jobs.sql'};
+const hash=text=>createHash('sha256').update(text,'utf8').digest('hex');
+const tempRoot=()=>mkdtempSync(join(tmpdir(),'knowledge-v2-migration-'));
+
+async function v0Schema(t,{data=true}={}){
+ const schema='oa_v0_'+randomUUID().replaceAll('-','').slice(0,28);
+ const pool=poolFor(databaseURL,schema);t.after(async()=>{await pool.query(`DROP SCHEMA IF EXISTS ${schema} CASCADE`);await pool.end();});
+ await pool.query(`CREATE SCHEMA ${schema}`);
+ await pool.query('CREATE TABLE schema_versions(version integer PRIMARY KEY,sha256 text NOT NULL)');
+ for(const [version,file] of Object.entries(sourceFiles)){
+  const source=readFileSync(new URL('../src/'+file,import.meta.url),'utf8');
+  await pool.query(source);
+  await pool.query('INSERT INTO schema_versions(version,sha256) VALUES($1,$2)',[Number(version),hash(source)]);
+ }
+ if(!data)return {pool,schema};
+ const root=tempRoot();t.after(()=>rmSync(root,{recursive:true,force:true}));
+ const objects=new PrivateObjects(root);const content='# 合成制度\n出差需先审批。\n报销应提交发票。';
+ const body='出差应先审批。[1]';const contentHash=await objects.put(pool,content),bodyHash=await objects.put(pool,body);
+ const spaceId='space-'+randomUUID(),documentId='doc-'+randomUUID(),sourceId='source-'+randomUUID(),pageId='page-'+randomUUID(),revisionId='revision-'+randomUUID();
+ await pool.query('INSERT INTO knowledge_spaces(id,title,department_ids) VALUES($1,$2,$3)',[spaceId,'Synthetic v0 space',[]]);
+ await pool.query('INSERT INTO knowledge_documents(id,space_id,policy_code) VALUES($1,$2,$3)',[documentId,spaceId,'DEMO-001']);
+ await pool.query(`INSERT INTO knowledge_sources(id,document_id,space_id,title,ordinal,version,filename,object_hash,status,valid_from)
+  VALUES($1,$2,$3,$4,1,'1','policy.md',$5,'active','2020-01-01T00:00:00Z')`,[sourceId,documentId,spaceId,'Synthetic travel policy',contentHash]);
+ await pool.query('INSERT INTO knowledge_pages(id,space_id,revision,published_revision_id) VALUES($1,$2,1,NULL)',[pageId,spaceId]);
+ const citations=[{sourceId,lineStart:2,lineEnd:2,quote:'出差需先审批。'}];
+ await pool.query(`INSERT INTO knowledge_revisions(id,page_id,page_revision,title,body_hash,source_ids,citations,state)
+  VALUES($1,$2,1,$3,$4,$5,$6,'draft')`,[revisionId,pageId,'出差审批指南',bodyHash,[sourceId],JSON.stringify(citations)]);
+ return {pool,schema,root,objects,content,body,contentHash,bodyHash,spaceId,documentId,sourceId,pageId,revisionId,citations};
+}
+
+test('paragraph ranges preserve one-based source lines and exact excerpts',()=>{
+ assert.deepEqual(paragraphRanges('a\n\nb'),[{lineStart:1,lineEnd:1,excerpt:'a'},{lineStart:3,lineEnd:3,excerpt:'b'}]);
+ assert.deepEqual(paragraphRanges('a\nb\n\nc'),[{lineStart:1,lineEnd:2,excerpt:'a\nb'},{lineStart:4,lineEnd:4,excerpt:'c'}]);
+ assert.deepEqual(paragraphRanges('a\n\n'),[{lineStart:1,lineEnd:1,excerpt:'a'}]);
+ assert.deepEqual(paragraphRanges('   \n\n'),[]);
+});
+
+test('005 applies additively to a synthetic v0 schema and backfills paragraphs idempotently',async(t)=>{
+ const f=await v0Schema(t);
+ await migrate(f.pool,f.schema);
+ assert.equal((await f.pool.query('SELECT version FROM schema_versions WHERE version=5')).rowCount,1);
+ assert.equal((await f.pool.query("SELECT entry_type FROM knowledge_pages WHERE id=$1",[f.pageId])).rows[0].entry_type,'policy');
+ assert.match((await f.pool.query('SELECT code FROM knowledge_spaces WHERE id=$1',[f.spaceId])).rows[0].code,/^SPACE-/);
+ assert.equal((await f.pool.query('SELECT allow_self_publish FROM knowledge_spaces WHERE id=$1',[f.spaceId])).rows[0].allow_self_publish,false);
+ const first=await backfillV0Fragments(f.pool,{objectRoot:f.root,spaceId:f.spaceId});
+ assert.equal(first.sources,1);assert.equal(first.fragmentsInserted,1);
+ const second=await backfillV0Fragments(f.pool,{objectRoot:f.root,spaceId:f.spaceId});
+ assert.equal(second.fragmentsInserted,0);
+ assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_fragments WHERE source_id=$1',[f.sourceId])).rows[0].n,1);
+ const fragments=await legacyCitationFragments(f.pool,{spaceId:f.spaceId,sourceId:f.sourceId,lineStart:2,lineEnd:2});
+ assert.equal(fragments.length,1);assert.match(fragments[0].excerpt,/出差需先审批/);assert.equal(fragments[0].locator.lineStart,1);assert.equal(fragments[0].locator.lineEnd,3);
+ const old=await f.pool.query('SELECT body_hash,citations FROM knowledge_revisions WHERE id=$1',[f.revisionId]);
+ assert.equal(readFileSync(join(f.root,old.rows[0].body_hash),'utf8'),f.body);
+ assert.deepEqual(old.rows[0].citations,f.citations);
+});
+
+test('005 failure rolls back atomically and can be retried',async(t)=>{
+ const f=await v0Schema(t,{data:false});
+ await f.pool.query('CREATE TABLE knowledge_fragments(id text PRIMARY KEY)');
+ await assert.rejects(migrate(f.pool,f.schema),/knowledge_fragments/);
+ assert.equal((await f.pool.query('SELECT 1 FROM schema_versions WHERE version=5')).rowCount,0);
+ assert.equal((await f.pool.query('SELECT to_regclass($1) AS t',[`${f.schema}.knowledge_pages`])).rows[0].t!==null,true);
+ await f.pool.query('DROP TABLE knowledge_fragments');
+ await migrate(f.pool,f.schema);
+ assert.equal((await f.pool.query('SELECT 1 FROM schema_versions WHERE version=5')).rowCount,1);
+ assert.equal((await f.pool.query('SELECT to_regclass($1) AS t',[`${f.schema}.knowledge_fragments`])).rows[0].t!==null,true);
+});
+
+test('backfill failure leaves completed sources committed and reruns without duplicates',async(t)=>{
+ const f=await v0Schema(t);
+ await migrate(f.pool,f.schema);
+ const secondId='z-source-'+randomUUID(),secondHash=hash('second source');
+ await f.pool.query(`INSERT INTO knowledge_objects(hash,size_bytes) VALUES($1,$2)`,[secondHash,13]);
+ await f.pool.query(`INSERT INTO knowledge_sources(id,document_id,space_id,title,ordinal,version,filename,object_hash,status,valid_from)
+  VALUES($1,$2,$3,'Second source',2,'2','second.md',$4,'active','2020-01-01T00:00:00Z')`,[secondId,f.documentId,f.spaceId,secondHash]);
+ await assert.rejects(backfillV0Fragments(f.pool,{objectRoot:f.root}),/OBJECT_MISSING/);
+ assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_fragments WHERE source_id=$1',[f.sourceId])).rows[0].n,1);
+ assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_fragments WHERE source_id=$1',[secondId])).rows[0].n,0);
+ writeFileSync(join(f.root,secondHash),'second source',{mode:0o600});
+ const rerun=await backfillV0Fragments(f.pool,{objectRoot:f.root});
+ assert.equal(rerun.fragmentsInserted,1);
+ assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_fragments WHERE source_id=$1',[f.sourceId])).rows[0].n,1);
+ assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_fragments WHERE source_id=$1',[secondId])).rows[0].n,1);
+});
+
+test('object copy restores readable bytes without changing fragment references',async(t)=>{
+ const f=await v0Schema(t);await migrate(f.pool,f.schema);await backfillV0Fragments(f.pool,{objectRoot:f.root});
+ const backup=mkdtempSync(join(tmpdir(),'knowledge-v2-object-backup-'));t.after(()=>rmSync(backup,{recursive:true,force:true}));
+ cpSync(f.root,backup,{recursive:true});
+ const objects=new PrivateObjects(f.root);unlinkSync(join(f.root,f.contentHash));
+ await assert.rejects(objects.read(f.pool,f.contentHash),/OBJECT_MISSING/);
+ cpSync(join(backup,f.contentHash),join(f.root,f.contentHash));
+ assert.equal(await objects.read(f.pool,f.contentHash),f.content);
+ assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_fragments WHERE source_id=$1',[f.sourceId])).rows[0].n,1);
+});
