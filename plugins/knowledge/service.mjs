@@ -4,6 +4,7 @@ import {digest} from '../access-management/service.mjs';
 import {PrivateObjects} from './objects.mjs';
 export const sourceDTO=s=>({id:s.id,documentId:s.document_id,spaceId:s.space_id,title:s.title,revision:s.ordinal,policyCode:s.policy_code,version:s.version,filename:s.filename,hash:s.object_hash,status:s.status,validFrom:s.valid_from.toISOString(),validUntil:s.valid_until?.toISOString()??'',createdAt:s.created_at.toISOString()});
 const spaceDTO=s=>({id:s.id,title:s.title,departmentIds:s.department_ids,revision:s.revision});
+export const spaceManagementDTO=s=>({spaceId:s.id,code:s.code,title:s.title,domainType:s.domain_type,departmentIds:s.department_ids,status:s.status,revision:s.revision,publicationPolicyRevision:s.publication_policy_revision,allowSelfPublish:s.allow_self_publish});
 export class KnowledgeService {
  constructor(kernel,objectRoot){this.kernel=kernel;this.objects=new PrivateObjects(objectRoot);}
  steward(ctx,spaceId){return ['knowledge:edit','knowledge:review','knowledge:publish'].some(p=>ctx.has(p,spaceId));}
@@ -12,6 +13,7 @@ export class KnowledgeService {
   if(i.spaceId){const space=(await db.query('SELECT * FROM knowledge_spaces WHERE id=$1',[i.spaceId])).rows[0];requireThat(space&&this.visible(ctx,space),404,'NOT_FOUND');}
   if(command.id==='knowledge.sources.list.v1')requireThat(this.steward(ctx,i.spaceId));
   if(i.view==='manage')requireThat(this.steward(ctx,i.spaceId));
+  if(command.id==='knowledge.spaces.publication-policy.set.v1')requireThat(ctx.trustedGovernor&&ctx.has('access:manage','*'),403,'FORBIDDEN');
  }
  async source(db,spaceId,id){const row=(await db.query('SELECT s.*,d.current_source_id,d.policy_code FROM knowledge_sources s JOIN knowledge_documents d ON d.id=s.document_id WHERE s.space_id=$1 AND s.id=$2',[spaceId,id])).rows[0];requireThat(row,404,'NOT_FOUND');return row;}
  async validSource(db,spaceId,id,{published=false,effective=true}={}){
@@ -56,6 +58,46 @@ export class KnowledgeService {
   return this.pageDTO(db,await this.revision(db,i.spaceId,id),{body:true,manage:true});
  }
  async dispatch(db,ctx,id,i){
+  if(id==='knowledge.spaces.get.v1'){
+   const space=(await db.query('SELECT * FROM knowledge_spaces WHERE id=$1',[i.spaceId])).rows[0];requireThat(space&&this.visible(ctx,space),404,'NOT_FOUND');return {space:spaceManagementDTO(space),requestId:randomUUID()};
+  }
+  if(id==='knowledge.spaces.create.v2'){
+   const code=String(i.code).trim();requireThat(code.length>=1&&code.length<=64&&i.title.length>=1&&i.title.length<=256&&['policy','procedure','reference'].includes(i.domainType),400,'INVALID_INPUT');
+   for(const d of i.departmentIds)requireThat((await db.query('SELECT 1 FROM product_departments WHERE id=$1 AND active',[d])).rowCount,404,'NOT_FOUND');
+   requireThat(!(await db.query('SELECT 1 FROM knowledge_spaces WHERE code=$1',[code])).rowCount,409,'VERSION_CONFLICT');
+   const row=(await db.query('INSERT INTO knowledge_spaces(id,code,title,domain_type,department_ids,status,publication_policy_revision,allow_self_publish) VALUES($1,$2,$3,$4,$5,$6,1,false) RETURNING *',[randomUUID(),code,i.title,i.domainType,i.departmentIds,'active'])).rows[0];
+   await this.kernel.event(db,'knowledge.space.created.v1',row.id);return {space:spaceManagementDTO(row),requestId:randomUUID()};
+  }
+  if(id==='knowledge.spaces.update.v1'){
+   const space=(await db.query('SELECT * FROM knowledge_spaces WHERE id=$1 FOR UPDATE',[i.spaceId])).rows[0];requireThat(space,404,'NOT_FOUND');requireThat(space.revision===i.expectedRevision,409,'VERSION_CONFLICT');requireThat(i.title.length>=1&&i.title.length<=256,400,'INVALID_INPUT');
+   for(const d of i.departmentIds)requireThat((await db.query('SELECT 1 FROM product_departments WHERE id=$1 AND active',[d])).rowCount,404,'NOT_FOUND');
+   const row=(await db.query('UPDATE knowledge_spaces SET title=$2,department_ids=$3,revision=revision+1 WHERE id=$1 RETURNING *',[space.id,i.title,i.departmentIds])).rows[0];
+   await this.kernel.event(db,'knowledge.space.updated.v1',row.id);return {space:spaceManagementDTO(row),requestId:randomUUID()};
+  }
+  if(id==='knowledge.spaces.archive.v1'){
+   const space=(await db.query('SELECT * FROM knowledge_spaces WHERE id=$1 FOR UPDATE',[i.spaceId])).rows[0];requireThat(space,404,'NOT_FOUND');requireThat(space.revision===i.expectedRevision,409,'VERSION_CONFLICT');
+   const row=(await db.query("UPDATE knowledge_spaces SET status='archived',revision=revision+1 WHERE id=$1 RETURNING *",[space.id])).rows[0];
+   await this.kernel.event(db,'knowledge.space.archived.v1',row.id);return {space:spaceManagementDTO(row),requestId:randomUUID()};
+  }
+  if(id==='knowledge.spaces.publication-policy.set.v1'){
+   const space=(await db.query('SELECT * FROM knowledge_spaces WHERE id=$1 FOR UPDATE',[i.spaceId])).rows[0];requireThat(space,404,'NOT_FOUND');requireThat(space.status!=='archived',409,'VERSION_CONFLICT');
+   const target={spaceId:i.spaceId,allowSelfPublish:i.allowSelfPublish,reason:i.reason,expectedPolicyRevision:i.expectedPolicyRevision};
+   const targetHash=digest(target);
+   const proposal=(await db.query('SELECT * FROM access_governance_proposals WHERE id=$1 FOR UPDATE',[i.proposalId])).rows[0];
+   requireThat(proposal&&!proposal.used&&proposal.expires_at>new Date()&&proposal.requested_by===ctx.actor.id&&proposal.space_id===i.spaceId&&proposal.target_hash===targetHash,409,'APPROVAL_REQUIRED');
+   const approval=(await db.query('SELECT * FROM access_governance_approvals WHERE id=$1 AND proposal_id=$2 FOR UPDATE',[i.approvalId,proposal.id])).rows[0];
+   requireThat(approval&&!approval.used&&approval.expires_at>new Date()&&approval.target_hash===targetHash&&approval.approver_id!==proposal.requested_by,409,'APPROVAL_REQUIRED');
+   const approver=(await db.query('SELECT p.id,p.active,p.epoch FROM principals p JOIN product_platform_governors g ON g.principal_id=p.id AND g.active WHERE p.id=$1',[approval.approver_id])).rows[0];
+   requireThat(approver?.active,409,'APPROVAL_REQUIRED');
+   const approverCtx=await this.kernel.context(db,{id:approver.id,credential_id:approval.credential_id,scopes:['product:read','product:write']});
+   requireThat(approverCtx.trustedGovernor&&approverCtx.has('access:manage','*'),409,'APPROVAL_REQUIRED');
+   requireThat(space.publication_policy_revision===i.expectedPolicyRevision,409,'VERSION_CONFLICT');
+   const revision=space.publication_policy_revision+1;
+   const row=(await db.query('UPDATE knowledge_spaces SET allow_self_publish=$2,publication_policy_revision=$3,revision=revision+1 WHERE id=$1 RETURNING *',[space.id,i.allowSelfPublish,revision])).rows[0];
+   await db.query('INSERT INTO knowledge_space_policy_revisions(space_id,revision,allow_self_publish,updated_by,approval_id) VALUES($1,$2,$3,$4,$5)',[space.id,revision,i.allowSelfPublish,ctx.actor.id,i.approvalId]);
+   await db.query('UPDATE access_governance_proposals SET used=true WHERE id=$1',[proposal.id]);await db.query('UPDATE access_governance_approvals SET used=true WHERE id=$1',[approval.id]);
+   await this.kernel.event(db,'knowledge.space.policy.changed.v1',space.id);return {spaceId:row.id,allowSelfPublish:row.allow_self_publish,policyRevision:row.publication_policy_revision,requestId:randomUUID()};
+  }
   if(id==='knowledge.spaces.list.v1'){
    const rows=(await db.query('SELECT * FROM knowledge_spaces WHERE id>$1 ORDER BY id LIMIT 101',[i.after??''])).rows;
    return {items:rows.slice(0,100).filter(s=>this.visible(ctx,s)).map(spaceDTO),...(rows.length>100&&{nextCursor:rows[99].id})};

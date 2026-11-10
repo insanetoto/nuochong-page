@@ -42,7 +42,7 @@ try {
   let parsed;
   try { parsed = parseArgs({ allowPositionals: true, strict: true, tokens: true, options: {
     json: { type: 'boolean' }, input: { type: 'string' }, 'run-id': { type: 'string' }, after: { type: 'string' },
-    'api-url': { type: 'string' }, 'timeout-ms': { type: 'string' }, 'dry-run': { type: 'boolean' },
+    'api-url': { type: 'string' }, 'timeout-ms': { type: 'string' }, 'dry-run': { type: 'boolean' }, 'command-version': { type: 'string' },
     help: { type: 'boolean', short: 'h' }, version: { type: 'boolean', short: 'v' },
   } }); } catch { throw invalid(); }
   const supplied = parsed.tokens.filter((item) => item.kind === 'option').map((item) => item.name);
@@ -56,15 +56,19 @@ try {
     commandId = 'version'; await write({ ok: true, data: { clientVersion: CLIENT_VERSION, contractVersion: CONTRACT_VERSION } });
   } else if (options.help || args.length === 0 || args[0] === 'help') {
     if (options.json) { await write({ ok: true, data: manifest() }); }
-    else process.stdout.write(`nuochong ${CLIENT_VERSION}\n\nCommands (use capabilities/schema for all mappings):\n  auth me|logout | auth principals list|create|set-active|set-role | auth credentials list|create|revoke\n  identity login|me|logout | identity accounts create\n  org departments list|create|update | org members list|create|update\n  access roles list | access bindings list|grant|revoke | access approvals create\n  knowledge spaces list|create | knowledge sources list|import|get|withdraw\n  knowledge changes create|review | knowledge publications publish|withdraw\n  knowledge pages list|get | knowledge search | knowledge quality\n  knowledge compile | knowledge ask | knowledge jobs list|get|cancel|events\n  plugins list\n  sessions create|list|get|history\n  models list | models config get|update | tools list | runtime status\n  capabilities --json\n  schema <command-id> --json\n  runs create --input - [--dry-run]\n  runs get|cancel|events --run-id <id> [--after <event-id>]\n\nAll network commands use NUOCHONG_API_URL and NUOCHONG_ACCESS_TOKEN.\nUse --input - for JSON stdin, --timeout-ms 1..180000 for a bounded operation.\nCompany knowledge commands use the versioned product API. Organization and publication writes require explicit approvals.\n`);
+    else process.stdout.write(`nuochong ${CLIENT_VERSION}\n\nCommands (use capabilities/schema for all mappings):\n  auth me|logout | auth principals list|create|set-active|set-role | auth credentials list|create|revoke\n  identity login|me|logout | identity accounts create\n  org departments list|create|update | org members list|create|update\n  access roles list | access bindings list|grant|revoke | access approvals create | access approval-requests create\n  knowledge spaces list|get|create|update|archive|publication-policy set | knowledge sources list|import|get|withdraw\n  knowledge changes create|review | knowledge publications publish|withdraw\n  knowledge pages list|get | knowledge search | knowledge quality\n  knowledge compile | knowledge ask | knowledge jobs list|get|cancel|events\n  plugins list\n  sessions create|list|get|history\n  models list | models config get|update | tools list | runtime status\n  capabilities --json\n  schema <command-id> --json\n  runs create --input - [--dry-run]\n  runs get|cancel|events --run-id <id> [--after <event-id>]\n\nAll network commands use NUOCHONG_API_URL and NUOCHONG_ACCESS_TOKEN.\nUse --input - for JSON stdin, --timeout-ms 1..180000 for a bounded operation.\nCompany knowledge commands use the versioned product API. Organization and publication writes require explicit approvals.\n`);
   } else if (args[0] === 'capabilities' && args.length === 1) {
     commandId = 'capabilities'; await write({ ok: true, data: manifest() });
   } else if (args[0] === 'schema' && args.length === 2) {
     commandId = 'schema'; const command = commands.find((item) => item.id === args[1]);
     if (!command) throw invalid(); await write({ ok: true, data: command });
   } else {
-    const command = commands.find((item) => item.argv.join(' ') === args.join(' '));
-    if (!command) {
+    const candidates = commands.filter((item) => item.argv.join(' ') === args.join(' '));
+    const requestedVersion = options['command-version'];
+    const command = requestedVersion
+      ? candidates.find((item) => item.id.endsWith('.v' + requestedVersion))
+      : candidates.find((item) => !item.id.endsWith('.v2')) ?? candidates[0];
+    if (!command || (requestedVersion && !candidates.some((item) => item.id.endsWith('.v' + requestedVersion)))) {
       if (manifest().plannedDomains.includes(args[0])) throw new CliError('FEATURE_NOT_AVAILABLE', 14, 'This domain is planned and has no implemented CLI command yet.');
       throw invalid();
     }

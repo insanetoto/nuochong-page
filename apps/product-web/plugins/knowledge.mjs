@@ -1,4 +1,4 @@
-import {h,field,selectField,textField,button,heading,table,empty,section,tag,date,today,pagination,bindForm} from '../ui.mjs';
+import {h,field,selectField,textField,button,heading,table,empty,section,tag,status,date,today,pagination,bindForm} from '../ui.mjs';
 const scoped=(ctx,input={})=>({spaceId:ctx.spaceId,...input});
 const form=(ctx,fields,run,label='提交',success)=>bindForm(ctx,h('form',{class:'panel form-grid'},fields.map(f=>f.node??f),h('button',{type:'submit',class:'primary'},label)),run,success);
 const link=(ctx,title,route)=>button(title,()=>ctx.navigate(route),{class:'text-link'});
@@ -6,7 +6,7 @@ const citations=(ctx,items)=>section('可核验依据',items.length?items.map(c=
 const dateInput=value=>value?new Date(value+'T00:00:00+08:00').toISOString():'';
 async function home(ctx){
  const content=h('div',{},heading('让制度成为可核验的知识','从来源到知识，再到有据可查的回答。所有内容须经人工审校后发布。'));
- if(ctx.can('knowledge:publish-global')){const title=field('空间名称',{required:true,maxlength:256});const departments=ctx.can('organization:read')?(await ctx.api('organization.departments.list.v1')).items.filter(d=>d.active):[];const scope=selectField('可见部门（不选为公司公共空间）',departments.map(d=>({value:d.id,label:d.name})),{multiple:true});content.append(section('新建知识空间',form(ctx,[title,...(departments.length?[scope]:[])],()=>ctx.approve('knowledge.spaces.create.v1',{title:title.input.value,departmentIds:[...scope.input.selectedOptions].map(o=>o.value)},'创建知识空间并设置部门范围'),'创建空间')));}
+ if(ctx.can('knowledge:publish-global')||ctx.can('access:manage'))content.append(section('空间管理','创建、改名、部门范围与归档在空间管理页完成；首页不再承担创建表单。',button('进入空间管理',()=>ctx.navigate('spaces'),{class:'primary'})));
  if(!ctx.spaceId){content.append(empty('尚无可访问的知识空间。请由管理员创建空间并分配权限。'));return {node:content};}
  const data=await ctx.api('knowledge.pages.list.v1',scoped(ctx,{view:'published'}));content.append(section('现行知识',data.items.length?h('div',{class:'cards'},data.items.map(p=>h('article',{class:'panel'},tag(p.pageState),h('h2',{},link(ctx,p.title,'read/'+p.pageId)),h('p',{class:'muted'},'版本 '+p.revision+' · '+p.sourceIds.length+' 项来源')))):empty('还没有发布的知识。管理员可导入来源、编译草稿、审校并发布。')));return {node:content};
 }
@@ -35,4 +35,17 @@ async function job(ctx,route){const j=await ctx.api('knowledge.jobs.get.v1',scop
  if(j.resultValid&&j.result?.page)content.append(h('h2',{},j.result.page.title),h('pre',{class:'wiki-body'},j.result.page.body),link(ctx,'进入人工审校','review/'+j.result.page.pageId));
  if(j.resultValid&&j.result?.answer){const a=j.result.answer;content.append(h('p',{class:'info'},({answered:'基于现行知识回答',insufficient_evidence:'现行知识依据不足',conflict:'检测到依据冲突'})[a.status]),h('pre',{class:'wiki-body'},a.text),citations(ctx,a.citations));}return {node:content,poll:pending};}
 async function quality(ctx,route){const data=await ctx.api('knowledge.quality.get.v1',scoped(ctx,route.params.get('after')?{after:route.params.get('after')}:{}));return {node:h('div',{},heading('知识质量','初版检查来源有效性与基本完整性，深层语义检查后续完善。'),table(['知识页','问题'],data.items.map(p=>[link(ctx,p.title,'review/'+p.pageId),p.code])),pagination(ctx,data,'quality'))};}
-export const knowledgeViews={home,search,sources,source,review,read,ask,jobs,job,quality};
+const departmentChecks=(departments,current=[])=>{const inputs=departments.filter(d=>d.active||current.includes(d.id)).map(d=>({d,input:h('input',{type:'checkbox',checked:current.includes(d.id)})}));return {node:h('fieldset',{},h('legend',{},'可见部门（不选为公司公共空间）'),inputs.map(({d,input})=>h('label',{},input,d.name))),value:()=>inputs.filter(x=>x.input.checked).map(x=>x.d.id)};};
+async function spaces(ctx,route){
+ const list=await ctx.api('knowledge.spaces.list.v1');const departments=ctx.can('organization:read')?(await ctx.api('organization.departments.list.v1')).items.filter(d=>d.active):[];
+ const content=h('div',{},heading('知识空间管理','空间编码创建后不可改；部门范围、名称和归档需要明确审批。自批资格只通过独立治理流程设置，普通设置不提供开关。'));
+ if(ctx.can('knowledge:publish-global')){const title=field('空间名称',{required:true,maxlength:256}),code=field('空间编码',{required:true,maxlength:64,pattern:'[A-Za-z0-9][A-Za-z0-9_-]*'}),domain=selectField('业务域',[{value:'policy',label:'制度'},{value:'procedure',label:'流程'},{value:'reference',label:'参考资料'}]),deps=departmentChecks(departments);content.append(section('创建空间',form(ctx,[title,code,domain,...(departments.length?[deps]:[])],()=>ctx.approve('knowledge.spaces.create.v2',{code:code.input.value.trim(),title:title.input.value,domainType:domain.input.value,departmentIds:departments.length?deps.value():[]},'创建知识空间并设置编码/业务域/部门范围'),'创建空间')));}
+ content.append(section('空间列表',table(['空间','编码','业务域','状态','版本',''],list.items.map(s=>[link(ctx,s.title,'spaces/'+s.id),s.code??'—',s.domainType??'—',tag(s.status??'active'),s.revision,button('设置',()=>ctx.navigate('spaces/'+s.id),{class:'text-link'})]))));
+ if(route.id){const data=await ctx.api('knowledge.spaces.get.v1',{spaceId:route.id}),s=data.space;  const detail=h('div',{},heading(s.title,'编码 '+s.code+' · 业务域 '+s.domainType+' · 版本 '+s.revision),h('p',{class:'muted'},'空间编码创建后只读。名称和部门范围变更需要审批；归档保留历史与旧链接，但不再作为可用工作空间。'),h('p',{},h('span',{class:'tag'},status(s.status)),h('span',{class:'tag'},'自批 '+(s.allowSelfPublish?'已启用':'关闭')),h('span',{class:'tag'},'策略版本 '+s.publicationPolicyRevision)));
+  if(ctx.can('knowledge:publish')){const title=field('空间名称',{required:true,maxlength:256,value:s.title}),deps=departmentChecks(departments,s.departmentIds);detail.append(section('设置',form(ctx,[title,...(departments.length?[deps]:[])],()=>ctx.approve('knowledge.spaces.update.v1',{spaceId:s.spaceId,expectedRevision:s.revision,title:title.input.value,departmentIds:departments.length?deps.value():[]},'修改空间名称与部门范围'),'保存设置'),h('p',{class:'small'},'空间编码不可修改。')));
+   const reason=textField('归档原因',{required:true,minlength:3,maxlength:1000});detail.append(h('details',{},h('summary',{},'归档空间'),form(ctx,[reason],()=>ctx.approve('knowledge.spaces.archive.v1',{spaceId:s.spaceId,expectedRevision:s.revision,reason:reason.input.value},'归档空间 '+s.title+'（保留历史与旧链接）'),'归档空间')));}
+  if(ctx.can('access:manage'))detail.append(section('自批策略（独立治理）',h('p',{},'当前：'+(s.allowSelfPublish?'允许合规自主发布':'默认审校人≠发布人')+'；策略版本 '+s.publicationPolicyRevision+'。'),h('p',{class:'muted'},'普通空间设置不能修改此项。变更必须由两名当前平台治理人分别创建提案和独立批准，并通过 CLI/受控治理入口执行；页面只读展示。')));
+  content.append(detail);}
+ return {node:content};
+}
+export const knowledgeViews={home,search,sources,source,review,read,ask,jobs,job,quality,spaces};
