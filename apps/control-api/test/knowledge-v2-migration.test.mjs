@@ -13,6 +13,23 @@ const databaseURL=process.env.TEST_DATABASE_URL;
 assert.ok(databaseURL,'TEST_DATABASE_URL must point to an isolated real PostgreSQL database.');
 const sourceFiles={1:'schema.sql',2:'migrations/002-product-access.sql',3:'migrations/003-knowledge.sql',4:'migrations/004-product-jobs.sql'};
 const hash=text=>createHash('sha256').update(text,'utf8').digest('hex');
+async function assertForeignKeysIntact(pool,schema){
+ const foreignKeys=(await pool.query(`SELECT c.conname,t.relname AS child,c.conkey,c.confkey,pt.relname AS parent
+  FROM pg_constraint c
+  JOIN pg_class t ON t.oid=c.conrelid JOIN pg_namespace n ON n.oid=t.relnamespace
+  JOIN pg_class pt ON pt.oid=c.confrelid
+  WHERE c.contype='f' AND n.nspname=$1`,[schema])).rows;
+ const names=async(relid,keys)=>(await pool.query(`SELECT a.attname FROM unnest($2::smallint[]) WITH ORDINALITY k(attnum,ord)
+  JOIN pg_attribute a ON a.attrelid=$1 AND a.attnum=k.attnum ORDER BY k.ord`,[relid,keys])).rows.map(row=>row.attname);
+ for(const fk of foreignKeys){
+  const childColumns=await names((await pool.query('SELECT $1::regclass::oid AS oid',[`${schema}.${fk.child}`])).rows[0].oid,fk.conkey);
+  const parentColumns=await names((await pool.query('SELECT $1::regclass::oid AS oid',[`${schema}.${fk.parent}`])).rows[0].oid,fk.confkey);
+  const join=childColumns.map((column,index)=>`c."${column}"=p."${parentColumns[index]}"`).join(' AND ');
+  const nonNull=childColumns.map(column=>`c."${column}" IS NOT NULL`).join(' AND ');
+  const count=(await pool.query(`SELECT count(*)::int AS n FROM ${schema}.${fk.child} c LEFT JOIN ${schema}.${fk.parent} p ON ${join} WHERE ${nonNull} AND p."${parentColumns[0]}" IS NULL`)).rows[0].n;
+  assert.equal(count,0,`FK_VIOLATION ${fk.conname}: ${count} dangling rows`);
+ }
+}
 const tempRoot=()=>mkdtempSync(join(tmpdir(),'knowledge-v2-migration-'));
 
 async function v0Schema(t,{data=true}={}){
@@ -203,10 +220,7 @@ test('full knowledge schema restore preserves identity, approvals, snapshots and
   await client.query('SET session_replication_role=replica');
   for(const table of tables)await client.query(`INSERT INTO ${table} SELECT * FROM jsonb_populate_recordset(NULL::${table},$1::jsonb)`,[JSON.stringify(backup[table])]);
   await client.query('SET session_replication_role=origin');
-  const constraints=await client.query(`SELECT n.nspname,t.relname,c.conname FROM pg_constraint c
-   JOIN pg_class t ON t.oid=c.conrelid JOIN pg_namespace n ON n.oid=t.relnamespace
-   WHERE c.contype='f' AND n.nspname=$1`,[f.schema]);
-  for(const row of constraints.rows)await client.query(`ALTER TABLE ${row.nspname}.${row.relname} VALIDATE CONSTRAINT ${row.conname}`);
+  await assertForeignKeysIntact(client,f.schema);
  }finally{client.release();}
  const restored=await f.pool.query(`SELECT p.published_revision_id,r.title,r.citations,pub.publisher_id,pub.approval_id,pub.snapshot_id
   FROM knowledge_pages p JOIN knowledge_revisions r ON r.id=p.published_revision_id JOIN knowledge_publications pub ON pub.revision_id=r.id WHERE p.id=$1`,[f.pageId]);
@@ -214,6 +228,13 @@ test('full knowledge schema restore preserves identity, approvals, snapshots and
  assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_fragments WHERE source_id=$1',[f.sourceId])).rows[0].n,1);
  assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_publication_capabilities WHERE snapshot_id=$1',[snapshotId])).rows[0].n,1);
  assert.equal(await new PrivateObjects(objectBackup).read(f.pool,f.contentHash),f.content);
+ const damage=await f.pool.connect();
+ try{
+  await damage.query('SET session_replication_role=replica');
+  await damage.query('DELETE FROM product_approvals WHERE id=$1',[approval]);
+  await damage.query('SET session_replication_role=origin');
+ }finally{damage.release();}
+ await assert.rejects(assertForeignKeysIntact(f.pool,f.schema),/FK_VIOLATION/);
 });
 
 test('immutable revisions and identity bindings reject mutation or mismatched references',async(t)=>{
