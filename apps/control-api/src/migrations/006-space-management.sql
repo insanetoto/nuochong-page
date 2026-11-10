@@ -32,3 +32,5 @@ CREATE TABLE access_governance_approvals(
  UNIQUE(proposal_id,approver_id)
 );
 CREATE INDEX access_governance_approvals_proposal ON access_governance_approvals(proposal_id);
+
+ALTER TABLE knowledge_space_policy_revisions ADD COLUMN governance_approval_id text REFERENCES access_governance_approvals(id);

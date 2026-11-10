@@ -94,7 +94,7 @@ export class KnowledgeService {
    requireThat(space.publication_policy_revision===i.expectedPolicyRevision,409,'VERSION_CONFLICT');
    const revision=space.publication_policy_revision+1;
    const row=(await db.query('UPDATE knowledge_spaces SET allow_self_publish=$2,publication_policy_revision=$3,revision=revision+1 WHERE id=$1 RETURNING *',[space.id,i.allowSelfPublish,revision])).rows[0];
-   await db.query('INSERT INTO knowledge_space_policy_revisions(space_id,revision,allow_self_publish,updated_by,approval_id) VALUES($1,$2,$3,$4,$5)',[space.id,revision,i.allowSelfPublish,ctx.actor.id,i.approvalId]);
+   await db.query('INSERT INTO knowledge_space_policy_revisions(space_id,revision,allow_self_publish,updated_by,governance_approval_id) VALUES($1,$2,$3,$4,$5)',[space.id,revision,i.allowSelfPublish,ctx.actor.id,i.approvalId]);
    await db.query('UPDATE access_governance_proposals SET used=true WHERE id=$1',[proposal.id]);await db.query('UPDATE access_governance_approvals SET used=true WHERE id=$1',[approval.id]);
    await this.kernel.event(db,'knowledge.space.policy.changed.v1',space.id);return {spaceId:row.id,allowSelfPublish:row.allow_self_publish,policyRevision:row.publication_policy_revision,requestId:randomUUID()};
   }
