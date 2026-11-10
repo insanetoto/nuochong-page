@@ -1,27 +1,28 @@
 name: Inspect existing OA deployment server
-
-on:
+'on':
   push:
-    branches: [feature/oa-test-native-deploy]
-    paths: ['.github/workflows/oa-server-inspect.yml']
+    branches:
+      - feature/oa-test-native-deploy
+    paths:
+      - .github/workflows/oa-server-inspect.yml
   workflow_dispatch:
     inputs:
       operation:
-        description: Read-only inspection or owner-authorized KBV2-01 existing-test update
+        description: Read-only inspection or explicitly authorized existing knowledge test update
         type: choice
-        options: [inspect, kbv2-01-update-test]
+        options:
+          - inspect
+          - kbv2-01-update-test
+          - kbv2-02-update-test
         default: inspect
-
 permissions:
   contents: read
-
 concurrency:
-  group: ${{ inputs.operation == 'kbv2-01-update-test' && 'oa-test-server-deploy' || 'oa-server-inspect' }}
+  group: ${{ startsWith(inputs.operation, 'kbv2-') && 'oa-test-server-deploy' || 'oa-server-inspect' }}
   cancel-in-progress: false
-
 jobs:
   inspect:
-    if: inputs.operation != 'kbv2-01-update-test'
+    if: inputs.operation != 'kbv2-01-update-test' && inputs.operation != 'kbv2-02-update-test'
     name: Read-only server capabilities
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -103,7 +104,6 @@ jobs:
       - name: Remove temporary SSH identity
         if: always()
         run: rm -f ~/.ssh/oa_deploy_key
-
   update-ontology-test:
     if: github.event_name == 'workflow_dispatch' && inputs.operation == 'kbv2-01-update-test'
     name: Update accepted KBV2-01 on existing knowledge test only
@@ -220,6 +220,165 @@ jobs:
           printf '%s\n' "$previous" > "$state/previous-release"
           printf '%s\n' "$sha" > "$state/release-sha"
           printf 'PASS activated existing knowledge test release: %s; source hashes,25 offline tests,services,public HTML and unauthorized rejection verified.\n' "$sha"
+          REMOTE
+      - name: Cleanup temporary runner SSH identity
+        if: always()
+        run: rm -f ~/.ssh/kbv2_deploy_key
+  update-data-test:
+    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'kbv2-02-update-test'
+    name: Update accepted KBV2-02 schema and backfill on existing knowledge test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CODE_SHA: 84464eede3f9c820389e661554d75d3f506d1ad3
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Package exact accepted source and unchanged-file baseline
+        run: |
+          python3 - <<'PYCODE'
+          import hashlib, os, pathlib, subprocess
+          sha = os.environ['CODE_SHA']
+          patch = ["apps/control-api/src/migrations/005-knowledge-v2.sql","plugins/knowledge/backfill.mjs","apps/control-api/test/control-api.test.mjs","apps/control-api/test/knowledge-crash-child.mjs","apps/control-api/test/knowledge-fixture.mjs","apps/control-api/test/knowledge-jobs.test.mjs","apps/control-api/test/knowledge-v2-migration.test.mjs","apps/control-api/test/knowledge.test.mjs","apps/control-api/test/product-access.test.mjs","apps/control-api/test/product-fixture.mjs","apps/control-api/test/product-web.browser.mjs","apps/control-api/test/runtime.test.mjs","apps/control-api/test/verify-knowledge-real.mjs","apps/control-api/test/verify-real-model.mjs","apps/control-api/test/worker-process.mjs"]
+          paths = ['apps/control-api/src', 'apps/control-api/package.json', 'apps/control-api/package-lock.json', 'apps/product-web', 'plugins', 'packages/platform', 'tools/nuochong-cli/src', 'apps/oa/deploy/gateway.mjs', 'apps/oa/deploy/service.mjs']
+          tracked = subprocess.check_output(['git','ls-tree','-r','--name-only',sha,'--',*paths],text=True).splitlines()
+          def manifest(files, name):
+              lines=[]
+              for path in files:
+                  data=subprocess.check_output(['git','show',sha+':'+path])
+                  lines.append(hashlib.sha256(data).hexdigest()+'  '+path+'\n')
+              pathlib.Path(os.environ['RUNNER_TEMP'],name).write_text(''.join(lines))
+          manifest(patch, 'kbv2-patch.sha256')
+          manifest([p for p in tracked if p not in patch], 'kbv2-base.sha256')
+          subprocess.run(['git','archive','--format=tar.gz','-o',os.environ['RUNNER_TEMP']+'/kbv2-source.tgz',sha,*patch],check=True)
+          PYCODE
+      - name: Validate isolated migration suite, hold writers, backup, migrate, backfill and verify
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$DEPLOY_HOST" && test -n "$DEPLOY_SSH_KEY"
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/kbv2_deploy_key
+          chmod 600 ~/.ssh/kbv2_deploy_key
+          ssh-keyscan -T 10 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+          tag="$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          remote_base=.local/share/nuochong-knowledge-test
+          ssh -i ~/.ssh/kbv2_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=15 deploy@"$DEPLOY_HOST" "test -L $remote_base/current"
+          scp -i ~/.ssh/kbv2_deploy_key -o IdentitiesOnly=yes "$RUNNER_TEMP/kbv2-source.tgz" deploy@"$DEPLOY_HOST":"$remote_base/incoming-$tag.tgz"
+          scp -i ~/.ssh/kbv2_deploy_key -o IdentitiesOnly=yes "$RUNNER_TEMP/kbv2-base.sha256" deploy@"$DEPLOY_HOST":"$remote_base/incoming-$tag-base.sha256"
+          scp -i ~/.ssh/kbv2_deploy_key -o IdentitiesOnly=yes "$RUNNER_TEMP/kbv2-patch.sha256" deploy@"$DEPLOY_HOST":"$remote_base/incoming-$tag-patch.sha256"
+          ssh -i ~/.ssh/kbv2_deploy_key -o IdentitiesOnly=yes -o BatchMode=yes deploy@"$DEPLOY_HOST" "bash -s -- $CODE_SHA $tag" <<'REMOTE'
+          set -euo pipefail
+          umask 077
+          sha=${1:?}; run_tag=${2:?}
+          [[ "$sha" == 84464eede3f9c820389e661554d75d3f506d1ad3 ]]
+          [[ "$run_tag" =~ ^[0-9]+-[0-9]+$ ]]
+          base="$HOME/.local/share/nuochong-knowledge-test"
+          state="$HOME/.local/state/nuochong-knowledge-test"
+          pg="$base/postgres/17.11"
+          export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+          export LD_LIBRARY_PATH="$pg/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          node="$HOME/.local/share/nuochong-oa-test/current/runtime/bin/node"
+          previous=$(readlink -f "$base/current")
+          [[ "$previous" == "$base/releases/"* ]]
+          old_sha=$(cat "$state/release-sha"); [[ "$old_sha" =~ ^[0-9a-f]{40}$ ]]
+          for unit in db api worker; do systemctl --user is-active --quiet "nuochong-knowledge-$unit.service"; done
+          systemctl --user is-active --quiet nuochong-oa-test.service
+          (cd "$previous" && sha256sum --quiet -c "$base/incoming-$run_tag-base.sha256")
+          release="$base/releases/$sha-data-$run_tag"
+          test ! -e "$release"
+          staging=$(mktemp -d "$base/releases/.data-$run_tag.XXXXXX")
+          cp -a "$previous/." "$staging/"
+          tar -xzf "$base/incoming-$run_tag.tgz" -C "$staging"
+          (cd "$staging" && sha256sum --quiet -c "$base/incoming-$run_tag-patch.sha256")
+          mv "$staging" "$release"
+          set -a; source "$state/runtime.env"; set +a
+          [[ "$OA_DATABASE_SCHEMA" == oa_knowledge_test ]]
+          export TEST_DATABASE_URL="$DATABASE_URL"
+          # Test fixtures create and remove their own oa_v0/oa_product schemas; no existing data is used.
+          (cd "$release" && "$node" --test apps/control-api/test/knowledge-v2-migration.test.mjs)
+          printf 'PASS exact accepted migration suite on isolated server schemas.\n'
+          paused=false; switched=false
+          finish() {
+           status=$?; trap - EXIT
+           if (( status != 0 )) && [[ "$switched" == true ]]; then
+            ln -s "$previous" "$base/rollback-$run_tag"
+            mv -Tf "$base/rollback-$run_tag" "$base/current"
+            printf '%s\n' "$old_sha" > "$state/release-sha"
+            printf 'Restored previous application code; additive schema retained, paired backup private.\n' >&2
+           fi
+           if [[ "$paused" == true ]]; then systemctl --user start nuochong-knowledge-api.service nuochong-knowledge-worker.service; fi
+           exit "$status"
+          }
+          trap finish EXIT
+          paused=true
+          systemctl --user stop nuochong-knowledge-api.service nuochong-knowledge-worker.service
+          # Hold all product writers stopped throughout the paired backup and data upgrade.
+          snapshot="$state/backups/kbv2-02-$run_tag"; mkdir -m 700 "$snapshot"
+          "$pg/bin/pg_dump" "$DATABASE_URL" -Fc -n oa_knowledge_test > "$snapshot/database.dump"
+          tar -czf "$snapshot/objects.tgz" -C "$state" objects
+          cp "$state/release-sha" "$snapshot/release-sha"
+          (cd "$snapshot" && sha256sum database.dump objects.tgz release-sha > SHA256SUMS && sha256sum --quiet -c SHA256SUMS)
+          "$pg/bin/pg_restore" --list "$snapshot/database.dump" > /dev/null
+          tar -tzf "$snapshot/objects.tgz" > /dev/null
+          printf 'PASS stopped-writer paired backup and archive integrity.\n'
+          cd "$release"
+          "$node" --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {readFileSync} from 'node:fs';
+          import {createHash} from 'node:crypto';
+          import {poolFor,migrate} from './apps/control-api/src/db.mjs';
+          import {backfillV0Fragments} from './plugins/knowledge/backfill.mjs';
+          const schema=process.env.OA_DATABASE_SCHEMA;
+          assert.equal(schema,'oa_knowledge_test');
+          const pool=poolFor(process.env.DATABASE_URL,schema);
+          try {
+           const tables={knowledge_spaces:'id',knowledge_sources:'id',knowledge_pages:'id',knowledge_revisions:'id',knowledge_publications:'id',principals:'id',credentials:'id',product_accounts:'username'};
+           const snapshots=[];
+           for(const [table,key] of Object.entries(tables)){
+            const columns=(await pool.query('SELECT column_name FROM information_schema.columns WHERE table_schema=$1 AND table_name=$2 ORDER BY ordinal_position',[schema,table])).rows.map(r=>r.column_name);
+            assert.ok(columns.length);
+            const sql=`SELECT ${columns.map(c=>'"'+c+'"').join(',')} FROM ${table} ORDER BY "${key}"`;
+            snapshots.push({sql,before:JSON.stringify((await pool.query(sql)).rows)});
+           }
+           await migrate(pool,schema);
+           const checksum=createHash('sha256').update(readFileSync('apps/control-api/src/migrations/005-knowledge-v2.sql')).digest('hex');
+           assert.equal((await pool.query('SELECT sha256 FROM schema_versions WHERE version=5')).rows[0].sha256,checksum);
+           const first=await backfillV0Fragments(pool,{objectRoot:process.env.PRODUCT_OBJECT_ROOT});
+           const second=await backfillV0Fragments(pool,{objectRoot:process.env.PRODUCT_OBJECT_ROOT});
+           assert.equal(second.fragmentsInserted,0);
+           for(const s of snapshots)assert.equal(JSON.stringify((await pool.query(s.sql)).rows),s.before,'Legacy data/account rows changed unexpectedly');
+           console.log(JSON.stringify({check:'migration005/backfill/idempotence/legacy-and-identity-rows',passed:true,sources:first.sources,fragmentsInserted:first.fragmentsInserted,secondRunInserted:second.fragmentsInserted}));
+          } finally {await pool.end();}
+          JS
+          printf '5\n' > "$state/schema-version"
+          ln -s "$release" "$base/current-$run_tag.next"
+          mv -Tf "$base/current-$run_tag.next" "$base/current"
+          switched=true
+          systemctl --user start nuochong-knowledge-api.service nuochong-knowledge-worker.service
+          healthy=false
+          for attempt in {1..30}; do
+           if curl --max-time 3 -fsS http://127.0.0.1:3081/product/ -o /dev/null; then healthy=true; break; fi
+           sleep 1
+          done
+          [[ "$healthy" == true ]]
+          for unit in db api worker; do systemctl --user is-active --quiet "nuochong-knowledge-$unit.service"; done
+          systemctl --user is-active --quiet nuochong-oa-test.service
+          "$node" --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          for(const url of ['http://127.0.0.1:3081/product/','https://www.nuochong.net/oa-test/product/','https://www.nuochong.net/']){
+           const r=await fetch(url,{signal:AbortSignal.timeout(15000)});assert.equal(r.status,200);assert.match(r.headers.get('content-type')??'',/text\/html/);console.log('PASS public/local HTML 200',url);
+          }
+          const r=await fetch('https://www.nuochong.net/oa-test/product/api/commands/identity.me.v1',{method:'POST',headers:{'content-type':'application/json'},body:'{}',signal:AbortSignal.timeout(15000)});assert.equal(r.status,401);assert.equal((await r.json()).code,'UNAUTHORIZED');console.log('PASS anonymous company command rejected 401');
+          JS
+          (cd "$base/current" && sha256sum --quiet -c "$base/incoming-$run_tag-patch.sha256")
+          printf '%s\n' "$previous" > "$state/previous-release"
+          printf '%s\n' "$sha" > "$state/release-sha"
+          paused=false
+          printf 'PASS activated KBV2-02 existing knowledge test release %s, schema005, backfill twice and legacy preservation verified.\n' "$sha"
           REMOTE
       - name: Cleanup temporary runner SSH identity
         if: always()
