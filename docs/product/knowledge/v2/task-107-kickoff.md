@@ -4,7 +4,7 @@
 
 ## 当前决定与入口
 
-#107 Ready。先同步含本交接的最新origin/refactor/integration，记录实际SHA，必须包含#136 merge `a6d9a5e4026427b790a2ca3db0b46c1357321e2a`，不从main/test或PR131规划分支开展实现。独立`codex/kbv2-04-import-a`等分支/工作目录，DeepSeek为本任务共享service/UI/CLI注册唯一修改人；006发布后不能改写，新增迁移登记007+。锁文件/解析依赖变更先附可实现性及依赖理由供技术预审。
+#107 Ready。PR137归档目前因既有浏览器回归失败暂未合并；合入前从该PR/固定文档提交读取本交接，不能假定integration已有此文件。实现代码仍同步最新origin/refactor/integration，记录实际SHA，必须包含#136 merge `a6d9a5e4026427b790a2ca3db0b46c1357321e2a`，不从main/test或PR131规划分支开展实现。独立`codex/kbv2-04-import-a`等分支/工作目录，DeepSeek为本任务共享service/UI/CLI注册唯一修改人；006发布后不能改写，新增迁移登记007+。锁文件/解析依赖变更先附可实现性及依赖理由供技术预审。
 
 准确产品入口：本轮`/product/#imports`，隔离测试外部前缀`/oa-test/product/#imports`；正式路径留给#108统一。三步交互固定按批准原型#imports：选择文件→填写元数据→检查与提交；展示批次/逐文件状态及恢复/待审入口，不自行重新设计页面或添加角色/provider调试开关。
 

@@ -70,6 +70,6 @@
 
 ## 本次归档CI出现的间歇失败与待办
 
-PR137文档/运维归档提交f255f09的[control-api首次运行](https://github.com/insanetoto/nuochong-page/actions/runs/42950731401/attempts/1)在product-web.browser.mjs的publisher改名断言失败：实际仍为旧名称；同一提交未改代码的[第二次运行](https://github.com/insanetoto/nuochong-page/actions/runs/42950731401/attempts/2)通过。必要gate首次也因control-api失败而失败。保留首次证据，不把复跑通过当修复。该测试当前强制requestSubmit并固定waitForTimeout(1000)后查库；仅凭日志尚不能判定是等待不足、审批/更新异常还是页面重载竞争。部署任务的11项服务器测试未包含这一全流程浏览器用例，不能相互替代。
+PR137文档/运维归档提交f255f09的[control-api首次运行](https://github.com/insanetoto/nuochong-page/actions/runs/42950731401/attempts/1)在product-web.browser.mjs的publisher改名断言失败：实际仍为旧名称；同一提交未改代码的[第二次运行](https://github.com/insanetoto/nuochong-page/actions/runs/42950731401/attempts/2)通过。必要gate首次也因control-api失败而失败。随后仅补文档的bc9d44e在[新运行42976190265](https://github.com/insanetoto/nuochong-page/actions/runs/42976190265)再次于同一断言失败，因此PR137归档暂不合并、不继续复跑碰运气；相关产品修复由DeepSeek独立交付。保留失败证据，不把复跑通过当修复。该测试当前强制requestSubmit并固定waitForTimeout(1000)后查库；仅凭日志尚不能判定是等待不足、审批/更新异常还是页面重载竞争。部署任务的11项服务器测试未包含这一全流程浏览器用例，不能相互替代。
 
 DeepSeek在现有#106补充交付一个独立测试稳定性PR：通过实际保存按钮触发并记录审批和更新请求的完成/错误，按有界条件等待页面及数据库结果，保留部门范围不变的负例；失败时提供脱敏响应/页面错误，不能仅延长sleep、隐藏断言、跳过用例或以重跑作为修复。针对受控延迟证明正常请求不会误判；针对失败更新证明测试必须失败。若定位到产品缺陷，先明确复现与范围再另附最小修复，不静默调整授权。#107-A解析模块设计与实现可先开展，涉及共享浏览器/产品入口的后续切片集成前需完成此补项的技术复审。负责人页面体验验收仍单列。
