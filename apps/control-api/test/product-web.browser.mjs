@@ -17,9 +17,10 @@ test('browser: company login, upload, compile, review, publish, cited answer and
  const publisherAccount=await f.write('identity.accounts.create.v1',{principalId:publisher.principalId,username:'synthetic-publisher',password:'synthetic-publisher-pass'});assert.equal(publisherAccount.status,200,JSON.stringify(publisherAccount.data));
  await page.getByRole('button',{name:'退出登录',exact:true}).click();await page.getByLabel('账号',{exact:true}).fill('synthetic-publisher');await page.getByLabel('密码',{exact:true}).fill('synthetic-publisher-pass');await page.getByRole('button',{name:'登录知识库',exact:true}).click();await expect(page.getByRole('button',{name:'退出登录',exact:true})).toBeVisible();await page.goto(f.app.listeningOrigin+'/product/#spaces');await expect(page.getByRole('heading',{name:'知识空间管理'})).toBeVisible();await page.getByRole('button',{name:/设置/}).last().click();await expect(page.getByLabel('空间名称',{exact:true})).toHaveValue('浏览器私有空间');assert.equal(await page.getByLabel('可见部门（不选为公司公共空间）').count(),0);async function saveTitle(title){
   await expect(page.getByRole('heading',{name:/浏览器私有空间/})).toBeVisible();
-  await page.getByLabel('空间名称',{exact:true}).fill(title);
+  const input=page.getByLabel('空间名称',{exact:true});await input.fill(title);assert.equal(await input.inputValue(),title);
   const update=page.waitForResponse(r=>r.url().includes('/product/api/commands/knowledge.spaces.update.v1')&&r.request().method()==='POST',{timeout:10000});
-  await page.getByRole('button',{name:'保存设置',exact:true}).evaluate(button=>button.click());return update;
+  await page.getByRole('button',{name:'保存设置',exact:true}).evaluate(button=>button.click());
+  const response=await update;console.log('save-request',response.request().postData());return response;
  }
  let update=await saveTitle('浏览器私有空间（改名）');assert.equal(update.status(),200,await update.text().catch(()=>''));await expect.poll(async()=>(await f.pool.query('SELECT title FROM knowledge_spaces WHERE id=$1',[targetSpace.id])).rows[0].title).toBe('浏览器私有空间（改名）');await expect(page.getByRole('heading',{name:'浏览器私有空间（改名）'})).toBeVisible();await page.goto(f.app.listeningOrigin+'/product/#spaces/'+targetSpace.id);await expect(page.getByLabel('空间名称',{exact:true})).toHaveValue('浏览器私有空间（改名）');
  await page.route('**/knowledge.spaces.update.v1',async route=>{await new Promise(resolve=>setTimeout(resolve,400));await route.continue();});
