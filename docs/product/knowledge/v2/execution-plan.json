@@ -1,6 +1,6 @@
 {
-  "date": "2026-11-10",
-  "status": "KBV2-02 accepted, merged, deployed existing isolated test; PLAN-03:R3 admits KBV2-03/04 development Ready; full release not complete",
+  "date": "2026-11-11",
+  "status": "KBV2-03 merged/deployed existing isolated test; KBV2-04 Ready with three-PR kickoff; original20 + six release tasks unified; full V2 not released",
   "gates": {
     "existingIssues": [
       85,
@@ -43,12 +43,21 @@
     "issueRegistration": {
       "status": "Registered",
       "date": "2026-11-08",
-      "created": 20,
+      "created": 26,
       "deferred": 0,
       "authorizedBy": "负责人本轮要求将所有任务转换为Issue",
       "evidence": "docs/product/knowledge/v2/issue-registration.md",
       "assignment": "Unassigned; roles documented",
-      "implementationAuthorized": false
+      "implementationAuthorized": false,
+      "originalCreated": 20,
+      "supplementalIssues": [
+        125,
+        126,
+        127,
+        128,
+        129,
+        130
+      ]
     },
     "blockingIssues": [],
     "designPRsMerged": true,
@@ -160,6 +169,14 @@
       "codeSha": "84464eede3f9c820389e661554d75d3f506d1ad3",
       "workflowRun": 42789811202,
       "status": "success"
+    },
+    "release20261111": {
+      "ownerInstruction": "先合并和部署，复盘过去的任务完成情况……如何优化",
+      "scope": "existing knowledge isolated test",
+      "codeSha": "a6d9a5e4026427b790a2ca3db0b46c1357321e2a",
+      "workflowRun": 42945233202,
+      "evidence": "docs/product/knowledge/v2/release-2026-11-11.md",
+      "result": "success"
     }
   },
   "tasks": [
@@ -411,7 +428,7 @@
       "ownerRole": "DeepSeek；ChatGPT预审；负责人验收",
       "priority": "P1",
       "lane": "P1实现",
-      "status": "Ready",
+      "status": "Released",
       "issue": 106,
       "dependsOn": [
         "KBV2-02",
@@ -455,7 +472,7 @@
         "apps/control-api/src/migrations/"
       ],
       "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
-      "readiness": "#105已验收并部署，R3只解锁03/04开发；共享文件先03后04串行领取，不等#103父Issue关闭。",
+      "readiness": "本轮已确认合并部署；#107顺序接管共享文件，不代表新增Linux视觉基线批准。",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/106",
       "issueState": "OPEN",
       "registeredAt": "2026-11-08",
@@ -469,7 +486,12 @@
       "reviewer": "ChatGPT / Codex",
       "acceptanceOwner": "项目负责人",
       "admissionEvidence": "docs/product/knowledge/v2/w0/r3-management-admission-2026-11-10.md",
-      "implementationBaseSha": "84464eede3f9c820389e661554d75d3f506d1ad3"
+      "implementationBaseSha": "84464eede3f9c820389e661554d75d3f506d1ad3",
+      "mergeSha": "a6d9a5e4026427b790a2ca3db0b46c1357321e2a",
+      "releaseScope": "existing knowledge isolated test",
+      "releaseEvidence": "docs/product/knowledge/v2/release-2026-11-11.md",
+      "mergeDeploymentConfirmedAt": "2026-11-11",
+      "productAcceptance": "Pending owner page walkthrough; merge/deploy decision is recorded separately"
     },
     {
       "id": "KBV2-04",
@@ -514,7 +536,7 @@
         "apps/control-api/test/"
       ],
       "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
-      "readiness": "#105已验收并部署，R3只解锁03/04开发；共享文件先03后04串行领取，不等#103父Issue关闭。",
+      "readiness": "#106已合并部署，共享文件可领取；沿用R3，不增加父Issue关闭门槛；三个切片逐步交付、父任务不提前验收。",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/107",
       "issueState": "OPEN",
       "registeredAt": "2026-11-08",
@@ -527,7 +549,23 @@
       "reviewer": "ChatGPT / Codex",
       "acceptanceOwner": "项目负责人",
       "admissionEvidence": "docs/product/knowledge/v2/w0/r3-management-admission-2026-11-10.md",
-      "implementationBaseSha": "84464eede3f9c820389e661554d75d3f506d1ad3"
+      "implementationBaseSha": "a6d9a5e4026427b790a2ca3db0b46c1357321e2a",
+      "kickoff": "docs/product/knowledge/v2/task-107-kickoff.md",
+      "acceptanceFixtures": "docs/product/knowledge/v2/import-acceptance-cases.json",
+      "slices": [
+        {
+          "id": "107-A",
+          "scope": "bounded files/format/extraction/locator"
+        },
+        {
+          "id": "107-B",
+          "scope": "durable import/API/CLI/permissions/idempotence/recovery"
+        },
+        {
+          "id": "107-C",
+          "scope": "approved wizard/real API/UI state/browser evidence"
+        }
+      ]
     },
     {
       "id": "KBV2-15",
@@ -877,7 +915,10 @@
         "KBV2-09",
         "KBV2-10",
         "KBV2-14",
-        "KBV2-15"
+        "KBV2-15",
+        "KBV2-REL-02",
+        "KBV2-REL-03",
+        "KBV2-REL-04"
       ],
       "scope": "v0 迁移演练、按段落片段回填校验、检索/图谱质量、恢复、容量、合成数据",
       "notInScope": "不恢复旧演示，不改官网，不扩权，不将planned注册为成功。",
@@ -1085,6 +1126,227 @@
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/120",
       "issueState": "OPEN",
       "registeredAt": "2026-11-08"
+    },
+    {
+      "id": "KBV2-REL-01",
+      "title": "V2原型到验收用例追踪与发布规则冻结",
+      "ownerRole": "ChatGPT设计；DeepSeek评估可测试性；负责人确认新增规则",
+      "dependsOn": [
+        "PLAN-01",
+        "PLAN-02"
+      ],
+      "status": "In review",
+      "scope": "完成release-process.md和release-acceptance.md；确认P1范围、16条AC、页面/动作/状态/命令/任务映射，保留批准原型不重绘。",
+      "acceptance": [
+        "全部10类原型页面和P1关键状态有AC与唯一实现归属；明确v0兼容测试与v2验收测试边界。",
+        "旧首页/缺图谱/缺三来源模块必须失败；确认设计已输出与实际测试通过分别登记。",
+        "DeepSeek提供测试可行性反馈；负责人确认新增发布规则，不能伪造确认。"
+      ],
+      "allowedPaths": [
+        "docs/product/knowledge/v2/",
+        "docs/refactor/"
+      ],
+      "designEvidence": [
+        "release-process.md",
+        "release-acceptance.md"
+      ],
+      "issue": 125,
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/125",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08",
+      "priority": "P0",
+      "lane": "V2发布质量与运维",
+      "wave": "Release design",
+      "commandIds": [],
+      "notInScope": "本轮不执行编码、迁移、测试发布或生产配置；官网基线不变，普通员工不开放owner。",
+      "implementationBase": "refactor/integration @ b2c14334bdbe519f4ac6d46a4f9fb2ab2dcc8a64; claim-time base must be rechecked",
+      "readiness": "设计文档已输出，待DeepSeek可测试性反馈和负责人确认新增发布规则。"
+    },
+    {
+      "id": "KBV2-REL-02",
+      "title": "V2真实业务浏览器E2E与原型验收负例",
+      "ownerRole": "DeepSeek实现；ChatGPT设计预审；负责人验收",
+      "dependsOn": [
+        "KBV2-REL-01",
+        "KBV2-03",
+        "KBV2-04",
+        "KBV2-06",
+        "KBV2-07",
+        "KBV2-08",
+        "KBV2-09",
+        "KBV2-14",
+        "KBV2-15"
+      ],
+      "status": "Planned",
+      "scope": "新增独立v2功能验收套件、真实API/PG合成夹具与CI；保留v0兼容套件，不以拦截API假响应代替集成。按页面增量交付，完整验收等待全部依赖。",
+      "acceptance": [
+        "覆盖V2-HOME-01至V2-STATE-12及联合场景，包含两类身份、空态、失败、撤权、审批失效、并发、幂等、断线和任务恢复。",
+        "旧v0首页、首页出现创建表单、缺图谱或任一三来源模块时明确失败，报告AC→测试文件/用例映射。",
+        "模型合成响应与真实模型验证分开，测试不向客户库写数据；错误脱敏，日志不含密码/token。"
+      ],
+      "allowedPaths": [
+        "apps/control-api/test/",
+        ".github/workflows/",
+        "tests/"
+      ],
+      "requiredAdmissionExit": "PLAN-03:FULL",
+      "issue": 126,
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/126",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08",
+      "priority": "P1",
+      "lane": "V2发布质量与运维",
+      "wave": "W1-W4 parallel quality",
+      "commandIds": [],
+      "notInScope": "本轮不执行编码、迁移、测试发布或生产配置；官网基线不变，普通员工不开放owner。",
+      "implementationBase": "refactor/integration @ b2c14334bdbe519f4ac6d46a4f9fb2ab2dcc8a64; claim-time base must be rechecked",
+      "readiness": "等待前置验收、FULL准入及实际任务授权；不得以本次登记提前开工或部署。"
+    },
+    {
+      "id": "KBV2-REL-03",
+      "title": "V2 Linux视觉基线、交互可达性与设计一致性门禁",
+      "ownerRole": "DeepSeek实现；ChatGPT对照原型审查；负责人确认真实Linux基线",
+      "dependsOn": [
+        "KBV2-REL-01",
+        "KBV2-03",
+        "KBV2-04",
+        "KBV2-06",
+        "KBV2-07",
+        "KBV2-09",
+        "KBV2-14",
+        "KBV2-15"
+      ],
+      "status": "Planned",
+      "scope": "固定Linux/浏览器/字体/数据/图谱种子，桌面与移动实际页面截图对照原型，建立批准后的真实产品基线及后续视觉比较。",
+      "acceptance": [
+        "全部P1页面至少正常与空/错误状态，关键权限/抽屉/对话框；1440x1000与390x844无遮挡/整页溢出，键盘、焦点恢复、Escape、减少动画与图谱列表替代通过。",
+        "首次真实Linux基线由ChatGPT预审并由负责人确认；原型HTML不直接当真实页面逐像素基线；只保存截图、macOS截图、自动更新基线都不能算通过。",
+        "截图差异、缺基线或未批准基线时CI明确未通过；不能整块遮蔽图谱/操作/空态，真实图数据仍来自服务端。"
+      ],
+      "allowedPaths": [
+        "apps/control-api/test/",
+        "tests/",
+        ".github/workflows/",
+        "docs/product/knowledge/v2/"
+      ],
+      "requiredAdmissionExit": "PLAN-03:FULL",
+      "issue": 127,
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/127",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08",
+      "priority": "P1",
+      "lane": "V2发布质量与运维",
+      "wave": "W1-W4 parallel quality",
+      "commandIds": [],
+      "notInScope": "本轮不执行编码、迁移、测试发布或生产配置；官网基线不变，普通员工不开放owner。",
+      "implementationBase": "refactor/integration @ b2c14334bdbe519f4ac6d46a4f9fb2ab2dcc8a64; claim-time base must be rechecked",
+      "readiness": "等待前置验收、FULL准入及实际任务授权；不得以本次登记提前开工或部署。"
+    },
+    {
+      "id": "KBV2-REL-04",
+      "title": "V2不可变候选产物、测试部署、版本核验与发布预检",
+      "ownerRole": "DeepSeek实现；ChatGPT契约及运维方案预审；负责人批准具体测试部署",
+      "dependsOn": [
+        "KBV2-REL-01"
+      ],
+      "status": "Planned",
+      "scope": "设计并实现API/Worker/Web/迁移/CLI版本关联的完整RC产物、清单、digest、版本查询、发布前证据检查和已有隔离测试的可恢复更新。禁止沿用六文件补丁为完整V2部署。",
+      "acceptance": [
+        "固定sourceSha/artifactDigest；测试与生产提升同一不可变产物，前后端实际版本可核验；不从浮动分支重建，不把官网deploy视为知识库deploy。",
+        "发布预检对缺必选AC/错SHA或digest/未验收或缺明确人工确认返回失败，stage明确preview/candidate/production；--yes与dry-run不得绕过。",
+        "合成备份/迁移/恢复演练；应用回退和数据恢复分别处理，保留账号/模型配置，不复用已删除bootstrap凭据；实际测试部署需单独具体授权。",
+        "只读版本查询按本任务planned契约补能力清单、schema、CLI和API/CLI同权负例；未实现前不可注册ready。"
+      ],
+      "allowedPaths": [
+        ".github/workflows/",
+        "apps/control-api/deploy/",
+        "apps/control-api/src/",
+        "apps/control-api/test/",
+        "apps/product-web/",
+        "packages/contracts/",
+        "tools/nuochong-cli/",
+        "docs/product/knowledge/v2/"
+      ],
+      "requiredAdmissionExit": "PLAN-03:FULL",
+      "issue": 128,
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/128",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08",
+      "priority": "P1",
+      "lane": "V2发布质量与运维",
+      "wave": "W1-W4 parallel quality",
+      "commandIds": [
+        "platform.release.get.v1"
+      ],
+      "notInScope": "本轮不执行编码、迁移、测试发布或生产配置；官网基线不变，普通员工不开放owner。",
+      "implementationBase": "refactor/integration @ b2c14334bdbe519f4ac6d46a4f9fb2ab2dcc8a64; claim-time base must be rechecked",
+      "readiness": "等待前置验收、FULL准入及实际任务授权；不得以本次登记提前开工或部署。"
+    },
+    {
+      "id": "KBV2-REL-05",
+      "title": "独立知识库生产环境方案、隔离配置与恢复演练",
+      "ownerRole": "ChatGPT先设计；负责人确认环境及成本；DeepSeek按批准方案建设",
+      "dependsOn": [
+        "KBV2-REL-01",
+        "KBV2-REL-04"
+      ],
+      "status": "Planned",
+      "scope": "方案先行：知识库生产URL/路径、网关TLS、服务/数据库/对象/凭据/模型隔离、容量成本、监控告警、验证账号、备份恢复与运行手册；批准后实施环境，尚不开放V2流量。",
+      "acceptance": [
+        "负责人明确批准生产环境/URL/资源及成本；与隔离测试DB、对象、账号、密钥分离，不把官网静态生产目录当知识库生产。",
+        "无凭据入库/入日志，最小权限、TLS/访问/监控/备份及隔离负例通过；不开放普通员工owner接口。",
+        "在隔离恢复副本恢复DB+对象且校验完整；冻结失败阈值、观察窗口、责任人和停写/回退流程；未确认生产路径不得标Ready。"
+      ],
+      "allowedPaths": [
+        "docs/product/knowledge/v2/",
+        "apps/control-api/deploy/",
+        ".github/workflows/"
+      ],
+      "requiredAdmissionExit": "PLAN-03:FULL",
+      "issue": 129,
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/129",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08",
+      "priority": "P1",
+      "lane": "V2发布质量与运维",
+      "wave": "Production preparation/release",
+      "commandIds": [],
+      "notInScope": "本轮不执行编码、迁移、测试发布或生产配置；官网基线不变，普通员工不开放owner。",
+      "implementationBase": "refactor/integration @ b2c14334bdbe519f4ac6d46a4f9fb2ab2dcc8a64; claim-time base must be rechecked",
+      "readiness": "等待前置验收、FULL准入及实际任务授权；不得以本次登记提前开工或部署。"
+    },
+    {
+      "id": "KBV2-REL-06",
+      "title": "V2 P1生产发布批准、执行核验与交付记录",
+      "ownerRole": "ChatGPT整理发布单；负责人批准实际版本/环境；DeepSeek执行；ChatGPT核验回填",
+      "dependsOn": [
+        "KBV2-11",
+        "KBV2-REL-04",
+        "KBV2-REL-05"
+      ],
+      "status": "Planned",
+      "scope": "汇总测试RC、人工验收、Linux基线、风险和迁移恢复证据，待负责人批准具体SHA/digest和生产环境后发布；验证真实页面和受控合成业务，标记最终范围。",
+      "acceptance": [
+        "#115负责人验收与REL-05环境准备完成；发布单列16条AC全部结论、RC SHA/digest、批准原型、版本/迁移、备份、回退、URL和明确发布批准；不复用KBV2-01旧授权。",
+        "发布同一验收产物；认证后首页全景及三来源入口、合成业务、API/Worker/Web版本/任务、匿名401和监控检查通过；测试资料/临时凭据清理记录齐全。",
+        "失败按已演练方案停止/回退，不把恢复旧库直接丢弃新写入；成功后回填Issue/路线图及实际URL/版本/run/范围，才标V2 P1 Released；未批准生产可止步测试Accepted。"
+      ],
+      "allowedPaths": [
+        "docs/product/knowledge/v2/",
+        ".github/workflows/"
+      ],
+      "requiredAdmissionExit": "PLAN-03:FULL",
+      "issue": 130,
+      "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/130",
+      "issueState": "OPEN",
+      "registeredAt": "2026-11-08",
+      "priority": "P1",
+      "lane": "V2发布质量与运维",
+      "wave": "Production preparation/release",
+      "commandIds": [],
+      "notInScope": "本轮不执行编码、迁移、测试发布或生产配置；官网基线不变，普通员工不开放owner。",
+      "implementationBase": "refactor/integration @ b2c14334bdbe519f4ac6d46a4f9fb2ab2dcc8a64; claim-time base must be rechecked",
+      "readiness": "等待前置验收、FULL准入及实际任务授权；不得以本次登记提前开工或部署。"
     }
   ],
   "designResponsibilities": {
@@ -1112,5 +1374,12 @@
   "revision": "v2-execution-r5-r1-approved",
   "taskCount": 20,
   "scopeDecisionStatus": "P1 implementation scope proposal requires PLAN-01 confirmation; prototype accepted",
-  "estimation": "Re-estimate after PLAN-01/02; historic 47-75 person-days is not the updated scope estimate"
+  "estimation": "Re-estimate after PLAN-01/02; historic 47-75 person-days is not the updated scope estimate",
+  "ledgerPolicy": {
+    "effectiveSource": "execution-plan.json and corresponding Issue current-status header",
+    "historicalPlanSource": "4e7177abc683eef6a2c6a60124b29a9f9bb03a8a / PR131",
+    "releaseRulesStatus": "Design carried forward for review; importing backlog is not runtime approval",
+    "totalTasks": 26,
+    "retrospective": "docs/product/knowledge/v2/retrospective-2026-11-11.md"
+  }
 }
