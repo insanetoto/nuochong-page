@@ -34,3 +34,11 @@ CREATE TABLE access_governance_approvals(
 CREATE INDEX access_governance_approvals_proposal ON access_governance_approvals(proposal_id);
 
 ALTER TABLE knowledge_space_policy_revisions ADD COLUMN governance_approval_id text REFERENCES access_governance_approvals(id);
+
+CREATE TABLE knowledge_space_eligibility(
+ space_id text PRIMARY KEY REFERENCES knowledge_spaces(id) ON DELETE CASCADE,
+ mode text NOT NULL CHECK(mode IN ('single-user','demo')),
+ active boolean NOT NULL DEFAULT true,
+ registered_by text REFERENCES principals(id),
+ created_at timestamptz NOT NULL DEFAULT clock_timestamp()
+);

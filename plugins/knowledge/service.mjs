@@ -5,12 +5,13 @@ import {PrivateObjects} from './objects.mjs';
 export const sourceDTO=s=>({id:s.id,documentId:s.document_id,spaceId:s.space_id,title:s.title,revision:s.ordinal,policyCode:s.policy_code,version:s.version,filename:s.filename,hash:s.object_hash,status:s.status,validFrom:s.valid_from.toISOString(),validUntil:s.valid_until?.toISOString()??'',createdAt:s.created_at.toISOString()});
 const spaceDTO=s=>({id:s.id,title:s.title,departmentIds:s.department_ids,revision:s.revision});
 export const spaceManagementDTO=s=>({spaceId:s.id,code:s.code,title:s.title,domainType:s.domain_type,departmentIds:s.department_ids,status:s.status,revision:s.revision,publicationPolicyRevision:s.publication_policy_revision,allowSelfPublish:s.allow_self_publish});
+const archivedReadCommands=new Set(['knowledge.spaces.get.v1','knowledge.sources.list.v1','knowledge.sources.get.v1','knowledge.pages.list.v1','knowledge.pages.get.v1','knowledge.search.v1','knowledge.quality.get.v1','knowledge.jobs.list.v1','knowledge.jobs.get.v1','knowledge.jobs.events.v1']);
 export class KnowledgeService {
  constructor(kernel,objectRoot){this.kernel=kernel;this.objects=new PrivateObjects(objectRoot);}
  steward(ctx,spaceId){return ['knowledge:edit','knowledge:review','knowledge:publish'].some(p=>ctx.has(p,spaceId));}
  visible(ctx,space){return ctx.has('knowledge:read',space.id)&&(this.steward(ctx,space.id)||!space.department_ids.length||space.department_ids.some(id=>ctx.departments.includes(id)));}
  async authorize(db,ctx,command,i){
-  if(i.spaceId){const space=(await db.query('SELECT * FROM knowledge_spaces WHERE id=$1',[i.spaceId])).rows[0];requireThat(space&&this.visible(ctx,space),404,'NOT_FOUND');}
+  if(i.spaceId){const space=(await db.query('SELECT * FROM knowledge_spaces WHERE id=$1',[i.spaceId])).rows[0];requireThat(space&&this.visible(ctx,space),404,'NOT_FOUND');if(command.id&&space.status==='archived'&&!archivedReadCommands.has(command.id)&&command.id!=='knowledge.jobs.cancel.v1')requireThat(false,409,'SPACE_ARCHIVED');}
   if(command.id==='knowledge.sources.list.v1')requireThat(this.steward(ctx,i.spaceId));
   if(i.view==='manage')requireThat(this.steward(ctx,i.spaceId));
   if(command.id==='knowledge.spaces.publication-policy.set.v1')requireThat(ctx.trustedGovernor&&ctx.has('access:manage','*'),403,'FORBIDDEN');
@@ -76,11 +77,13 @@ export class KnowledgeService {
   }
   if(id==='knowledge.spaces.archive.v1'){
    const space=(await db.query('SELECT * FROM knowledge_spaces WHERE id=$1 FOR UPDATE',[i.spaceId])).rows[0];requireThat(space,404,'NOT_FOUND');requireThat(space.revision===i.expectedRevision,409,'VERSION_CONFLICT');
+   requireThat(!(await db.query("SELECT 1 FROM product_jobs WHERE space_id=$1 AND status IN ('queued','running') LIMIT 1",[space.id])).rowCount,409,'SPACE_BUSY');
    const row=(await db.query("UPDATE knowledge_spaces SET status='archived',revision=revision+1 WHERE id=$1 RETURNING *",[space.id])).rows[0];
    await this.kernel.event(db,'knowledge.space.archived.v1',row.id);return {space:spaceManagementDTO(row),requestId:randomUUID()};
   }
   if(id==='knowledge.spaces.publication-policy.set.v1'){
-   const space=(await db.query('SELECT * FROM knowledge_spaces WHERE id=$1 FOR UPDATE',[i.spaceId])).rows[0];requireThat(space,404,'NOT_FOUND');requireThat(space.status!=='archived',409,'VERSION_CONFLICT');
+   const space=(await db.query('SELECT * FROM knowledge_spaces WHERE id=$1 FOR UPDATE',[i.spaceId])).rows[0];requireThat(space,404,'NOT_FOUND');requireThat(space.status!=='archived',409,'SPACE_ARCHIVED');
+   if(i.allowSelfPublish)requireThat((await db.query('SELECT 1 FROM knowledge_space_eligibility WHERE space_id=$1 AND active',[space.id])).rowCount,409,'SELF_PUBLISH_NOT_ELIGIBLE');
    const target={spaceId:i.spaceId,allowSelfPublish:i.allowSelfPublish,reason:i.reason,expectedPolicyRevision:i.expectedPolicyRevision};
    const targetHash=digest(target);
    const proposal=(await db.query('SELECT * FROM access_governance_proposals WHERE id=$1 FOR UPDATE',[i.proposalId])).rows[0];

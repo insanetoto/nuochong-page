@@ -102,6 +102,7 @@ export class AccessKernel {
    requireThat(Object.keys(target).sort().join(',')==='allowSelfPublish,expectedPolicyRevision,reason,spaceId',400,'INVALID_INPUT');
    requireThat(typeof target.allowSelfPublish==='boolean'&&typeof target.reason==='string'&&target.reason.length>=3&&target.reason.length<=1000&&Number.isInteger(target.expectedPolicyRevision)&&target.expectedPolicyRevision>=1,400,'INVALID_INPUT');
    const space=(await db.query('SELECT id,status FROM knowledge_spaces WHERE id=$1',[target.spaceId])).rows[0];requireThat(space&&space.status!=='archived',404,'NOT_FOUND');
+   if(target.allowSelfPublish)requireThat((await db.query('SELECT 1 FROM knowledge_space_eligibility WHERE space_id=$1 AND active',[target.spaceId])).rowCount,409,'SELF_PUBLISH_NOT_ELIGIBLE');
    const targetHash=digest(target),id=randomUUID(),expiresAt=new Date(Date.now()+15*60000);
    await db.query(`INSERT INTO access_governance_proposals(id,command_id,target,target_hash,space_id,requested_by,credential_id,expires_at)
     VALUES($1,$2,$3,$4,$5,$6,$7,$8)`,[id,input.commandId,target,targetHash,target.spaceId,ctx.actor.id,ctx.actor.credential_id,expiresAt]);
