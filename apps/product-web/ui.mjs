@@ -12,4 +12,4 @@ export const heading=(title,description)=>h('div',{class:'page-toolbar'},h('div'
 export const table=(headers,rows)=>rows.length?h('div',{class:'table-wrap'},h('table',{},h('thead',{},h('tr',{},headers.map(x=>h('th',{scope:'col'},x)))),h('tbody',{},rows.map(cells=>h('tr',{},cells.map(c=>h('td',{},c))))))):empty('暂无记录');
 export const pagination=(ctx,data,view)=>data.nextCursor?h('div',{class:'actions'},button('下一页',()=>ctx.navigate(view+'?after='+encodeURIComponent(data.nextCursor)))):null;
 export const section=(title,...children)=>h('section',{class:'section-gap'},h('h2',{},title),children);
-export function bindForm(ctx,form,operation,success){form.addEventListener('submit',event=>{event.preventDefault();const submit=form.querySelector('button[type=submit]');ctx.operate(submit,operation,success);});return form;}
+export function bindForm(ctx,form,operation,success){form.addEventListener('submit',event=>{event.preventDefault();const submit=form.querySelector('button[type=submit]');ctx.operate(submit,()=>operation(event),success);});return form;}
