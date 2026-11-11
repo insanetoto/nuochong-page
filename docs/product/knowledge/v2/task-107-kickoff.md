@@ -10,6 +10,10 @@
 
 必须阅读：Issue107、docs/refactor/README.md、w0/r3-management-admission-2026-11-10.md、w0/decisions.md(D10/D11/D12)、w0/p1-command-contracts.json、w0/hash-and-compatibility.md、prototype-design.md及import-pipeline.md。精确35项冻结schema优先于旧概览；不能将未知schema关键词静默忽略。
 
+## 已知回归补项
+
+PR137同一提交浏览器改名测试首跑失败、复跑通过，原因未定，见[复盘证据](retrospective-2026-11-11.md#本次归档ci出现的间歇失败与待办)。DeepSeek在#106先用独立小PR补充基于请求完成、页面/持久化结果的有界等待及失败诊断，不以固定sleep或重跑掩盖问题；受控慢成功/失败更新均验证。#107-A解析模块可先开展，后续共享浏览器/产品入口切片集成前须完成该补项技术复审；不新增父Issue关闭门槛，也不擅改产品权限语义。
+
 ## 三个小PR与各自出口
 
 | 切片 | 允许交付 | 必备证据 | 不能声称已完成 |
