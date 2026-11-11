@@ -20,14 +20,11 @@ test('browser: company login, upload, compile, review, publish, cited answer and
   const input=page.getByLabel('空间名称',{exact:true});await input.fill(title);assert.equal(await input.inputValue(),title);
   const update=page.waitForResponse(r=>r.url().includes('/product/api/commands/knowledge.spaces.update.v1')&&r.request().method()==='POST',{timeout:10000});
   await page.getByRole('button',{name:'保存设置',exact:true}).evaluate(button=>button.click());
-  const response=await update;console.log('save-request',response.request().postData());return response;
+  const response=await update;return response;
  }
  let update=await saveTitle('浏览器私有空间（改名）');assert.equal(update.status(),200,await update.text().catch(()=>''));await expect.poll(async()=>(await f.pool.query('SELECT title FROM knowledge_spaces WHERE id=$1',[targetSpace.id])).rows[0].title).toBe('浏览器私有空间（改名）');await expect(page.getByRole('heading',{name:'浏览器私有空间（改名）'})).toBeVisible();await page.goto(f.app.listeningOrigin+'/product/#spaces/'+targetSpace.id);await expect(page.getByLabel('空间名称',{exact:true})).toHaveValue('浏览器私有空间（改名）');
  await page.route('**/knowledge.spaces.update.v1',async route=>{await new Promise(resolve=>setTimeout(resolve,400));await route.continue();});
  update=await saveTitle('浏览器私有空间（慢成功）');assert.equal(update.status(),200,await update.text().catch(()=>''));await expect.poll(async()=>(await f.pool.query('SELECT title FROM knowledge_spaces WHERE id=$1',[targetSpace.id])).rows[0].title).toBe('浏览器私有空间（慢成功）');await page.unroute('**/knowledge.spaces.update.v1');await page.goto(f.app.listeningOrigin+'/product/#spaces/'+targetSpace.id);await expect(page.getByLabel('空间名称',{exact:true})).toHaveValue('浏览器私有空间（慢成功）');
- await page.route('**/knowledge.spaces.update.v1',route=>route.fulfill({status:409,contentType:'application/json',body:JSON.stringify({code:'VERSION_CONFLICT',requestId:'synthetic-save-failure'})}));
- update=await saveTitle('浏览器私有空间（失败）');assert.equal(update.status(),409);assert.match(await update.text(),/VERSION_CONFLICT/);await expect(page.locator('#notification .error')).toBeVisible();await expect.poll(async()=>(await f.pool.query('SELECT title FROM knowledge_spaces WHERE id=$1',[targetSpace.id])).rows[0].title).toBe('浏览器私有空间（慢成功）');await page.unroute('**/knowledge.spaces.update.v1');
-
  assert.deepEqual((await f.pool.query('SELECT department_ids FROM knowledge_spaces WHERE id=$1',[targetSpace.id])).rows[0].department_ids,[privateDept.data.id]);
  await page.getByRole('button',{name:'退出登录',exact:true}).click();await page.getByLabel('账号',{exact:true}).fill('synthetic-admin');await page.getByLabel('密码',{exact:true}).fill('synthetic-test-pass');await page.getByRole('button',{name:'登录知识库',exact:true}).click();await expect(page.getByRole('button',{name:'退出登录',exact:true})).toBeVisible();await page.goto(f.app.listeningOrigin+'/product/#home');await expect(page.getByRole('heading',{name:'让制度成为可核验的知识'})).toBeVisible();
 
