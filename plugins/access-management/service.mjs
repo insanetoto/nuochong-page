@@ -19,7 +19,8 @@ export class AccessKernel {
   requireThat(live,401,'UNAUTHORIZED');
   const bindings=(await db.query("SELECT b.*,r.permissions FROM product_bindings b JOIN product_roles r ON r.id=b.role_id JOIN product_plugins pp ON pp.id=r.product_id AND pp.state IN ('enabled','draining') WHERE principal_id=$1",[actor.id])).rows;
   const departments=(await db.query('SELECT m.department_id FROM product_memberships m JOIN product_departments d ON d.id=m.department_id WHERE m.principal_id=$1 AND d.active',[actor.id])).rows.map(r=>r.department_id);
-  return {actor,bindings,departments,has:(permission,scope='*')=>bindings.some(b=>b.permissions.includes(permission)&&(b.scope_id==='*'||b.scope_id===scope))};
+  const trustedGovernor=(await db.query('SELECT 1 FROM product_platform_governors WHERE principal_id=$1 AND active',[actor.id])).rowCount>0;
+  return {actor,bindings,departments,trustedGovernor,has:(permission,scope='*')=>bindings.some(b=>b.permissions.includes(permission)&&(b.scope_id==='*'||b.scope_id===scope))};
  }
  async event(db,type,id){const row=(await db.query('UPDATE product_settings SET epoch=epoch+1 WHERE id=1 RETURNING epoch')).rows[0];await db.query('INSERT INTO product_outbox(event_id,type,resource_id,revision) VALUES($1,$2,$3,$4)',[randomUUID(),type,id,row.epoch]);}
  async perform(actor,command,input,body,authorize=async()=>{}){
@@ -94,6 +95,29 @@ export class AccessKernel {
   if(id==='platform.plugins.list.v1')return {items:(await this.registry(db)).list()};
   if(id==='access.permissions.check.v1')return {allowed:ctx.has(input.permission,input.scopeId),principalId:ctx.actor.id};
   if(id==='access.approvals.create.v1')return this.approval(db,ctx,input);
+  if(id==='access.approval-requests.create.v1'){
+   requireThat(ctx.trustedGovernor&&ctx.has('access:manage','*'),403,'FORBIDDEN');
+   const target=input.target;
+   requireThat(input.commandId==='knowledge.spaces.publication-policy.set.v1'&&target&&typeof target==='object',400,'INVALID_INPUT');
+   requireThat(Object.keys(target).sort().join(',')==='allowSelfPublish,expectedPolicyRevision,reason,spaceId',400,'INVALID_INPUT');
+   requireThat(typeof target.allowSelfPublish==='boolean'&&typeof target.reason==='string'&&target.reason.length>=3&&target.reason.length<=1000&&Number.isInteger(target.expectedPolicyRevision)&&target.expectedPolicyRevision>=1,400,'INVALID_INPUT');
+   const space=(await db.query('SELECT id,status FROM knowledge_spaces WHERE id=$1',[target.spaceId])).rows[0];requireThat(space&&space.status!=='archived',404,'NOT_FOUND');
+   if(target.allowSelfPublish)requireThat((await db.query('SELECT 1 FROM knowledge_space_eligibility WHERE space_id=$1 AND active',[target.spaceId])).rowCount,409,'SELF_PUBLISH_NOT_ELIGIBLE');
+   const targetHash=digest(target),id=randomUUID(),expiresAt=new Date(Date.now()+15*60000);
+   await db.query(`INSERT INTO access_governance_proposals(id,command_id,target,target_hash,space_id,requested_by,credential_id,expires_at)
+    VALUES($1,$2,$3,$4,$5,$6,$7,$8)`,[id,input.commandId,target,targetHash,target.spaceId,ctx.actor.id,ctx.actor.credential_id,expiresAt]);
+   return {proposalId:id,targetHash,expiresAt:expiresAt.toISOString(),requestId:randomUUID()};
+  }
+  if(id==='access.approvals.create.v2'){
+   requireThat(ctx.trustedGovernor&&ctx.has('access:manage','*'),403,'FORBIDDEN');
+   const proposal=(await db.query('SELECT * FROM access_governance_proposals WHERE id=$1 AND NOT used AND expires_at>clock_timestamp() FOR UPDATE',[input.proposalId])).rows[0];
+   requireThat(proposal,409,'APPROVAL_REQUIRED');
+   requireThat(proposal.requested_by!==ctx.actor.id,409,'APPROVAL_REQUIRED');
+   const approvalId=randomUUID(),expiresAt=new Date(Date.now()+15*60000);
+   await db.query(`INSERT INTO access_governance_approvals(id,proposal_id,approver_id,credential_id,target_hash,expires_at)
+    VALUES($1,$2,$3,$4,$5,$6)`,[approvalId,proposal.id,ctx.actor.id,ctx.actor.credential_id,proposal.target_hash,expiresAt]);
+   return {approvalId,targetHash:proposal.target_hash,expiresAt:expiresAt.toISOString(),requestId:randomUUID()};
+  }
   if(id==='access.roles.list.v1')return {items:(await db.query('SELECT * FROM product_roles ORDER BY id')).rows.map(r=>({id:r.id,productId:r.product_id,permissions:r.permissions}))};
   if(id==='access.bindings.list.v1'){const rows=(await db.query('SELECT * FROM product_bindings WHERE id>$1 ORDER BY id LIMIT 101',[input.after??''])).rows;return {items:rows.slice(0,100).map(bindingDTO),...(rows.length>100&&{nextCursor:rows[99].id})};}
   if(id==='access.bindings.grant.v1'){
@@ -127,6 +151,7 @@ export async function bootstrapProduct(pool,identity,{username,password}){
   await db.query('INSERT INTO product_accounts(username,principal_id,salt,password_hash) VALUES($1,$2,$3,$4)',[username,id,salt,scryptSync(password,salt,64).toString('hex')]);
   for(const role of ['org-admin','access-admin','knowledge-reader','knowledge-editor','knowledge-reviewer','knowledge-publisher'])await db.query("INSERT INTO product_bindings(id,principal_id,role_id,scope_id) VALUES($1,$2,$3,'*')",[randomUUID(),id,role]);
   await db.query('UPDATE product_settings SET initialized=true WHERE id=1');
+ await db.query('INSERT INTO product_platform_governors(principal_id) VALUES($1) ON CONFLICT(principal_id) DO UPDATE SET active=true',[principal.id]);
   await db.query("INSERT INTO audit(actor_id,action,resource_id,result) VALUES($1,'product.bootstrap',$1,'allow')",[id]);
   const credential=await identity.issue(db,principal,['product:read','product:write','product:approve'],new Date(Date.now()+4*3600000));
   return {principalId:id,token:credential.token,expiresAt:credential.expiresAt};

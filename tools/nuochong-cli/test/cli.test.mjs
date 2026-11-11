@@ -199,3 +199,20 @@ test('unsupported schema features do not silently pass a partial validator',()=>
   const result=await cli(['identity','login','--input',JSON.stringify({username:'synthetic-user',password:'synthetic-private-pass',delivery:'bearer'}),'--dry-run']);
   assert.equal(result.code,0);assert.ok(!result.stdout.includes('synthetic-private-pass'));assert.match(result.stdout,/redacted/);
  });
+
+test('space management contracts select v2 explicitly and preserve CLI/API parity', async () => {
+  const detail = { spaceId: 'space-1', code: 'POLICY-1', title: 'Synthetic policy', domainType: 'policy', departmentIds: [], status: 'active', revision: 1, publicationPolicyRevision: 1, allowSelfPublish: false };
+  const create = commands.find((c) => c.id === 'knowledge.spaces.create.v2');
+  assert.ok(create); assert.equal(create.path, '/product/api/commands/knowledge.spaces.create.v2');
+  const dry = await cli(['knowledge', 'spaces', 'create', '--input', JSON.stringify({ idempotencyKey: 'synthetic-key-123', approvalId: 'approval-1', code: 'POLICY-1', title: 'Synthetic policy', domainType: 'policy', departmentIds: [] }), '--command-version', '2', '--dry-run']);
+  assert.equal(dry.code, 0, dry.stderr); assert.equal(JSON.parse(dry.stdout).command, 'knowledge.spaces.create.v2');
+  const fixture = await server((req, res) => json(res, { space: detail, requestId: 'request-1' }));
+  try {
+    const result = await cli(['knowledge', 'spaces', 'get', '--input', '{"spaceId":"space-1"}'], fixture.env);
+    assert.equal(result.code, 0, result.stderr); assert.equal(fixture.seen[0].url, '/product/api/commands/knowledge.spaces.get.v1');
+    assert.deepEqual(fixture.seen[0].body, { spaceId: 'space-1' });
+    assert.equal(JSON.parse(result.stdout).data.space.code, 'POLICY-1');
+  } finally { await fixture.close(); }
+  const request = await cli(['access', 'approval-requests', 'create', '--input', JSON.stringify({ idempotencyKey: 'synthetic-key-123', commandId: 'knowledge.spaces.publication-policy.set.v1', target: { spaceId: 'space-1', allowSelfPublish: false, reason: 'synthetic governance', expectedPolicyRevision: 1 } }), '--dry-run']);
+  assert.equal(request.code, 0, request.stderr); assert.equal(JSON.parse(request.stdout).command, 'access.approval-requests.create.v1');
+});
