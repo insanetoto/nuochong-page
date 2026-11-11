@@ -25,7 +25,12 @@ for(const c of catalogue.commands){
 const ontology=ajv.compile(json('ontology-fragment.schema.json')),example=json('ontology-fragment.example.json');
 assert(ontology(example));
 for(const bad of [{...example,script:'exec'}, {...example,namespace:'nc.ext:'}, {...example,apiMajor:2}, {...example,relations:[{...example.relations[0],authorizationPropagation:true}]}]){assert.equal(ontology(bad),false);negative++;}
-const baseline=json('v0-command-baseline.json');assert.equal(runtime.length,59);
+// Historical v0/R1 count was 59. KBV2-03 explicitly implements these seven additions.
+const implementedV2=new Set(['knowledge.spaces.get.v1','knowledge.spaces.create.v2','knowledge.spaces.update.v1','knowledge.spaces.archive.v1','knowledge.spaces.publication-policy.set.v1','access.approval-requests.create.v1','access.approvals.create.v2']);
+const baseline=json('v0-command-baseline.json');assert.equal(runtime.length,59+implementedV2.size);
+assert.equal(new Set(runtime.map(c=>c.id)).size,runtime.length);
+for(const id of implementedV2)assert(runtime.some(c=>c.id===id),id+' missing implemented command');
+for(const c of catalogue.commands)if(runtime.some(r=>r.id===c.commandId))assert(implementedV2.has(c.commandId),c.commandId+' registered without updating implementation evidence');
 for(const old of baseline.commands)assert.deepEqual(JSON.parse(JSON.stringify(runtime.find(c=>c.id===old.id))),old,old.id+' wire baseline changed');
 function canonical(v){
  if(v===null||typeof v==='number'&&(!Number.isSafeInteger(v)||Object.is(v,-0)))throw new Error('invalid canonical value');

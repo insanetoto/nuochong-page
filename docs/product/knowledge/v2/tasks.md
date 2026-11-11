@@ -1,5 +1,7 @@
 # 知识库 v2 任务索引（执行计划 r5（R1已批准））
 
+2026-11-11当前状态：#106已合并部署隔离测试（a6d9a5e）；#107 Ready并顺序接管共享文件，见[开工卡](task-107-kickoff.md)。原20项与6项发布质量任务统一台账为26项，发布设计仍与运行实现分别验收；完整V2未上线。见[发布记录](release-2026-11-11.md)与[复盘改进](retrospective-2026-11-11.md)。下方旧状态为历史快照。
+
 2026-11-10最新：#105已验收、合并并更新知识库隔离测试，见[发布记录](release-2026-11-10.md)。#106/#107为Ready，消费[PLAN-03:R3](w0/r3-management-admission-2026-11-10.md)，先空间管理再导入串行领取；整体V2/FULL和后续发布仍独立。下方历史阶段快照不能覆盖本条。
 
 **2026-11-09最新：#94已验收关闭，PR #132已合入integration（4fce492）；#105 / KBV2-02为Ready，明确消费PLAN-03:R2，只允许隔离合成数据开发，不等待#103父Issue关闭。整体FULL及其他任务/部署不自动解锁。见[R2交接](w0/r2-data-admission-2026-11-09.md)。**
@@ -23,7 +25,7 @@ W0设计已补齐，见[一次确认单](w0/admission.md)；#104当前Released�
 | PLAN-03 | [#103](https://github.com/insanetoto/nuochong-page/issues/103) | 实现准入与执行任务登记 | ChatGPT；负责人批准 | PLAN-01, PLAN-02 | In progress |
 | KBV2-01 | [#104](https://github.com/insanetoto/nuochong-page/issues/104) | 本体注册表与版本治理 | DeepSeek；ChatGPT预审；负责人验收 | PLAN-03:R1 | Released（隔离测试） |
 | KBV2-02 | [#105](https://github.com/insanetoto/nuochong-page/issues/105) | 数据模型扩展与迁移 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-01, PLAN-03:R2 | Released（隔离测试） |
-| KBV2-03 | [#106](https://github.com/insanetoto/nuochong-page/issues/106) | 知识空间管理 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-02, PLAN-03:R3 | Ready |
+| KBV2-03 | [#106](https://github.com/insanetoto/nuochong-page/issues/106) | 知识空间管理 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-02, PLAN-03:R3 | Released（隔离测试） |
 | KBV2-04 | [#107](https://github.com/insanetoto/nuochong-page/issues/107) | 文本/PDF/DOCX 导入与片段任务 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-02, PLAN-03:R3 | Ready |
 | KBV2-15 | [#108](https://github.com/insanetoto/nuochong-page/issues/108) | 产品壳、导航兼容与持久任务页面 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-03, KBV2-04 | Planned |
 | KBV2-06 | [#109](https://github.com/insanetoto/nuochong-page/issues/109) | 片段待审与条目组装 | DeepSeek；ChatGPT预审；负责人验收 | KBV2-04 | Planned |
@@ -53,3 +55,13 @@ W0设计已补齐，见[一次确认单](w0/admission.md)；#104当前Released�
 01本体继承PLAT-01/02；02模型继承KB-02；03空间与06审校/07发布继承KB-03/06/07/13；04文本及05媒体继承KB-04；08图谱继承KB-08；09全景与14员工消费继承KB-11；10集成继承KB-14；11验收继承KB-17；15整合已有产品壳与任务基础。只继承相关切片，不将原30项完整规划自动标记完成，也不恢复旧B—E业务演示。
 
 R1最新准入以[验收与固定基线](w0/r1-acceptance-2026-11-08.md)为准；#104只依赖#103的R1子出口，不等待父Issue关闭。其余任务不据此跳过完整前置。
+
+
+## 补充质量与发布任务（已统一入26项台账）
+
+- [KBV2-REL-01 #125](https://github.com/insanetoto/nuochong-page/issues/125)：V2原型到验收用例追踪与发布规则冻结；In review。
+- [KBV2-REL-02 #126](https://github.com/insanetoto/nuochong-page/issues/126)：V2真实业务浏览器E2E与原型验收负例；Planned。
+- [KBV2-REL-03 #127](https://github.com/insanetoto/nuochong-page/issues/127)：V2 Linux视觉基线、交互可达性与设计一致性门禁；Planned。
+- [KBV2-REL-04 #128](https://github.com/insanetoto/nuochong-page/issues/128)：V2不可变候选产物、测试部署、版本核验与发布预检；Planned。
+- [KBV2-REL-05 #129](https://github.com/insanetoto/nuochong-page/issues/129)：独立知识库生产环境方案、隔离配置与恢复演练；Planned。
+- [KBV2-REL-06 #130](https://github.com/insanetoto/nuochong-page/issues/130)：V2 P1生产发布批准、执行核验与交付记录；Planned。

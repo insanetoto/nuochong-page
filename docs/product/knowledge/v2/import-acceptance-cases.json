@@ -1,0 +1,94 @@
+{
+  "status": "design fixtures; not runtime/test pass evidence",
+  "runtimeRegistration": false,
+  "owner": "ChatGPT design; DeepSeek creates actual fixture files/tests",
+  "textCases": [
+    {
+      "id": "MD-01",
+      "format": "text/markdown",
+      "content": "# Synthetic policy\n\nTravel requires approval.\nKeep receipts.\n",
+      "fragments": [
+        {
+          "lineStart": 1,
+          "lineEnd": 1,
+          "excerpt": "# Synthetic policy",
+          "textHash": "ec82900dccac5702681972943d2440c50e973d9917d447d41d54201bf00309e2"
+        },
+        {
+          "lineStart": 3,
+          "lineEnd": 4,
+          "excerpt": "Travel requires approval.\nKeep receipts.",
+          "textHash": "b6966c46d396b7b034cab5cf9f3891eb70e2bf0541345d87b6166046d61c87bf"
+        }
+      ],
+      "sha256": "c62c13af8763c16e77fa9690b9035febc914672cdd285b2fa4a3fc69e37a4bc2",
+      "byteLength": 61
+    },
+    {
+      "id": "TXT-01",
+      "format": "text/plain",
+      "content": "Travel requires approval.\n\nKeep receipts.\n",
+      "fragments": [
+        {
+          "lineStart": 1,
+          "lineEnd": 1,
+          "excerpt": "Travel requires approval.",
+          "textHash": "56b47962a259a1f132e6296bdd2ad421dfd319710433d46335e7c5acdeb98d27"
+        },
+        {
+          "lineStart": 3,
+          "lineEnd": 3,
+          "excerpt": "Keep receipts.",
+          "textHash": "da7c2671ec34ca7dcd239e95d76c523b69a408dfa02398ce77340f117660b0fc"
+        }
+      ],
+      "sha256": "14b1b244ac4e1ce712a9eedeb6a8afe1a3765d60273b96b23f146616a4435deb",
+      "byteLength": 42
+    }
+  ],
+  "binaryFixtureSpecifications": [
+    {
+      "id": "PDF-01",
+      "format": "application/pdf",
+      "pages": [
+        {
+          "page": 1,
+          "text": "Synthetic policy"
+        },
+        {
+          "page": 2,
+          "text": "Travel requires approval.\nKeep receipts."
+        }
+      ],
+      "requiredAssertions": [
+        "actual two-page text-layer PDF",
+        "page2 citations locate Travel requires approval.",
+        "original bytes immutable and hash persisted",
+        "fix producer/font/layout; expected locator not derived from parser output"
+      ]
+    },
+    {
+      "id": "DOCX-01",
+      "format": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "paragraphs": [
+        "Travel requires approval.",
+        "Keep receipts."
+      ],
+      "requiredAssertions": [
+        "actual DOCX container",
+        "paragraph 1 and 2 text exact",
+        "original bytes immutable and hash persisted",
+        "malformed/encrypted/expansion-over-limit rejects"
+      ]
+    }
+  ],
+  "negativeInputs": [
+    "empty",
+    "extension-and-magic-mismatch",
+    "invalid UTF8",
+    "scanned PDF without text layer",
+    "encrypted document",
+    "file/batch/space/page/expanded-byte/code-point limit plus one"
+  ],
+  "implementationEvidence": "Not run: these are acceptance specifications, not implemented parser/fixture validation"
+}
