@@ -19,7 +19,7 @@ test('space management uses frozen DTOs, immutable code and approval/governance 
  assert.equal((await f.write('knowledge.spaces.create.v2',{code:space.code,title:'Duplicate code',domainType:'policy',departmentIds:[]})).status,409);
  const got=await f.call('knowledge.spaces.get.v1',{spaceId:space.spaceId});assert.equal(got.status,200);assert.equal(got.data.space.code,space.code);assert.equal(got.data.space.status,'active');
  const updated=await f.write('knowledge.spaces.update.v1',{spaceId:space.spaceId,expectedRevision:space.revision,title:'Renamed policy space',departmentIds:[]});assert.equal(updated.status,200);assert.equal(updated.data.space.title,'Renamed policy space');assert.equal(updated.data.space.code,space.code);
- assert.equal((await f.write('knowledge.spaces.update.v1',{spaceId:space.spaceId,expectedRevision:space.revision,title:'Stale',departmentIds:[]})).status,409);
+ assert.equal((await f.write('knowledge.spaces.update.v1',{spaceId:space.spaceId,expectedRevision:space.revision,title:'Stale',departmentIds:[]})).status,409);assert.equal((await f.pool.query('SELECT title FROM knowledge_spaces WHERE id=$1',[space.spaceId])).rows[0].title,'Renamed policy space');
  const reader=await f.reader();
  assert.equal((await f.call('knowledge.spaces.update.v1',{idempotencyKey:randomUUID(),approvalId:'missing',spaceId:space.spaceId,expectedRevision:space.revision,title:'Reader cannot rename',departmentIds:[]},reader.token)).status,403);
  assert.equal((await f.call('knowledge.spaces.update.v1',{idempotencyKey:randomUUID(),approvalId:'missing',spaceId:space.spaceId,expectedRevision:space.revision,title:'No bypass',departmentIds:[],allowSelfPublish:true},f.admin.token)).status,400);
