@@ -11,7 +11,7 @@ const importFile=obj({objectRef:str(128),title:str(256),policyCode:str(128),vers
 const importFileResult=obj({fileId:str(128),objectRef:str(128),filename:str(256),status:{enum:['uploaded','validated','parsing','parsed','failed','quarantined','cancelled']},jobId:str(128),errorCode:str(80)},['fileId','objectRef','filename','status']);
 const importBatch=obj({batchId:str(128),spaceId:str(128),status:{enum:['created','parsing','completed','partial','failed','cancelled']},files:arr(importFileResult,20),revision});
 const importResult=obj({batch:importBatch,requestId:str(128)});
-const uploadResult=obj({objectRef:str(128),sha256:str(64),byteLength:{type:'integer',minimum:1,maximum:20971520},status:{enum:['ready','quarantined']},expiresAt:str(),requestId:str(128)});
+const uploadResult=obj({objectRef:str(128),sha256:str(64),byteLength:{type:'integer',minimum:1},status:{enum:['ready','quarantined']},expiresAt:str(),requestId:str(128)});
 
 const governanceRequest=obj({proposalId:str(128),targetHash:str(64),expiresAt:str(),requestId:str(128)});
 const governanceApproval=obj({approvalId:str(128),targetHash:str(64),expiresAt:str(),requestId:str(128)});
@@ -21,7 +21,7 @@ export const detailSchema=obj({...knowledgePageSchema.properties,body:str(20000)
 const read={permission:'knowledge:read',scopeField:'spaceId'},edit={write:true,permission:'knowledge:edit',scopeField:'spaceId'},publish={write:true,approval:true,permission:'knowledge:publish',scopeField:'spaceId'};
 export const knowledgeCommands=[
  command('knowledge.spaces.list.v1','knowledge spaces list',obj({after:str()},[]),pageOf(spaceSchema)),
- command('knowledge.objects.upload.v1','knowledge objects upload',obj({spaceId:str(128),idempotencyKey:str(128,16),filename:str(256),mediaType,byteLength:{type:'integer',minimum:1,maximum:20971520},sha256:str(64)}),uploadResult,{write:true,permission:'knowledge:edit',scopeField:'spaceId'}),
+ command('knowledge.objects.upload.v1','knowledge objects upload',obj({spaceId:str(128),idempotencyKey:str(128,16),filename:str(256),mediaType,byteLength:{type:'integer',minimum:1},sha256:str(64)}),uploadResult,{write:true,permission:'knowledge:edit',scopeField:'spaceId'}),
  command('knowledge.imports.create.v1','knowledge imports create',obj({spaceId:str(128),idempotencyKey:str(128,16),files:arr(importFile,20)}),importResult,{write:true,permission:'knowledge:edit',scopeField:'spaceId'}),
  command('knowledge.imports.list.v1','knowledge imports list',obj({spaceId:str(128),after:str(512,0)},['spaceId']),pageOf(importBatch),{permission:'knowledge:edit',scopeField:'spaceId'}),
  command('knowledge.imports.get.v1','knowledge imports get',obj({spaceId:str(128),batchId:str(128)}),importResult,{permission:'knowledge:edit',scopeField:'spaceId'}),
