@@ -15,7 +15,7 @@ export class ImportService {
   requireThat(Buffer.isBuffer(bytes)&&bytes.length>0&&bytes.length<=MAX_FILE,422,'INVALID_INPUT');
   requireThat(input.byteLength===bytes.length&&input.sha256===sha(bytes),400,'INVALID_INPUT');
   const media=input.mediaType;requireThat(MEDIA[media]?.test(input.filename),422,'INVALID_INPUT');
-  parseImportBytes(bytes,media); // reject format/magic/empty/encrypted/scan before accepting
+  try{parseImportBytes(bytes,media);}catch{requireThat(false,422,'INVALID_INPUT');} // reject format/magic/empty/encrypted/scan before accepting
   const hash=await this.knowledge.objects.putBytes(db,bytes);
   requireThat(hash===input.sha256,400,'INVALID_INPUT');
   await db.query(`INSERT INTO knowledge_object_bindings(hash,space_id,filename,media_type,sha256,byte_length,created_by)
