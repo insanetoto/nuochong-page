@@ -21,7 +21,7 @@ export function registerProduct(app,{pool,identity,publicOrigin,cookiePath,objec
    if(typeof value==='string')requireThat(!value.includes('\0'),400,'INVALID_INPUT');
    else if(value&&typeof value==='object')for(const child of Object.values(value))pending.push({value:child,depth:depth+1});
   }
-  if(command.id==='knowledge.objects.upload.v1'){console.error('UPLOAD_START',Buffer.isBuffer(req.body),req.headers['content-type']);
+  if(command.id==='knowledge.objects.upload.v1'){
    const boundary=/boundary=(?:"([^"]+)"|([^;]+))/i.exec(req.headers['content-type']??'')?.[1]??/boundary=(?:"([^"]+)"|([^;]+))/i.exec(req.headers['content-type']??'')?.[2];
    requireThat(boundary&&Buffer.isBuffer(req.body),400,'INVALID_INPUT');
    const parts=[];const delimiter=Buffer.from('--'+boundary);let start=req.body.indexOf(delimiter);
@@ -29,7 +29,7 @@ export function registerProduct(app,{pool,identity,publicOrigin,cookiePath,objec
    while(start>=0){start+=delimiter.length;if(req.body.subarray(start,start+2).toString()==='--')break;if(req.body.subarray(start,start+2).toString()==='\r\n')start+=2;const next=req.body.indexOf(delimiter,start);requireThat(next>start,400,'INVALID_INPUT');parts.push(req.body.subarray(start,next));start=next;}
    let metadata,bytes;
    for(const part of parts){const headerEnd=part.indexOf(Buffer.from('\r\n\r\n'));if(headerEnd<0)continue;const headers=part.subarray(0,headerEnd).toString('utf8');const body=part.subarray(headerEnd+4,-2);if(/name="metadata"/.test(headers))metadata=JSON.parse(body.toString('utf8'));else if(/name="file"/.test(headers))bytes=body;}
-   console.error('UPLOAD_PARTS',!!metadata,bytes?.length);requireThat(metadata&&bytes,400,'INVALID_INPUT');req.body=metadata;req.uploadBytes=bytes;
+   requireThat(metadata&&bytes,400,'INVALID_INPUT');req.body=metadata;req.uploadBytes=bytes;
   }
   requireThat(valid(command.inputSchema,req.body),400,'INVALID_INPUT');
   requireThat(Object.keys(req.query).length===0,400,'INVALID_INPUT');
@@ -49,7 +49,7 @@ export function registerProduct(app,{pool,identity,publicOrigin,cookiePath,objec
   }
   if(!bearer&&cookie&&command.sideEffect!=='none')requireThat(origin===trustedOrigin(),403,'INVALID_ORIGIN');
   const actor=await identity.authenticate(bearer??cookie);req.oaAudit={actorId:actor.id,action:command.id};
-  let data;try{data=await kernel.perform(actor,command,req.body,(db,ctx)=>['knowledge.compilations.create.v1','knowledge.answers.ask.v1'].includes(command.id)||command.id.startsWith('knowledge.jobs.')?jobs.dispatch(db,ctx,command.id,req.body):command.id.startsWith('knowledge.')?(command.id==='knowledge.objects.upload.v1'||command.id.startsWith('knowledge.imports.')?imports.dispatch(db,ctx,command.id,command.id==='knowledge.objects.upload.v1'?{...req.body,__bytes:req.uploadBytes}:req.body):knowledge.dispatch(db,ctx,command.id,req.body)):command.id.startsWith('organization.')?organization.dispatch(db,ctx,command.id,req.body):kernel.dispatch(db,ctx,command.id,req.body),(db,ctx)=>command.id.startsWith('knowledge.')?knowledge.authorize(db,ctx,command,req.body):undefined);}catch(error){if(command.id==='knowledge.objects.upload.v1')console.error(error);throw error;}
+  const data=await kernel.perform(actor,command,req.body,(db,ctx)=>['knowledge.compilations.create.v1','knowledge.answers.ask.v1'].includes(command.id)||command.id.startsWith('knowledge.jobs.')?jobs.dispatch(db,ctx,command.id,req.body):command.id.startsWith('knowledge.')?(command.id==='knowledge.objects.upload.v1'||command.id.startsWith('knowledge.imports.')?imports.dispatch(db,ctx,command.id,command.id==='knowledge.objects.upload.v1'?{...req.body,__bytes:req.uploadBytes}:req.body):knowledge.dispatch(db,ctx,command.id,req.body)):command.id.startsWith('organization.')?organization.dispatch(db,ctx,command.id,req.body):kernel.dispatch(db,ctx,command.id,req.body),(db,ctx)=>command.id.startsWith('knowledge.')?knowledge.authorize(db,ctx,command,req.body):undefined);
   requireThat(valid(command.outputSchema,data),500,'INVALID_RESPONSE');
   if(command.id==='identity.logout.v1')reply.header('set-cookie',`product_session=; Path=${sessionPath}; HttpOnly; SameSite=Strict; Max-Age=0${trustedOrigin().startsWith('https:')?'; Secure':''}`);
   return data;

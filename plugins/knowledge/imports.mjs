@@ -6,9 +6,11 @@ import {parseImportBytes} from './import-parsers.mjs';
 const MAX_FILE=20*1024*1024;
 const MEDIA={'text/plain':/\.txt$/i,'text/markdown':/\.md$/i,'application/pdf':/\.pdf$/i,'application/vnd.openxmlformats-officedocument.wordprocessingml.document':/\.docx$/i};
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+const fileDTO=f=>({fileId:f.id,objectRef:f.object_ref,filename:f.filename,status:f.status,...(f.job_id&&{jobId:f.job_id}),...(f.error_code&&{errorCode:f.error_code})});
+const batchDTO=b=>({batchId:b.id,spaceId:b.space_id,status:b.status,files:(b.files??[]).map(fileDTO),revision:b.revision});
 export class ImportService {
  constructor(kernel,knowledge){this.kernel=kernel;this.knowledge=knowledge;this.pool=kernel.pool;}
- async batch(db,spaceId,id){const b=(await db.query('SELECT * FROM knowledge_import_batches WHERE id=$1 AND space_id=$2',[id,spaceId])).rows[0];requireThat(b,404,'NOT_FOUND');const files=(await db.query('SELECT * FROM knowledge_import_files WHERE batch_id=$1 ORDER BY created_at,id',[id])).rows;return {...b,files};}
+ async batch(db,spaceId,id){const b=(await db.query('SELECT * FROM knowledge_import_batches WHERE id=$1 AND space_id=$2',[id,spaceId])).rows[0];requireThat(b,404,'NOT_FOUND');const files=(await db.query('SELECT * FROM knowledge_import_files WHERE batch_id=$1 ORDER BY created_at,id',[id])).rows;return batchDTO({...b,files});}
  async upload(db,ctx,input,bytes){
   requireThat(Buffer.isBuffer(bytes)&&bytes.length>0&&bytes.length<=MAX_FILE,422,'INVALID_INPUT');
   requireThat(input.byteLength===bytes.length&&input.sha256===sha(bytes),400,'INVALID_INPUT');
@@ -18,7 +20,7 @@ export class ImportService {
   requireThat(hash===input.sha256,400,'INVALID_INPUT');
   await db.query(`INSERT INTO knowledge_object_bindings(hash,space_id,filename,media_type,sha256,byte_length,created_by)
    VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT(hash,space_id) DO NOTHING`,[hash,input.spaceId,input.filename,media,input.sha256,bytes.length,ctx.actor.id]);
-  return {objectRef:hash,sha256:hash,byteLength:bytes.length,status:'ready',expiresAt:new Date(Date.now()+86400000).toISOString()};
+  return {objectRef:hash,sha256:hash,byteLength:bytes.length,status:'ready',expiresAt:new Date(Date.now()+86400000).toISOString(),requestId:randomUUID()};
  }
  async parseFile(db,ctx,batch,file){
   const binding=(await db.query('SELECT * FROM knowledge_object_bindings WHERE hash=$1 AND space_id=$2 AND created_by=$3',[file.object_ref,batch.space_id,ctx.actor.id])).rows[0];
@@ -71,11 +73,11 @@ export class ImportService {
  }
  async dispatch(db,ctx,id,i){
   if(id==='knowledge.objects.upload.v1')return this.upload(db,ctx,i,i.__bytes);
-  if(id==='knowledge.imports.create.v1')return {batch:await this.create(db,ctx,i)};
+  if(id==='knowledge.imports.create.v1')return {batch:await this.create(db,ctx,i),requestId:randomUUID()};
   if(id==='knowledge.imports.list.v1'){const rows=(await db.query('SELECT id FROM knowledge_import_batches WHERE space_id=$1 AND id>$2 ORDER BY id LIMIT 101',[i.spaceId,i.after??''])).rows;const items=[];for(const r of rows.slice(0,100))items.push(await this.batch(db,i.spaceId,r.id));return {items,...(rows.length>100&&{nextCursor:rows[99].id})};}
-  if(id==='knowledge.imports.get.v1')return {batch:await this.batch(db,i.spaceId,i.batchId)};
-  if(id==='knowledge.imports.cancel.v1')return this.cancel(db,ctx,i);
-  if(id==='knowledge.imports.retry.v1')return {batch:await this.retry(db,ctx,i)};
+  if(id==='knowledge.imports.get.v1')return {batch:await this.batch(db,i.spaceId,i.batchId),requestId:randomUUID()};
+  if(id==='knowledge.imports.cancel.v1')return {...await this.cancel(db,ctx,i),requestId:randomUUID()};
+  if(id==='knowledge.imports.retry.v1')return {batch:await this.retry(db,ctx,i),requestId:randomUUID()};
   requireThat(false,404,'NOT_FOUND');
  }
 }
