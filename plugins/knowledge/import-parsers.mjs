@@ -35,7 +35,7 @@ function pdfString(raw){
  return out;
 }
 function pdfText(stream){
- const text=stream.toString('latin1');if(/\/Encrypt\b/.test(text))throw Object.assign(new Error('ENCRYPTED'),{code:'INVALID_INPUT'});
+ const text=stream.toString('latin1');if(/\/Encrypt\b/.test(text))throw Object.assign(new Error('ENCRYPTED'),{code:'INVALID_INPUT'});if(/<[0-9a-fA-F\s]+>\s*(?:Tj|TJ)/.test(text))throw Object.assign(new Error('PDF_UNSUPPORTED_TEXT'),{code:'PARSER_UNAVAILABLE'});
  const lines=[];let line='';
  for(const match of text.matchAll(/\((?:\\.|[^\\)])*\)\s*Tj|\[(?:[^\]]*)\]\s*TJ|T\*|\bTd\b|\bTD\b/g)){
   const token=match[0];
@@ -58,19 +58,34 @@ function inflateStream(body,header,remaining){
   throw Object.assign(new Error('PDF_STREAM_CORRUPT'),{code:'INVALID_INPUT'});
  }
 }
-function pageRefs(objects){
+function pageRefs(objects,pageLimit){
  const catalog=[...objects.values()].find(body=>/\/Type\s*\/Catalog\b/.test(body));
  const root=catalog&&/\/Pages\s+(\d+)\s+\d+\s+R/.exec(catalog)?.[1];
  if(!root)return null;
- const refs=[];
- const walk=number=>{const body=objects.get(Number(number));if(!body)return;if(/\/Type\s*\/Page\b/.test(body)&&!/\/Type\s*\/Pages\b/.test(body)){refs.push(Number(number));return;}const kids=/\/Kids\s*\[([^\]]+)\]/.exec(body);if(kids)for(const ref of kids[1].matchAll(/(\d+)\s+\d+\s+R/g))walk(ref[1]);};
- walk(root);return refs;
+ const refs=[],seen=new Set();let nodes=0;
+ const walk=(number,depth)=>{
+  if(depth>32)throw Object.assign(new Error('PDF_PAGE_TREE_DEPTH'),{code:'INVALID_INPUT'});
+  if(seen.has(number))throw Object.assign(new Error('PDF_PAGE_TREE_CYCLE'),{code:'INVALID_INPUT'});
+  seen.add(number);nodes+=1;
+  if(nodes>pageLimit*4+64)throw Object.assign(new Error('QUOTA_EXCEEDED'),{code:'QUOTA_EXCEEDED'});
+  const body=objects.get(Number(number));if(!body)throw Object.assign(new Error('PDF_PAGE_TREE_MISSING'),{code:'INVALID_INPUT'});
+  if(/\/Type\s*\/Page\b/.test(body)&&!/\/Type\s*\/Pages\b/.test(body)){
+   refs.push(Number(number));
+   if(refs.length>pageLimit)throw Object.assign(new Error('QUOTA_EXCEEDED'),{code:'QUOTA_EXCEEDED'});
+   return;
+  }
+  const kids=/\/Kids\s*\[([^\]]+)\]/.exec(body);
+  if(kids)for(const ref of kids[1].matchAll(/(\d+)\s+\d+\s+R/g))walk(ref[1],depth+1);
+ };
+ walk(root,0);return refs;
 }
+
 export function parsePdf(bytes,{expandedLimit=100*1024*1024,pageLimit=100}={}){
  const raw=bytes.toString('latin1');if(!raw.startsWith('%PDF-'))throw Object.assign(new Error('PDF_MAGIC_MISMATCH'),{code:'INVALID_INPUT'});
  if(/\/Encrypt\b/.test(raw))throw Object.assign(new Error('ENCRYPTED'),{code:'INVALID_INPUT'});
+ if(/\/ToUnicode\b/.test(raw))throw Object.assign(new Error('PDF_UNSUPPORTED_TEXT'),{code:'PARSER_UNAVAILABLE'});
  const objects=new Map();for(const m of raw.matchAll(/(\d+)\s+\d+\s+obj\b([\s\S]*?)endobj/g))objects.set(Number(m[1]),m[2]);
- const refs=pageRefs(objects)??[...objects].filter(([,body])=>/\/Type\s*\/Page\b/.test(body)&&!/\/Type\s*\/Pages\b/.test(body)).map(([number])=>number);
+ const refs=pageRefs(objects,pageLimit)??[...objects].filter(([,body])=>/\/Type\s*\/Page\b/.test(body)&&!/\/Type\s*\/Pages\b/.test(body)).map(([number])=>number);
  if(refs.length>pageLimit)throw quota();
  const pages=[];let budget=expandedLimit;
  for(let index=0;index<refs.length;index+=1){

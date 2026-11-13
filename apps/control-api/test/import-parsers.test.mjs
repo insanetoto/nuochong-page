@@ -7,8 +7,8 @@ import {parseImportBytes,parsePdf,parseDocx} from '../../../plugins/knowledge/im
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 function pdf(pages,extra=''){
  const objects=[];
- const pagesId=2;objects[1]='<< /Type /Catalog /Pages 2 0 R >>';objects[2]='<< /Type /Pages /Kids ['+pages.map((_,i)=>`${3+i*2} 0 R`).join(' ')+'] /Count ${pages.length} >>';
- pages.forEach((page,i)=>{const pageId=3+i*2,contentId=pageId+1;objects[pageId]=`<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 612 792] /Contents ${contentId} 0 R >>`;const body=Buffer.from(`BT /F1 12 Tf 72 700 Td (${page.replace(/[()\\]/g,c=>'\\'+c)}) Tj ET`,'latin1');objects[contentId]=`<< /Length ${body.length} >>\nstream\n${body.toString('latin1')}\nendstream`;});
+ const pagesId=2;const fontId=3+pages.length*2;objects[1]='<< /Type /Catalog /Pages 2 0 R >>';objects[2]='<< /Type /Pages /Kids ['+pages.map((_,i)=>`${3+i*2} 0 R`).join(' ')+'] /Count ${pages.length} >>';objects[fontId]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>';
+ pages.forEach((page,i)=>{const pageId=3+i*2,contentId=pageId+1;objects[pageId]=`<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 ${fontId} 0 R >> >> /Contents ${contentId} 0 R >>`;const body=Buffer.from(`BT /F1 12 Tf 72 700 Td (${page.replace(/[()\\]/g,c=>'\\'+c)}) Tj ET`,'latin1');objects[contentId]=`<< /Length ${body.length} >>\nstream\n${body.toString('latin1')}\nendstream`;});
  let out='%PDF-1.4\n';objects.forEach((body,index)=>{if(index)out+=`${index} 0 obj\n${body}\nendobj\n`;});return Buffer.from(out+extra,'latin1');
 }
 function zip(files){
@@ -40,6 +40,15 @@ test('actual DOCX container extracts exact paragraphs',()=>{
 
 test('PDF preserves real page number for an empty first page',()=>{const file=pdf(['','Travel requires approval.']);const parsed=parsePdf(file);assert.equal(parsed.pages.length,2);assert.equal(parsed.pages[0].page,1);assert.equal(parsed.pages[0].text,'');assert.equal(parsed.fragments[0].locator.page,2);assert.equal(parsed.fragments[0].locator.lineStart,1);});
 
+test('PDF page tree rejects cycles and stays within page budget',()=>{
+ const cycle=Buffer.from('%PDF-1.4\n1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n2 0 obj << /Type /Pages /Kids [2 0 R] /Count 1 >> endobj\n');
+ assert.throws(()=>parsePdf(cycle),/PDF_PAGE_TREE_CYCLE|INVALID/);
+ const deep=pdf(Array.from({length:101},(_,i)=>'page '+i));assert.throws(()=>parsePdf(deep),/QUOTA_EXCEEDED/);
+});
+test('PDF refuses mixed literal/hex text instead of partial success',()=>{
+ const mixed=Buffer.from('%PDF-1.4\n1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n3 0 obj << /Type /Page /Parent 2 0 R /Contents 4 0 R >> endobj\n4 0 obj << /Length 18 >>\nstream\nBT (A) Tj <42> Tj ET\nendstream\nendobj\n');
+ assert.throws(()=>parsePdf(mixed),/PDF_UNSUPPORTED_TEXT|PARSER_UNAVAILABLE/);
+});
 test('text and expansion limits fail before unbounded work',()=>{assert.throws(()=>parseImportBytes(Buffer.from('x'.repeat(20001)),'text/plain'),/QUOTA_EXCEEDED|TEXT_OR_RESOURCE|QUOTA/);assert.throws(()=>parseDocx(docx(['x'.repeat(100000)]),{expandedLimit:100}),/QUOTA_EXCEEDED|DOCX_EXPANSION|QUOTA/);});
 
 test('negative formats fail closed without empty success',()=>{
