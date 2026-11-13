@@ -45,7 +45,7 @@ export class ImportService {
  async retry(db,ctx,input){
   const batch=await this.batch(db,input.spaceId,input.batchId);requireThat(batch.revision===input.expectedRevision,409,'VERSION_CONFLICT');
   for(const id of input.fileIds){const f=batch.files.find(x=>x.fileId===id);requireThat(f,404,'NOT_FOUND');requireThat(['failed','cancelled'].includes(f.status),409,'VERSION_CONFLICT');await db.query("UPDATE knowledge_import_files SET status='uploaded',error_code=NULL,cancel_requested=false,lease_token=NULL,lease_until=NULL,deadline_at=NULL,updated_at=clock_timestamp() WHERE id=$1",[id]);}
-  await db.query("UPDATE knowledge_import_batches SET status='parsing',revision=revision+1,updated_at=clock_timestamp() WHERE id=$1",[batch.id]);return {batch:await this.batch(db,input.spaceId,batch.id),requestId:randomUUID()};
+  await db.query("UPDATE knowledge_import_batches SET status='parsing',revision=revision+1,updated_at=clock_timestamp() WHERE id=$1",[batch.batchId]);return {batch:await this.batch(db,input.spaceId,batch.batchId),requestId:randomUUID()};
  }
  async dispatch(db,ctx,id,i){
   if(id==='knowledge.objects.upload.v1')return this.upload(db,ctx,i,i.__bytes);
