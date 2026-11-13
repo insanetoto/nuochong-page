@@ -38,6 +38,10 @@ test('actual DOCX container extracts exact paragraphs',()=>{
  const file=docx(['Travel requires approval.','Keep receipts.']);const parsed=parseImportBytes(file,'application/vnd.openxmlformats-officedocument.wordprocessingml.document');assert.deepEqual(parsed.paragraphs,['Travel requires approval.','Keep receipts.']);assert.deepEqual(parsed.fragments.map(f=>f.locator),[{type:'paragraph',index:1},{type:'paragraph',index:2}]);
 });
 
+test('PDF preserves real page number for an empty first page',()=>{const file=pdf(['','Travel requires approval.']);const parsed=parsePdf(file);assert.equal(parsed.pages.length,2);assert.equal(parsed.pages[0].page,1);assert.equal(parsed.pages[0].text,'');assert.equal(parsed.fragments[0].locator.page,2);assert.equal(parsed.fragments[0].locator.lineStart,1);});
+
+test('text and expansion limits fail before unbounded work',()=>{assert.throws(()=>parseImportBytes(Buffer.from('x'.repeat(20001)),'text/plain'),/QUOTA_EXCEEDED|TEXT_OR_RESOURCE|QUOTA/);assert.throws(()=>parseDocx(docx(['x'.repeat(100000)]),{expandedLimit:100}),/QUOTA_EXCEEDED|DOCX_EXPANSION|QUOTA/);});
+
 test('negative formats fail closed without empty success',()=>{
  assert.throws(()=>parseImportBytes(Buffer.alloc(0),'text/plain'),/EMPTY_FILE|INVALID_INPUT/);
  assert.throws(()=>parseImportBytes(Buffer.from([0xff,0xfe,0x00]),'text/plain'),/INVALID|UTF/);

@@ -48,35 +48,4 @@ async function spaces(ctx,route){
   content.append(detail);}
  return {node:content};
 }
-async function imports(ctx){
- if(!ctx.spaceId)return {node:heading('知识导入','请先选择或创建知识空间。')};
- const data=await ctx.api('knowledge.imports.list.v1',scoped(ctx));
- const content=h('div',{},heading('知识导入','三步完成：选择文件 → 填写元数据 → 检查并提交。原文按不可变对象保存，解析失败会明确显示，不产生空成功。'));
- const file=field('选择文件（MD/TXT/文本层 PDF/DOCX，单文件≤20MiB）',{type:'file',accept:'.md,.txt,.pdf,.docx',required:true});
- const title=field('来源标题',{required:true,maxlength:256});
- const policy=field('制度编号',{required:true,maxlength:128});
- const version=field('来源版本',{required:true,maxlength:64});
- const from=field('生效日期',{type:'date',required:true,value:today()});
- if(ctx.can('knowledge:edit')){
-  content.append(section('① 选择文件',file.node));
-  content.append(section('② 填写元数据',h('div',{class:'form-grid'},title.node,policy.node,version.node,from.node)));
-  content.append(section('③ 检查并提交',form(ctx,[],async()=>{
-   const selected=file.input.files[0];
-   if(!selected)throw new Error('请选择文件');
-   if(selected.size>20*1024*1024)throw new Error('文件超过 20MiB');
-   const bytes=new Uint8Array(await selected.arrayBuffer());
-   const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(b=>b.toString(16).padStart(2,'0')).join('');
-   const media=/\.md$/i.test(selected.name)?'text/markdown':/\.txt$/i.test(selected.name)?'text/plain':/\.pdf$/i.test(selected.name)?'application/pdf':'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-   const uploaded=await ctx.upload('knowledge.objects.upload.v1',{spaceId:ctx.spaceId,idempotencyKey:ctx.key(),filename:selected.name,mediaType:media,byteLength:selected.size,sha256:hash},selected);
-   return ctx.mutate('knowledge.imports.create.v1',scoped(ctx,{files:[{objectRef:uploaded.objectRef,title:title.input.value,policyCode:policy.input.value,version:version.input.value,validFrom:dateInput(from.input.value)}]}));
-  },'检查并提交导入')));
- }
- const rows=data.items.map(b=>{
-  const retry=b.files.some(f=>['failed','cancelled'].includes(f.status));
-  const action=retry?button('重试失败文件',e=>ctx.operate(e.currentTarget,()=>ctx.mutate('knowledge.imports.retry.v1',scoped(ctx,{batchId:b.batchId,fileIds:b.files.filter(f=>['failed','cancelled'].includes(f.status)).map(f=>f.id),expectedRevision:b.revision})))): '';
-  return [b.batchId.slice(0,8),tag(b.status),b.files.map(f=>f.filename+'：'+f.status+(f.errorCode?'（'+f.errorCode+'）':'')).join('；'),action];
- });
- content.append(section('导入批次',data.items.length?table(['批次','状态','文件','操作'],rows):empty('还没有导入批次。')),pagination(ctx,data,'imports'));
- return {node:content};
-}
-export const knowledgeViews={home,search,sources,source,review,read,ask,jobs,job,quality,spaces,imports};
+export const knowledgeViews={home,search,sources,source,review,read,ask,jobs,job,quality,spaces};

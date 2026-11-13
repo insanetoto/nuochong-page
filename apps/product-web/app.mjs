@@ -1,10 +1,10 @@
-import {api,idempotencyKey,friendly,upload} from './api.mjs';
+import {api,idempotencyKey,friendly} from './api.mjs';
 import {h,field,button,heading} from './ui.mjs';
 import {knowledgeViews} from './plugins/knowledge.mjs';import {organizationView} from './plugins/organization.mjs';
 const root=document.querySelector('#root');let generation=0,sessionVersion=0,timer;
 const state={me:null,spaces:[],spaceId:'',plugins:[],allowed:{},query:'',pending:new Map()};
-const labels={home:'知识首页',search:'搜索知识',ask:'知识问答',spaces:'空间管理',imports:'知识导入',sources:'来源管理',review:'变更审校',read:'知识阅读',source:'原文核验',quality:'知识质量',jobs:'我的任务',job:'任务与结果',organization:'统一组织与权限'};
-const ctx={api,upload,key:idempotencyKey,state,can:permission=>!!state.allowed[permission],navigate,refresh:load,notify,operate,mutate,approve,get spaceId(){return state.spaceId;},get me(){return state.me;},get spaces(){return state.spaces;},get plugins(){return state.plugins;},get query(){return state.query;},set query(value){state.query=value;}};
+const labels={home:'知识首页',search:'搜索知识',ask:'知识问答',spaces:'空间管理',sources:'来源管理',review:'变更审校',read:'知识阅读',source:'原文核验',quality:'知识质量',jobs:'我的任务',job:'任务与结果',organization:'统一组织与权限'};
+const ctx={api,key:idempotencyKey,state,can:permission=>!!state.allowed[permission],navigate,refresh:load,notify,operate,mutate,approve,get spaceId(){return state.spaceId;},get me(){return state.me;},get spaces(){return state.spaces;},get plugins(){return state.plugins;},get query(){return state.query;},set query(value){state.query=value;}};
 function notify(text,error=false){const area=document.querySelector('#notification');if(area)area.replaceChildren(h('div',{class:error?'error':'info',role:error?'alert':'status'},text));}
 function navigate(route){if(location.hash.slice(1)===route)load();else location.hash=route;}
 async function operate(control,operation,success=()=>load()){
@@ -33,7 +33,7 @@ function login(){
 function shell(content,route){
  const navItems=[['home','◈　知识首页'],['search','⌕　搜索知识'],['ask','◌　知识问答'],['jobs','◷　我的任务']];
  const nav=h('nav',{'aria-label':'产品导航'},h('label',{},'企业知识库'),navItems.map(([id,label])=>button(label,()=>navigate(id),{class:route.name===id?'active':''})));
- if(['knowledge:edit','knowledge:review','knowledge:publish','access:manage'].some(ctx.can)){nav.append(h('label',{},'内容与运营'));for(const [id,label] of [['spaces','▦　空间管理'],['imports','⇧　知识导入'],['sources','▤　来源管理'],['review','☷　变更审校']])nav.append(button(label,()=>navigate(id),{class:route.name===id?'active':''}));if(ctx.can('knowledge:edit'))nav.append(button('◇　知识质量',()=>navigate('quality'),{class:route.name==='quality'?'active':''}));}
+ if(['knowledge:edit','knowledge:review','knowledge:publish','access:manage'].some(ctx.can)){nav.append(h('label',{},'内容与运营'));for(const [id,label] of [['spaces','▦　空间管理'],['sources','▤　来源管理'],['review','☷　变更审校']])nav.append(button(label,()=>navigate(id),{class:route.name===id?'active':''}));if(ctx.can('knowledge:edit'))nav.append(button('◇　知识质量',()=>navigate('quality'),{class:route.name==='quality'?'active':''}));}
  if(ctx.can('organization:read')||ctx.can('access:manage'))nav.append(h('label',{},'统一管理'),button('◎　组织与权限',()=>navigate('organization'),{class:route.name==='organization'?'active':''}));
  const spaceSelect=h('select',{class:'toolbar-select','aria-label':'当前知识空间',onchange:event=>{state.spaceId=event.target.value;navigate('home');}},state.spaces.map(s=>h('option',{value:s.id,selected:s.id===state.spaceId},s.title)));
  const logout=button('退出登录',event=>operate(event.currentTarget,()=>mutate('identity.logout.v1',{}),()=>{sessionVersion++;generation++;state.me=null;state.query='';state.spaces=[];state.spaceId='';state.pending.clear();root.replaceChildren(login());}));
