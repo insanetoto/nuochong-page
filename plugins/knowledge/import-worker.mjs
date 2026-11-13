@@ -64,7 +64,8 @@ export async function runImportWorkerOnce({pool,kernel,knowledge,leaseMs=LEASE_M
   if(lost)return {fileId:file.id,status:'lost'};
   if(cancel)return await finishCancelled(pool,file);
   const textHash=await knowledge.objects.put(pool,parsed.text);
-  await transaction(pool,async db=>{
+  const committed=await transaction(pool,async db=>{
+   await db.query('SELECT pg_advisory_xact_lock(hashtext($1))',[pool.oaSchema+':product-domain-state']);
    const current=(await db.query("SELECT * FROM knowledge_import_files WHERE id=$1 AND lease_token=$2 AND status='parsing' AND lease_until>clock_timestamp() FOR UPDATE",[file.id,file.lease_token])).rows[0];
    if(!current)throw Object.assign(new Error('STALE_WORKER'),{code:'STALE_WORKER'});
    if(current.cancel_requested)return finishCancelledTx(db,file);
@@ -85,10 +86,12 @@ export async function runImportWorkerOnce({pool,kernel,knowledge,leaseMs=LEASE_M
    await db.query('UPDATE knowledge_documents SET current_source_id=$2 WHERE id=$1',[document.id,source.id]);
    await db.query("UPDATE knowledge_import_files SET status='parsed',fragment_count=$2,extracted_object_hash=$3,error_code=NULL,lease_token=NULL,lease_until=NULL,updated_at=clock_timestamp() WHERE id=$1",[file.id,parsed.fragments.length,textHash]);
    await batchStatus(db,file.batch_id);await kernel.event(db,'knowledge.import.file.parsed.v1',file.id);
+   return {fileId:file.id,status:'parsed'};
   });
-  return {fileId:file.id,status:'parsed'};
+  return committed??{fileId:file.id,status:'lost'};
  }catch(error){
-  if(lost||cancel)return {fileId:file.id,status:lost?'lost':'cancelled'};
+  if(lost)return {fileId:file.id,status:'lost'};
+  if(cancel)return finishCancelled(pool,file);
   const code=['SOURCE_VERSION_EXISTS','QUOTA_EXCEEDED','INVALID_INPUT','REQUEST_FAILED','PARSER_UNAVAILABLE','EVIDENCE_CHANGED','SPACE_ARCHIVED','UNAUTHORIZED','FORBIDDEN','STALE_WORKER'].includes(error.code)?error.code:'REQUEST_FAILED';
   await transaction(pool,async db=>{const changed=await db.query("UPDATE knowledge_import_files SET status='failed',error_code=$3,lease_token=NULL,lease_until=NULL,updated_at=clock_timestamp() WHERE id=$1 AND lease_token=$2 AND status='parsing' RETURNING id",[file.id,file.lease_token,code]);if(changed.rowCount)await batchStatus(db,file.batch_id);});
   return {fileId:file.id,status:'failed',errorCode:code};

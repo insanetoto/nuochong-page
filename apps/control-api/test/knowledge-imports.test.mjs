@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash,randomUUID} from 'node:crypto';
+import {spawn} from 'node:child_process';
+import {resolve} from 'node:path';
 import {knowledgeFixture} from './knowledge-fixture.mjs';
 import {aggregate,claimImportFile,drainImports,expireImportFiles,importLoop} from '../../../plugins/knowledge/import-worker.mjs';
 
@@ -53,4 +55,13 @@ test('terminal aggregation is consistent for parsed/failed/cancelled mixes',()=>
 });
 test('expired parsing settles the batch without a later request',async(t)=>{
  const f=await knowledgeFixture(t);const bytes=Buffer.from('Expire input\n');const uploaded=await upload(f,{bytes});const created=await f.call('knowledge.imports.create.v1',{spaceId:f.spaceId,idempotencyKey:randomUUID(),files:[{objectRef:uploaded.data.objectRef,title:'Expire',policyCode:'EXP-1',version:'1',validFrom:'2020-01-01T00:00:00Z'}]},f.admin.token);const claimed=await claimImportFile(f.pool);assert.equal(claimed.batch_id,created.data.batch.batchId);await f.pool.query("UPDATE knowledge_import_files SET lease_until=clock_timestamp()-interval '1 second' WHERE id=$1",[claimed.id]);assert.equal(await expireImportFiles(f.pool),1);const got=await f.call('knowledge.imports.get.v1',{spaceId:f.spaceId,batchId:created.data.batch.batchId},f.admin.token);assert.equal(got.data.batch.status,'failed');assert.equal(got.data.batch.files[0].errorCode,'LEASE_EXPIRED');
+});
+
+
+test('real product worker child parses automatically and a restart resumes a new batch',async(t)=>{
+ const f=await knowledgeFixture(t);const env={...process.env,DATABASE_URL:process.env.TEST_DATABASE_URL,OA_DATABASE_SCHEMA:f.pool.oaSchema,PRODUCT_OBJECT_ROOT:f.root,OA_RUNTIME_HOME:f.root+'-runtime'};
+ const start=()=>{const child=spawn(process.execPath,[resolve('apps/control-api/src/product-worker-main.mjs')],{env,stdio:'ignore'});t.after(()=>{try{child.kill('SIGKILL');}catch{/* already exited */}});return child;};
+ const wait=async batchId=>{for(let i=0;i<200;i++){const got=await f.call('knowledge.imports.get.v1',{spaceId:f.spaceId,batchId},f.admin.token);if(got.data.batch.status==='completed')return got.data.batch;await new Promise(r=>setTimeout(r,50));}throw new Error('worker did not complete batch');};
+ let child=start();const bytes=Buffer.from('Real child input\n');const uploaded=await upload(f,{bytes});const first=await f.call('knowledge.imports.create.v1',{spaceId:f.spaceId,idempotencyKey:randomUUID(),files:[{objectRef:uploaded.data.objectRef,title:'Child one',policyCode:'CHILD-1',version:'1',validFrom:'2020-01-01T00:00:00Z'}]},f.admin.token);await wait(first.data.batch.batchId);
+ child.kill('SIGKILL');await new Promise(r=>setTimeout(r,100));const secondUpload=await upload(f,{bytes:Buffer.from('Restart input\n')});const second=await f.call('knowledge.imports.create.v1',{spaceId:f.spaceId,idempotencyKey:randomUUID(),files:[{objectRef:secondUpload.data.objectRef,title:'Child two',policyCode:'CHILD-2',version:'1',validFrom:'2020-01-01T00:00:00Z'}]},f.admin.token);child=start();const done=await wait(second.data.batch.batchId);assert.equal(done.files[0].status,'parsed');
 });
