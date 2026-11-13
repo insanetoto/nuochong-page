@@ -61,7 +61,7 @@ test('loads the platform and knowledge fragments, is order independent and deepl
 });
 
 test('the runtime command surface includes the approved KBV2-03 v2 additions', () => {
-  assert.equal(runtimeCommands.length, 66);
+  assert.equal(runtimeCommands.length, 72);
   assert.deepEqual(runtimeCommands.filter((command) => command.id.endsWith('.v2')).map((command) => command.id).sort(), [
     'access.approvals.create.v2',
     'knowledge.spaces.create.v2',
