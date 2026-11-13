@@ -1,0 +1,29 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createHash,randomUUID} from 'node:crypto';
+import {knowledgeFixture} from './knowledge-fixture.mjs';
+import {drainImports} from '../../../plugins/knowledge/import-worker.mjs';
+
+const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+async function upload(f,{bytes,filename='policy.md',mediaType='text/markdown'}){
+ const metadata={spaceId:f.spaceId,idempotencyKey:randomUUID(),filename,mediaType,byteLength:bytes.length,sha256:sha(bytes)};
+ const form=new FormData();form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));form.append('file',new Blob([bytes],{type:mediaType}),filename);
+ const response=await fetch(f.app.listeningOrigin+'/product/api/commands/knowledge.objects.upload.v1',{method:'POST',headers:{authorization:'Bearer '+f.admin.token},body:form});return {status:response.status,data:await response.json()};
+}
+async function drain(f){return drainImports({pool:f.pool,kernel:f.product.kernel,knowledge:f.product.knowledge});}
+test('upload/multipart is bounded, batch is persistent and worker creates extracted source/fragments',async(t)=>{
+ const f=await knowledgeFixture(t);const bytes=Buffer.from('# Imported\n\nTravel requires approval.\n');const uploaded=await upload(f,{bytes});assert.equal(uploaded.status,200,JSON.stringify(uploaded.data));
+ const created=await f.call('knowledge.imports.create.v1',{spaceId:f.spaceId,idempotencyKey:randomUUID(),files:[{objectRef:uploaded.data.objectRef,title:'Imported policy',policyCode:'IMP-1',version:'1',validFrom:'2020-01-01T00:00:00Z'}]},f.admin.token);assert.equal(created.status,200,JSON.stringify(created.data));assert.equal(created.data.batch.status,'parsing');assert.equal(created.data.batch.files[0].status,'uploaded');
+ const results=await drain(f);assert.equal(results.length,1);assert.equal(results[0].status,'parsed');
+ const got=await f.call('knowledge.imports.get.v1',{spaceId:f.spaceId,batchId:created.data.batch.batchId},f.admin.token);assert.equal(got.data.batch.status,'completed');assert.equal(got.data.batch.files[0].status,'parsed');
+ const source=(await f.pool.query('SELECT * FROM knowledge_sources WHERE space_id=$1 AND object_hash IS NOT NULL ORDER BY ordinal DESC LIMIT 1',[f.spaceId])).rows[0];assert.equal(source.object_hash,(await f.pool.query('SELECT extracted_object_hash FROM knowledge_import_files WHERE id=$1',[got.data.batch.files[0].fileId])).rows[0].extracted_object_hash);assert.equal((await f.pool.query('SELECT count(*)::int n FROM knowledge_fragments WHERE source_id=$1',[source.id])).rows[0].n,2);
+ const read=await f.call('knowledge.sources.get.v1',{spaceId:f.spaceId,sourceId:source.id},f.admin.token);assert.equal(read.status,200);assert.match(read.data.content,/Imported/);
+});
+test('cancel uses fileId and retry uses DTO identity/version',async(t)=>{
+ const f=await knowledgeFixture(t);const bytes=Buffer.from('Travel requires approval.\n');const uploaded=await upload(f,{bytes});const created=await f.call('knowledge.imports.create.v1',{spaceId:f.spaceId,idempotencyKey:randomUUID(),files:[{objectRef:uploaded.data.objectRef,title:'Cancel me',policyCode:'CAN-1',version:'1',validFrom:'2020-01-01T00:00:00Z'}]},f.admin.token);const fileId=created.data.batch.files[0].fileId;
+ const cancelled=await f.call('knowledge.imports.cancel.v1',{spaceId:f.spaceId,idempotencyKey:randomUUID(),batchId:created.data.batch.batchId,fileIds:[fileId]},f.admin.token);assert.equal(cancelled.status,200);assert.equal((await f.call('knowledge.imports.get.v1',{spaceId:f.spaceId,batchId:created.data.batch.batchId},f.admin.token)).data.batch.files[0].status,'cancelled');
+ const retried=await f.call('knowledge.imports.retry.v1',{spaceId:f.spaceId,idempotencyKey:randomUUID(),batchId:created.data.batch.batchId,fileIds:[fileId],expectedRevision:created.data.batch.revision+1},f.admin.token);assert.equal(retried.status,200,JSON.stringify(retried.data));assert.equal(retried.data.batch.files[0].status,'uploaded');assert.equal((await drain(f))[0].status,'parsed');
+});
+test('upload rejects fake magic and missing object is not found',async(t)=>{
+ const f=await knowledgeFixture(t);const fake=await upload(f,{bytes:Buffer.from('not a pdf'),filename:'fake.pdf',mediaType:'application/pdf'});assert.equal(fake.status,422);const missing=await f.call('knowledge.imports.create.v1',{spaceId:f.spaceId,idempotencyKey:randomUUID(),files:[{objectRef:'0'.repeat(64),title:'Missing',policyCode:'MISS',version:'1',validFrom:'2020-01-01T00:00:00Z'}]},f.admin.token);assert.equal(missing.status,404);
+});
