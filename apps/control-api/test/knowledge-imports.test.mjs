@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash,randomUUID} from 'node:crypto';
 import {knowledgeFixture} from './knowledge-fixture.mjs';
-import {drainImports,importLoop} from '../../../plugins/knowledge/import-worker.mjs';
+import {aggregate,claimImportFile,drainImports,expireImportFiles,importLoop} from '../../../plugins/knowledge/import-worker.mjs';
 
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 async function upload(f,{bytes,filename='policy.md',mediaType='text/markdown',token=f.admin.token}){
@@ -40,4 +40,17 @@ test('revoked creator credential cannot finalize a parsed import',async(t)=>{
 });
 test('upload rejects fake magic and missing object is not found',async(t)=>{
  const f=await knowledgeFixture(t);const fake=await upload(f,{bytes:Buffer.from('not a pdf'),filename:'fake.pdf',mediaType:'application/pdf'});assert.equal(fake.status,422);const missing=await f.call('knowledge.imports.create.v1',{spaceId:f.spaceId,idempotencyKey:randomUUID(),files:[{objectRef:'0'.repeat(64),title:'Missing',policyCode:'MISS',version:'1',validFrom:'2020-01-01T00:00:00Z'}]},f.admin.token);assert.equal(missing.status,404);
+});
+
+
+test('terminal aggregation is consistent for parsed/failed/cancelled mixes',()=>{
+ assert.equal(aggregate(['parsed','parsed']),'completed');
+ assert.equal(aggregate(['failed','failed']),'failed');
+ assert.equal(aggregate(['cancelled','cancelled']),'cancelled');
+ assert.equal(aggregate(['parsed','failed']),'partial');
+ assert.equal(aggregate(['parsed','cancelled']),'partial');
+ assert.equal(aggregate(['uploaded','parsed']),'parsing');
+});
+test('expired parsing settles the batch without a later request',async(t)=>{
+ const f=await knowledgeFixture(t);const bytes=Buffer.from('Expire input\n');const uploaded=await upload(f,{bytes});const created=await f.call('knowledge.imports.create.v1',{spaceId:f.spaceId,idempotencyKey:randomUUID(),files:[{objectRef:uploaded.data.objectRef,title:'Expire',policyCode:'EXP-1',version:'1',validFrom:'2020-01-01T00:00:00Z'}]},f.admin.token);const claimed=await claimImportFile(f.pool);assert.equal(claimed.batch_id,created.data.batch.batchId);await f.pool.query("UPDATE knowledge_import_files SET lease_until=clock_timestamp()-interval '1 second' WHERE id=$1",[claimed.id]);assert.equal(await expireImportFiles(f.pool),1);const got=await f.call('knowledge.imports.get.v1',{spaceId:f.spaceId,batchId:created.data.batch.batchId},f.admin.token);assert.equal(got.data.batch.status,'failed');assert.equal(got.data.batch.files[0].errorCode,'LEASE_EXPIRED');
 });
