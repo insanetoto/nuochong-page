@@ -35,7 +35,7 @@ function pdfString(raw){
  return out;
 }
 function pdfText(stream){
- const text=stream.toString('latin1');if(/\/Encrypt\b/.test(text))throw Object.assign(new Error('ENCRYPTED'),{code:'INVALID_INPUT'});if(/<[0-9a-fA-F\s]+>\s*(?:Tj|TJ)/.test(text))throw Object.assign(new Error('PDF_UNSUPPORTED_TEXT'),{code:'PARSER_UNAVAILABLE'});
+ const text=stream.toString('latin1');if(/\/Encrypt\b/.test(text))throw Object.assign(new Error('ENCRYPTED'),{code:'INVALID_INPUT'});if(/<[0-9a-fA-F\s]+>/.test(text))throw Object.assign(new Error('PDF_UNSUPPORTED_TEXT'),{code:'PARSER_UNAVAILABLE'});
  const lines=[];let line='';
  for(const match of text.matchAll(/\((?:\\.|[^\\)])*\)\s*Tj|\[(?:[^\]]*)\]\s*TJ|T\*|\bTd\b|\bTD\b/g)){
   const token=match[0];

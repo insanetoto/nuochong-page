@@ -48,6 +48,8 @@ test('PDF page tree rejects cycles and stays within page budget',()=>{
 test('PDF refuses mixed literal/hex text instead of partial success',()=>{
  const mixed=Buffer.from('%PDF-1.4\n1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n3 0 obj << /Type /Page /Parent 2 0 R /Contents 4 0 R >> endobj\n4 0 obj << /Length 18 >>\nstream\nBT (A) Tj <42> Tj ET\nendstream\nendobj\n');
  assert.throws(()=>parsePdf(mixed),/PDF_UNSUPPORTED_TEXT|PARSER_UNAVAILABLE/);
+ const tjArray=Buffer.from('%PDF-1.4\n1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n3 0 obj << /Type /Page /Parent 2 0 R /Contents 4 0 R >> endobj\n4 0 obj << /Length 22 >>\nstream\nBT [(A) <42>] TJ ET\nendstream\nendobj\n');
+ assert.throws(()=>parsePdf(tjArray),/PDF_UNSUPPORTED_TEXT|PARSER_UNAVAILABLE/);
 });
 test('text and expansion limits fail before unbounded work',()=>{assert.throws(()=>parseImportBytes(Buffer.from('x'.repeat(20001)),'text/plain'),/QUOTA_EXCEEDED|TEXT_OR_RESOURCE|QUOTA/);assert.throws(()=>parseDocx(docx(['x'.repeat(100000)]),{expandedLimit:100}),/QUOTA_EXCEEDED|DOCX_EXPANSION|QUOTA/);});
 
