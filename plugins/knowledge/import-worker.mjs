@@ -27,8 +27,8 @@ export async function claimImportFile(pool,{leaseMs=LEASE_MS,processLimit=PROCES
  return transaction(pool,async db=>{
   await db.query("SELECT pg_advisory_xact_lock(hashtext($1))",[pool.oaSchema+':import-claim']);await settleExpired(db);
   const running=(await db.query("SELECT id,space_id FROM knowledge_import_files WHERE status='parsing' FOR UPDATE")).rows;
-  if(running.rowCount>=processLimit)return null;
-  const spaces={};for(const row of running.rows)spaces[row.space_id]=(spaces[row.space_id]??0)+1;
+  if(running.length>=processLimit)return null;
+  const spaces={};for(const row of running)spaces[row.space_id]=(spaces[row.space_id]??0)+1;
   const blocked=Object.entries(spaces).filter(([,n])=>n>=spaceLimit).map(([id])=>id);
   const row=(await db.query(`SELECT f.* FROM knowledge_import_files f JOIN knowledge_import_batches b ON b.id=f.batch_id
    WHERE f.status='uploaded' AND b.status='parsing' AND ($1::text[] IS NULL OR NOT(f.space_id=ANY($1)))
