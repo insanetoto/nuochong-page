@@ -8,7 +8,7 @@ CREATE TABLE knowledge_object_bindings(
  byte_length integer NOT NULL CHECK(byte_length BETWEEN 1 AND 20971520),
  created_by text NOT NULL REFERENCES principals(id),
  created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
- PRIMARY KEY(hash,space_id)
+ PRIMARY KEY(hash,space_id,created_by)
 );
 CREATE INDEX knowledge_object_bindings_space ON knowledge_object_bindings(space_id,created_at);
 
