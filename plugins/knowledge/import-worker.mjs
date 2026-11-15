@@ -23,7 +23,7 @@ async function settleExpired(db){
  for(const id of new Set(rows.map(r=>r.batch_id)))await batchStatus(db,id);return rows.length;
 }
 export async function expireImportFiles(pool){return transaction(pool,db=>settleExpired(db));}
-export async function claimImportFile(pool,{leaseMs=LEASE_MS,processLimit=PROCESS_SLOTS,spaceLimit=SPACE_SLOTS}={}){
+export async function claimImportFile(pool,{leaseMs=LEASE_MS,deadlineMs=DEADLINE_MS,processLimit=PROCESS_SLOTS,spaceLimit=SPACE_SLOTS}={}){
  return transaction(pool,async db=>{
   await db.query("SELECT pg_advisory_xact_lock(hashtext($1))",[pool.oaSchema+':import-claim']);await settleExpired(db);
   const running=(await db.query("SELECT id,space_id FROM knowledge_import_files WHERE status='parsing' FOR UPDATE")).rows;
@@ -34,7 +34,7 @@ export async function claimImportFile(pool,{leaseMs=LEASE_MS,processLimit=PROCES
    WHERE f.status='uploaded' AND b.status='parsing' AND ($1::text[] IS NULL OR NOT(f.space_id=ANY($1)))
    ORDER BY f.created_at,f.id LIMIT 1 FOR UPDATE OF f SKIP LOCKED`,[blocked.length?blocked:null])).rows[0];
   if(!row)return null;
-  return (await db.query(`UPDATE knowledge_import_files SET status='parsing',lease_token=$2,lease_until=clock_timestamp()+$3*interval '1 millisecond',deadline_at=clock_timestamp()+$4*interval '1 millisecond',attempt=attempt+1,updated_at=clock_timestamp() WHERE id=$1 RETURNING *`,[row.id,randomUUID(),leaseMs,DEADLINE_MS])).rows[0];
+  return (await db.query(`UPDATE knowledge_import_files SET status='parsing',lease_token=$2,lease_until=clock_timestamp()+$3*interval '1 millisecond',deadline_at=clock_timestamp()+$4*interval '1 millisecond',attempt=attempt+1,updated_at=clock_timestamp() WHERE id=$1 RETURNING *`,[row.id,randomUUID(),leaseMs,deadlineMs])).rows[0];
  });
 }
 function parseInWorker(bytes,mediaType,deadline){
@@ -47,11 +47,11 @@ function parseInWorker(bytes,mediaType,deadline){
   worker.on('exit',()=>{if(!finished)finish(reject,Object.assign(new Error('REQUEST_FAILED'),{code:'REQUEST_FAILED'}));});
  });
 }
-export async function runImportWorkerOnce({pool,kernel,knowledge,leaseMs=LEASE_MS}){
- const file=await claimImportFile(pool,{leaseMs});if(!file)return null;
+export async function runImportWorkerOnce({pool,kernel,knowledge,leaseMs=LEASE_MS,deadlineMs=DEADLINE_MS}){
+ const file=await claimImportFile(pool,{leaseMs,deadlineMs});if(!file)return null;
  const batch=(await pool.query('SELECT * FROM knowledge_import_batches WHERE id=$1',[file.batch_id])).rows[0];
  let lost=false,cancel=false;
- const heartbeat=setInterval(async()=>{
+ const heartbeat=process.env.NODE_ENV==='test'&&process.env.IMPORT_TEST_DISABLE_HEARTBEAT==='1'?null:setInterval(async()=>{
   try{
    const row=(await pool.query("UPDATE knowledge_import_files SET lease_until=clock_timestamp()+$3*interval '1 millisecond' WHERE id=$1 AND lease_token=$2 AND status='parsing' AND lease_until>clock_timestamp() RETURNING cancel_requested",[file.id,file.lease_token,leaseMs])).rows[0];
    if(!row)lost=true;else if(row.cancel_requested)cancel=true;
@@ -95,7 +95,7 @@ export async function runImportWorkerOnce({pool,kernel,knowledge,leaseMs=LEASE_M
   const code=['SOURCE_VERSION_EXISTS','QUOTA_EXCEEDED','INVALID_INPUT','REQUEST_FAILED','PARSER_UNAVAILABLE','EVIDENCE_CHANGED','SPACE_ARCHIVED','UNAUTHORIZED','FORBIDDEN','STALE_WORKER'].includes(error.code)?error.code:'REQUEST_FAILED';
   await transaction(pool,async db=>{const changed=await db.query("UPDATE knowledge_import_files SET status='failed',error_code=$3,lease_token=NULL,lease_until=NULL,updated_at=clock_timestamp() WHERE id=$1 AND lease_token=$2 AND status='parsing' RETURNING id",[file.id,file.lease_token,code]);if(changed.rowCount)await batchStatus(db,file.batch_id);});
   return {fileId:file.id,status:'failed',errorCode:code};
- }finally{clearInterval(heartbeat);}
+ }finally{if(heartbeat)clearInterval(heartbeat);}
 }
 async function finishCancelled(pool,file){return transaction(pool,async db=>{const changed=await db.query("UPDATE knowledge_import_files SET status='cancelled',lease_token=NULL,lease_until=NULL,updated_at=clock_timestamp() WHERE id=$1 AND lease_token=$2 AND status='parsing' RETURNING id",[file.id,file.lease_token]);if(changed.rowCount)await batchStatus(db,file.batch_id);return {fileId:file.id,status:'cancelled'};});}
 async function finishCancelledTx(db,file){await db.query("UPDATE knowledge_import_files SET status='cancelled',lease_token=NULL,lease_until=NULL,updated_at=clock_timestamp() WHERE id=$1 AND lease_token=$2 AND status='parsing'",[file.id,file.lease_token]);await batchStatus(db,file.batch_id);return {fileId:file.id,status:'cancelled'};}
