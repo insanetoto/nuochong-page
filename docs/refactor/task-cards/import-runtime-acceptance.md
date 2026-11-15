@@ -1,3 +1,9 @@
+## 当前验收补充（2026-11-15）
+
+PR140 head1350ef7已提供逐AC回执。RUN-01及解析中取消/错误/deadline/迟到租约、PDF/DOCX精确hash/locator已认可；剩余原三项按[最新审查](https://github.com/insanetoto/nuochong-page/pull/140#pullrequestreview-5909973194)一次补齐：提交临界取消的两种串行先后、授权后插入前真实管理事务锁等待、真实CLI/API拒绝语义和无副作用。
+
+取消先持久化则cancelled/无业务新增；提交先完成则parsed/唯一副作用，不要求后到取消推翻已完成事务。撤权在Worker持锁时必须等待，不要求与锁语义矛盾地先提交；反序撤权先完成才要求Worker拒绝。当前手动run43696627525成功，但PR43696739241失败（旧core取消断言running而预期cancelled），需如实记录定位，不擅改原生Worker。143/144暂不解除依赖。
+
 # 导入任务在强杀、取消和撤权后保持一致终态
 
 类型：独立开发/验收任务；执行DeepSeek；设计与预审ChatGPT；人工体验/发布负责人。规划ID：import-runtime-acceptance（正式GitHub Issue编号创建后记录，不使用107-A/B/C）。
