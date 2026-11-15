@@ -92,6 +92,8 @@ export async function runImportWorkerOnce({pool,kernel,knowledge,leaseMs=LEASE_M
  }catch(error){
   if(lost)return {fileId:file.id,status:'lost'};
   if(cancel)return finishCancelled(pool,file);
+  const cancelled=(await pool.query('SELECT cancel_requested FROM knowledge_import_files WHERE id=$1 AND lease_token=$2',[file.id,file.lease_token])).rows[0];
+  if(cancelled?.cancel_requested)return finishCancelled(pool,file);
   const code=['SOURCE_VERSION_EXISTS','QUOTA_EXCEEDED','INVALID_INPUT','REQUEST_FAILED','PARSER_UNAVAILABLE','EVIDENCE_CHANGED','SPACE_ARCHIVED','UNAUTHORIZED','FORBIDDEN','STALE_WORKER'].includes(error.code)?error.code:'REQUEST_FAILED';
   await transaction(pool,async db=>{const changed=await db.query("UPDATE knowledge_import_files SET status='failed',error_code=$3,lease_token=NULL,lease_until=NULL,updated_at=clock_timestamp() WHERE id=$1 AND lease_token=$2 AND status='parsing' RETURNING id",[file.id,file.lease_token,code]);if(changed.rowCount)await batchStatus(db,file.batch_id);});
   return {fileId:file.id,status:'failed',errorCode:code};
