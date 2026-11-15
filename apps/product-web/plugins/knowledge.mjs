@@ -103,7 +103,7 @@ async function imports(ctx,route){
    if(changed())throw Object.assign(new Error('空间或会话已变化，未提交导入'),{code:'STALE_OPERATION'});
    op.uploaded=uploaded;
    try{const result=await ctx.api('knowledge.imports.create.v1',{spaceId,idempotencyKey:op.key,files:uploaded});if(op!==importOperation||owner!==importOwnerFor(ctx))throw Object.assign(new Error('操作已变化'),{code:'STALE_OPERATION'});importOperation=null;importCreateKey=null;importDraft=null;importBatchId=result.batch.batchId;return result;}
-   catch(error){if(op===importOperation){if(error.status&&![500,502,503,504].includes(error.status)){importOperation=null;importCreateKey=null;}else{op.status='unknown';}}throw error;}
+   catch(error){if(op===importOperation){if(error.status&&![500,502,503,504].includes(error.status)){importOperation=null;importCreateKey=null;}else{op.status='unknown';setTimeout(()=>ctx.refresh(),0);}}throw error;}
   },'提交导入'):h('p',{class:'muted'},'结果未知，提交按钮已暂停。')),h('div',{class:'actions'},back));
  }
 
