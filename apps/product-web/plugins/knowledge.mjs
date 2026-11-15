@@ -102,7 +102,7 @@ async function imports(ctx,route){
   content.append(section('批次详情',table(['文件','状态','对象','错误'],detail.batch.files.map(f=>[f.filename,tag(f.status),f.objectRef.slice(0,12)+'…',f.errorCode??'']))));
  }
  const active=data.items.some(b=>['created','parsing'].includes(b.status));
- return {node:content,...(active&&!importDraft?{poll:true}:{})};
+ return {node:content,...(active?{poll:true}:{})};
 }
 
 export const knowledgeViews={home,search,sources,source,review,read,ask,jobs,job,quality,spaces,imports};
