@@ -35,3 +35,11 @@
 | REQ-IMP-03：维护者能看到真实进展、定位失败并恢复 | BIZ-IMP-03：列表/详情→跟随→终态；retry/cancel是请求，服务端权威状态决定结果 | FUNC-IMP-03：imports list/get/retry/cancel；cursor、fileId、revision及稳定错误 | #imports批次列表/详情，空/错/部分成功，取消/失败恢复/待审入口；窄屏键盘 | #144 BAT-01—04 |
 
 此表是既有已批准导入能力的交接归一，不改变冻结command schema或扩充产品；设计文件有歧义时由ChatGPT提供逐项修订。新产品也必须先建立同结构追溯，不能用本表代替新产品的需求调研和确认。
+
+## 最新调度（2026-11-15）
+
+原PR141 head58839d0新增两个浏览器用例，当前head手动core工作流43694082546 attempt2通过；但前端相较7309f5未改，SUB-02迟到响应/SUB-03改变文件集问题仍未闭环，[本轮审核](https://github.com/insanetoto/nuochong-page/pull/141#pullrequestreview-5909915448)已记录。认可新测试，不重复要求已完成正常路径。143已补具体状态/恢复动作，见[完整任务卡](task-cards/import-submit-isolation.md)。
+
+先完成142当前PR140的RUN验收交接，ChatGPT审核通过后自动合并关闭142；随后143解除业务依赖，独立提交；144在共享文件交接后实施。当前143/144仍Blocked，可做设计/测试计划，不在未审分支扩写代码。没有新增重复Issue，也不让总目标107阻塞已完成独立任务关闭。
+
+可直接使用[下一任务提示词](next-task-prompt-2026-11-15.md)。本次没有复审PR140的新head，不声称142已经通过；没有合并业务实现或部署。
