@@ -1129,7 +1129,7 @@
       {
         "issue": 142,
         "id": "import-runtime-acceptance",
-        "status": "In review",
+        "status": "Closed",
         "dependsOnIssues": [],
         "acceptedBase": "68ab723",
         "acceptanceIds": [
@@ -1137,12 +1137,15 @@
           "RUN-02",
           "RUN-03",
           "RUN-04"
-        ]
+        ],
+        "mergedSha": "e4dcf6c94b9d1e1e0ba2b26a06a9a191d24f53b5",
+        "reviewedHead": "e73bfc4349ad4bd8b83349dad309618860e22464",
+        "evidence": "https://github.com/insanetoto/nuochong-page/pull/140#pullrequestreview-5910334952"
       },
       {
         "issue": 143,
         "id": "import-submit-isolation",
-        "status": "Blocked",
+        "status": "Ready",
         "dependsOnIssues": [
           142
         ],
@@ -1156,7 +1159,7 @@
       {
         "issue": 144,
         "id": "import-batch-recovery",
-        "status": "Blocked",
+        "status": "Blocked (shared file order after 143)",
         "dependsOnIssues": [
           142
         ],
@@ -1166,7 +1169,8 @@
           "BAT-02",
           "BAT-03",
           "BAT-04"
-        ]
+        ],
+        "businessDependencySatisfied": true
       }
     ]
   }
