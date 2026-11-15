@@ -48,14 +48,16 @@ async function spaces(ctx,route){
   content.append(detail);}
  return {node:content};
 }
-let importDraft=null,importBatchId=null;
+let importDraft=null,importBatchId=null,importOwner='',importCreateKey=null;
+const importOwnerFor=ctx=>[ctx.me?.principalId??ctx.me?.id??ctx.me?.name??'',ctx.session,ctx.spaceId].join(':');
+function resetImportState(ctx){const owner=importOwnerFor(ctx);if(importOwner&&owner!==importOwner){importDraft=null;importBatchId=null;importCreateKey=null;}importOwner=owner;return owner;}
 const emptyDraft=()=>({step:1,spaceId:'',files:[]});
-function importDraftFor(spaceId){if(!importDraft||importDraft.spaceId!==spaceId) importDraft={...emptyDraft(),spaceId};return importDraft;}
+function importDraftFor(ctx){resetImportState(ctx);if(!importDraft||importDraft.spaceId!==ctx.spaceId) importDraft={...emptyDraft(),spaceId:ctx.spaceId};return importDraft;}
 function importFileMeta(file){return {file,title:file.name.replace(/\.[^.]+$/,''),policyCode:'',version:'1',validFrom:new Date().toISOString().slice(0,10)};}
 async function imports(ctx,route){
  if(!ctx.spaceId)return {node:heading('知识导入','请先选择或创建知识空间。')};
  const after=route.params.get('after');const data=await ctx.api('knowledge.imports.list.v1',scoped(ctx,after?{after}:{}));
- const draft=importDraftFor(ctx.spaceId);
+ const draft=importDraftFor(ctx);
  const content=h('div',{},heading('知识导入','三步完成：选择文件 → 填写元数据 → 检查并提交。支持多文件，失败可恢复；原始文件不可变。'));
  const steps=h('ol',{class:'steps','aria-label':'导入步骤'},['选择文件','填写元数据','检查并提交'].map((label,i)=>h('li',{class:i+1===draft.step?'active':i+1<draft.step?'done':''},(i+1)+'. '+label)));
  content.append(steps);
@@ -70,7 +72,7 @@ async function imports(ctx,route){
  if(draft.step===2){
   const cards=draft.files.map((f,i)=>{
    const title=field('来源标题 #'+(i+1),{required:true,maxlength:256,value:f.title}),policy=field('制度编号 #'+(i+1),{required:true,maxlength:128,value:f.policyCode}),version=field('来源版本 #'+(i+1),{required:true,maxlength:64,value:f.version}),from=field('生效日期 #'+(i+1),{type:'date',required:true,value:f.validFrom});
-   title.input.addEventListener('input',()=>{f.title=title.input.value;});policy.input.addEventListener('input',()=>{f.policyCode=policy.input.value;});version.input.addEventListener('input',()=>{f.version=version.input.value;});from.input.addEventListener('input',()=>{f.validFrom=from.input.value;});
+   title.input.addEventListener('input',()=>{f.title=title.input.value;importCreateKey=null;});policy.input.addEventListener('input',()=>{f.policyCode=policy.input.value;importCreateKey=null;});version.input.addEventListener('input',()=>{f.version=version.input.value;importCreateKey=null;});from.input.addEventListener('input',()=>{f.validFrom=from.input.value;importCreateKey=null;});
    return h('article',{class:'panel'},h('h2',{},f.file.name),h('div',{class:'form-grid'},title.node,policy.node,version.node,from.node));
   });
   content.append(section('② 填写元数据',...cards),h('div',{class:'actions'},back,button('下一步',()=>{for(const f of draft.files){if(!f.title.trim()||!f.policyCode.trim()||!f.version.trim()||!f.validFrom)return ctx.notify('请完整填写每个文件的标题、制度编号、版本和生效日期',true);}draft.step=3;ctx.refresh();})));
@@ -78,23 +80,27 @@ async function imports(ctx,route){
  if(draft.step===3){
   const invalid=draft.files.find(f=>!f.title.trim()||!f.policyCode.trim()||!f.version.trim()||!f.validFrom);if(invalid)content.append(h('div',{class:'error',role:'alert'},'元数据不完整，请返回上一步。'));
   content.append(section('③ 检查并提交',h('p',{class:'muted'},'空间：'+(ctx.spaces.find(s=>s.id===draft.spaceId)?.title??draft.spaceId)),table(['文件','标题','制度编号','版本','生效日期'],draft.files.map(f=>[f.file.name,f.title,f.policyCode,f.version,f.validFrom])),form(ctx,[],async()=>{
-   const spaceId=draft.spaceId,generation=ctx.generation,session=ctx.session;const uploaded=[];
-   for(const f of draft.files){
+   const spaceId=draft.spaceId,session=ctx.session,principal=ctx.me?.principalId??ctx.me?.id??ctx.me?.name??'',files=draft.files.map(f=>({...f}));const uploaded=[];
+   const changed=()=>ctx.spaceId!==spaceId||ctx.session!==session||(ctx.me?.principalId??ctx.me?.id??ctx.me?.name??'')!==principal;
+   for(const f of files){
     if(f.file.size>20*1024*1024)throw Object.assign(new Error('文件超过 20MiB'),{code:'INVALID_INPUT'});
     const bytes=new Uint8Array(await f.file.arrayBuffer());const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(b=>b.toString(16).padStart(2,'0')).join('');
-    if(ctx.spaceId!==spaceId||ctx.generation!==generation||ctx.session!==session)throw Object.assign(new Error('空间或会话已变化，未提交导入'),{code:'STALE_OPERATION'});
+    if(changed())throw Object.assign(new Error('空间或会话已变化，未提交导入'),{code:'STALE_OPERATION'});
     const media=/\.md$/i.test(f.file.name)?'text/markdown':/\.txt$/i.test(f.file.name)?'text/plain':/\.pdf$/i.test(f.file.name)?'application/pdf':'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     const result=await ctx.upload('knowledge.objects.upload.v1',{spaceId,idempotencyKey:ctx.key(),filename:f.file.name,mediaType:media,byteLength:f.file.size,sha256:hash},f.file);
-    if(ctx.spaceId!==spaceId||ctx.generation!==generation||ctx.session!==session)throw Object.assign(new Error('空间或会话已变化，未提交导入'),{code:'STALE_OPERATION'});
+    if(changed())throw Object.assign(new Error('空间或会话已变化，未提交导入'),{code:'STALE_OPERATION'});
     uploaded.push({objectRef:result.objectRef,title:f.title,policyCode:f.policyCode,version:f.version,validFrom:dateInput(f.validFrom)});
    }
-   const result=await ctx.mutate('knowledge.imports.create.v1',{spaceId,idempotencyKey:ctx.key(),files:uploaded});importDraft=null;importBatchId=result.batch.batchId;return result;
+   if(changed())throw Object.assign(new Error('空间或会话已变化，未提交导入'),{code:'STALE_OPERATION'});
+   if(!importCreateKey)importCreateKey=ctx.key();
+   try{const result=await ctx.api('knowledge.imports.create.v1',{spaceId,idempotencyKey:importCreateKey,files:uploaded});importCreateKey=null;importDraft=null;importBatchId=result.batch.batchId;return result;}
+   catch(error){if(error.status&&![500,502,503,504].includes(error.status))importCreateKey=null;throw error;}
   },'提交导入')),h('div',{class:'actions'},back));
  }
  const rows=[];
  for(const b of data.items){
   const retry=b.files.some(f=>['failed','cancelled'].includes(f.status));const cancel=b.files.some(f=>['uploaded','parsing'].includes(f.status));
-  rows.push([b.batchId.slice(0,8),tag(b.status),b.files.map(f=>f.filename+'：'+f.status+(f.errorCode?'（'+f.errorCode+'）':'')).join('；'),h('div',{class:'actions'},button('详情',()=>{importBatchId=b.batchId;ctx.refresh();}),retry?button('重试失败文件',()=>ctx.mutate('knowledge.imports.retry.v1',scoped(ctx,{batchId:b.batchId,fileIds:b.files.filter(f=>['failed','cancelled'].includes(f.status)).map(f=>f.fileId),expectedRevision:b.revision}))):null,cancel?button('取消未开始文件',()=>ctx.mutate('knowledge.imports.cancel.v1',scoped(ctx,{batchId:b.batchId,fileIds:b.files.filter(f=>['uploaded','parsing'].includes(f.status)).map(f=>f.fileId)}))):null,['completed','partial'].includes(b.status)?button('去变更审校',()=>ctx.navigate('review')):null)]);
+  rows.push([b.batchId.slice(0,8),tag(b.status),b.files.map(f=>f.filename+'：'+f.status+(f.errorCode?'（'+f.errorCode+'）':'')).join('；'),h('div',{class:'actions'},button('详情',()=>{importBatchId=b.batchId;ctx.refresh();}),retry?button('重试失败文件',e=>ctx.operate(e.currentTarget,()=>ctx.mutate('knowledge.imports.retry.v1',scoped(ctx,{batchId:b.batchId,fileIds:b.files.filter(f=>['failed','cancelled'].includes(f.status)).map(f=>f.fileId),expectedRevision:b.revision})))):null,cancel?button('取消未开始文件',e=>ctx.operate(e.currentTarget,()=>ctx.mutate('knowledge.imports.cancel.v1',scoped(ctx,{batchId:b.batchId,fileIds:b.files.filter(f=>['uploaded','parsing'].includes(f.status)).map(f=>f.fileId)})))):null,['completed','partial'].includes(b.status)?button('去变更审校',()=>ctx.navigate('review')):null)]);
  }
  content.append(section('导入批次',data.items.length?table(['批次','状态','文件','操作'],rows):empty('还没有导入批次。')),pagination(ctx,data,'imports'));
  if(importBatchId&&data.items.some(b=>b.batchId===importBatchId)){
