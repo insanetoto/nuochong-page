@@ -477,7 +477,7 @@
       "ownerRole": "DeepSeek；ChatGPT预审；负责人验收",
       "priority": "P1",
       "lane": "P1实现",
-      "status": "Ready",
+      "status": "Tracking",
       "issue": 107,
       "dependsOn": [
         "KBV2-02",
@@ -504,7 +504,7 @@
       "prototypeViews": [
         "imports"
       ],
-      "implementationBase": "refactor/integration; exact merged SHA recorded at PLAN-03",
+      "implementationBase": "各独立Issue领取时登记已验收依赖SHA，不使用此Tracking旧SHA作为当前代码基线",
       "allowedPaths": [
         "plugins/knowledge/",
         "apps/product-web/plugins/knowledge.mjs",
@@ -514,7 +514,7 @@
         "apps/control-api/test/"
       ],
       "delivery": "代码/迁移/接口与CLI/自动化测试/PR；人工验收及发布单列",
-      "readiness": "#105已验收并部署，R3只解锁03/04开发；共享文件先03后04串行领取，不等#103父Issue关闭。",
+      "readiness": "不再领取此总目标；执行独立Issue142/143/144，旧A/B/C历史入口不覆盖本规则。",
       "issueUrl": "https://github.com/insanetoto/nuochong-page/issues/107",
       "issueState": "OPEN",
       "registeredAt": "2026-11-08",
@@ -527,7 +527,14 @@
       "reviewer": "ChatGPT / Codex",
       "acceptanceOwner": "项目负责人",
       "admissionEvidence": "docs/product/knowledge/v2/w0/r3-management-admission-2026-11-10.md",
-      "implementationBaseSha": "84464eede3f9c820389e661554d75d3f506d1ad3"
+      "implementationBaseSha": "84464eede3f9c820389e661554d75d3f506d1ad3",
+      "type": "Tracking",
+      "executable": false,
+      "deliveryIssues": [
+        142,
+        143,
+        144
+      ]
     },
     {
       "id": "KBV2-15",
@@ -1112,5 +1119,55 @@
   "revision": "v2-execution-r5-r1-approved",
   "taskCount": 20,
   "scopeDecisionStatus": "P1 implementation scope proposal requires PLAN-01 confirmation; prototype accepted",
-  "estimation": "Re-estimate after PLAN-01/02; historic 47-75 person-days is not the updated scope estimate"
+  "estimation": "Re-estimate after PLAN-01/02; historic 47-75 person-days is not the updated scope estimate",
+  "deliveryProtocol": {
+    "date": "2026-11-15",
+    "design": "docs/refactor/delivery-contract.md",
+    "migration": "docs/refactor/import-independent-tasks.md",
+    "note": "本次仅迁移107的交付组织，其余tasks记录保留历史状态，不据此批量宣称当前Ready；领取前按协议核验。",
+    "independentTasks": [
+      {
+        "issue": 142,
+        "id": "import-runtime-acceptance",
+        "status": "In review",
+        "dependsOnIssues": [],
+        "acceptedBase": "68ab723",
+        "acceptanceIds": [
+          "RUN-01",
+          "RUN-02",
+          "RUN-03",
+          "RUN-04"
+        ]
+      },
+      {
+        "issue": 143,
+        "id": "import-submit-isolation",
+        "status": "Blocked",
+        "dependsOnIssues": [
+          142
+        ],
+        "acceptanceIds": [
+          "SUB-01",
+          "SUB-02",
+          "SUB-03",
+          "SUB-04"
+        ]
+      },
+      {
+        "issue": 144,
+        "id": "import-batch-recovery",
+        "status": "Blocked",
+        "dependsOnIssues": [
+          142
+        ],
+        "sharedFileIntegrationAfterIssue": 143,
+        "acceptanceIds": [
+          "BAT-01",
+          "BAT-02",
+          "BAT-03",
+          "BAT-04"
+        ]
+      }
+    ]
+  }
 }
