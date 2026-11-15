@@ -6,6 +6,13 @@ export const spaceDetailSchema=obj({spaceId:str(128),code:str(64),title:str(256)
 export const spaceManagementResult=obj({space:spaceDetailSchema,requestId:str(128)});
 const policyResult=obj({spaceId:str(128),allowSelfPublish:bool,policyRevision:revision,requestId:str(128)});
 const governanceTarget=obj({spaceId:str(128),allowSelfPublish:bool,reason:str(1000,3),expectedPolicyRevision:revision});
+const mediaType={enum:['text/plain','text/markdown','application/pdf','application/vnd.openxmlformats-officedocument.wordprocessingml.document']};
+const importFile=obj({objectRef:str(128),title:str(256),policyCode:str(128),version:str(64),validFrom:str(),validUntil:str(64,0)},['objectRef','title','policyCode','version','validFrom']);
+const importFileResult=obj({fileId:str(128),objectRef:str(128),filename:str(256),status:{enum:['uploaded','validated','parsing','parsed','failed','quarantined','cancelled']},jobId:str(128),errorCode:str(80)},['fileId','objectRef','filename','status']);
+const importBatch=obj({batchId:str(128),spaceId:str(128),status:{enum:['created','parsing','completed','partial','failed','cancelled']},files:arr(importFileResult,20),revision});
+const importResult=obj({batch:importBatch,requestId:str(128)});
+const uploadResult=obj({objectRef:str(128),sha256:str(64),byteLength:{type:'integer',minimum:1},status:{enum:['ready','quarantined']},expiresAt:str(),requestId:str(128)});
+
 const governanceRequest=obj({proposalId:str(128),targetHash:str(64),expiresAt:str(),requestId:str(128)});
 const governanceApproval=obj({approvalId:str(128),targetHash:str(64),expiresAt:str(),requestId:str(128)});
 export const sourceSchema=obj({id:str(),documentId:str(),spaceId:str(),title:str(),revision,policyCode:str(),version:str(),filename:str(),hash:str(),status:{enum:['active','withdrawn']},validFrom:str(),validUntil:str(64,0),createdAt:str()});
@@ -14,6 +21,12 @@ export const detailSchema=obj({...knowledgePageSchema.properties,body:str(20000)
 const read={permission:'knowledge:read',scopeField:'spaceId'},edit={write:true,permission:'knowledge:edit',scopeField:'spaceId'},publish={write:true,approval:true,permission:'knowledge:publish',scopeField:'spaceId'};
 export const knowledgeCommands=[
  command('knowledge.spaces.list.v1','knowledge spaces list',obj({after:str()},[]),pageOf(spaceSchema)),
+ command('knowledge.objects.upload.v1','knowledge objects upload',obj({spaceId:str(128),idempotencyKey:str(128,16),filename:str(256),mediaType,byteLength:{type:'integer',minimum:1},sha256:str(64)}),uploadResult,{write:true,permission:'knowledge:edit',scopeField:'spaceId'}),
+ command('knowledge.imports.create.v1','knowledge imports create',obj({spaceId:str(128),idempotencyKey:str(128,16),files:arr(importFile,20)}),importResult,{write:true,permission:'knowledge:edit',scopeField:'spaceId'}),
+ command('knowledge.imports.list.v1','knowledge imports list',obj({spaceId:str(128),after:str(512,0)},['spaceId']),pageOf(importBatch),{permission:'knowledge:edit',scopeField:'spaceId'}),
+ command('knowledge.imports.get.v1','knowledge imports get',obj({spaceId:str(128),batchId:str(128)}),importResult,{permission:'knowledge:edit',scopeField:'spaceId'}),
+ command('knowledge.imports.cancel.v1','knowledge imports cancel',obj({spaceId:str(128),idempotencyKey:str(128,16),batchId:str(128),fileIds:arr(str(128),20)}),obj({batchId:str(128),cancelRequested:{const:true},requestId:str(128)}),{write:true,permission:'knowledge:edit',scopeField:'spaceId'}),
+ command('knowledge.imports.retry.v1','knowledge imports retry',obj({spaceId:str(128),idempotencyKey:str(128,16),batchId:str(128),fileIds:arr(str(128),20),expectedRevision:revision}),importResult,{write:true,permission:'knowledge:edit',scopeField:'spaceId'}),
  command('knowledge.spaces.get.v1','knowledge spaces get',obj({spaceId:str(128)}),spaceManagementResult,{permission:'knowledge:read',scopeField:'spaceId'}),
  command('knowledge.spaces.create.v2','knowledge spaces create',obj({...approved,code:str(64),title:str(256),domainType:{enum:['policy','procedure','reference']},departmentIds:arr(str())}),spaceManagementResult,{write:true,approval:true,permission:'knowledge:publish'}),
  command('knowledge.spaces.update.v1','knowledge spaces update',obj({...approved,spaceId:str(128),expectedRevision:revision,title:str(256),departmentIds:arr(str())}),spaceManagementResult,{write:true,approval:true,permission:'knowledge:publish',scopeField:'spaceId'}),
