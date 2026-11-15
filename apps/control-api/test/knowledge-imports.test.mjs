@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash,randomUUID} from 'node:crypto';
 import {deflateRawSync} from 'node:zlib';
-import {exec,spawn} from 'node:child_process';
+import {execFile,spawn} from 'node:child_process';
 import {promisify} from 'node:util';
 import {fileURLToPath} from 'node:url';
 import {knowledgeFixture} from './knowledge-fixture.mjs';
@@ -18,7 +18,7 @@ function zipBuffer(files){
 }
 function docxBuffer(paragraphs){const body=paragraphs.map(p=>`<w:p><w:r><w:t>${p}</w:t></w:r></w:p>`).join('');return zipBuffer({'[Content_Types].xml':'<Types/>','word/document.xml':`<w:document><w:body>${body}</w:body></w:document>`});}
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
-const run=promisify(exec);
+const run=promisify(execFile);
 const cli=new URL('../../../tools/nuochong-cli/bin/nuochong.mjs',import.meta.url).pathname;
 async function upload(f,{bytes,filename='policy.md',mediaType='text/markdown',token=f.admin.token}){
  const metadata={spaceId:f.spaceId,idempotencyKey:randomUUID(),filename,mediaType,byteLength:bytes.length,sha256:sha(bytes)};
