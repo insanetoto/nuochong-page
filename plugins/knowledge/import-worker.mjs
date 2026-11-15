@@ -7,6 +7,8 @@ import {requireThat} from '../../apps/control-api/src/errors.mjs';
 const LEASE_MS=5000,DEADLINE_MS=60000,SPACE_SLOTS=2,PROCESS_SLOTS=4;
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const terminal=new Set(['parsed','failed','cancelled']);
+let beforeCommitHook=null,afterAuthorizeHook=null;
+export function setImportCommitHooks({beforeCommit,afterAuthorize}={}){beforeCommitHook=beforeCommit??null;afterAuthorizeHook=afterAuthorize??null;}
 export function aggregate(statuses){
  if(statuses.some(s=>!terminal.has(s)))return 'parsing';
  if(statuses.every(s=>s==='parsed'))return 'completed';
@@ -64,6 +66,7 @@ export async function runImportWorkerOnce({pool,kernel,knowledge,leaseMs=LEASE_M
   if(lost)return {fileId:file.id,status:'lost'};
   if(cancel)return await finishCancelled(pool,file);
   const textHash=await knowledge.objects.put(pool,parsed.text);
+  if(beforeCommitHook)await beforeCommitHook({file,batchId:file.batch_id});
   const committed=await transaction(pool,async db=>{
    await db.query('SELECT pg_advisory_xact_lock(hashtext($1))',[pool.oaSchema+':product-domain-state']);
    const current=(await db.query("SELECT * FROM knowledge_import_files WHERE id=$1 AND lease_token=$2 AND status='parsing' AND lease_until>clock_timestamp() FOR UPDATE",[file.id,file.lease_token])).rows[0];
@@ -74,6 +77,7 @@ export async function runImportWorkerOnce({pool,kernel,knowledge,leaseMs=LEASE_M
    const ctx=await kernel.context(db,{id:batch.created_by,credential_id:batch.created_credential_id,scopes:['product:read','product:write']});
    requireThat(ctx.has('knowledge:edit',batch.space_id),403,'FORBIDDEN');
    await knowledge.authorize(db,ctx,{id:'knowledge.imports.create.v1'},{spaceId:batch.space_id});
+   if(afterAuthorizeHook)await afterAuthorizeHook({file,batchId:file.batch_id});
    requireThat(Date.now()<=current.deadline_at.getTime(),408,'REQUEST_FAILED');
    let document=(await db.query('SELECT * FROM knowledge_documents WHERE space_id=$1 AND policy_code=$2',[batch.space_id,file.policy_code])).rows[0];
    if(!document)document=(await db.query('INSERT INTO knowledge_documents(id,space_id,policy_code) VALUES($1,$2,$3) RETURNING *',[randomUUID(),batch.space_id,file.policy_code])).rows[0];
