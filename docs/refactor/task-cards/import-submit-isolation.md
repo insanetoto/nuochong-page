@@ -62,4 +62,3 @@ Blocked：依赖运行任务通过合并；可先核对现有PR141证据，不�
 每AC附测试路径/用例、固定输入hash/独立预期、实际环境/SHA/运行链接；未执行不算通过。既有命令建议：`node --test apps/control-api/test/knowledge-imports.test.mjs`（隔离TEST_DATABASE_URL）、`node --test apps/control-api/test/product-web.browser.mjs`（对应依赖齐全后）、CLI对应测试与相关构建。最终回执必须列实际使用的命令，不声称未跑项已通过。
 
 本任务仅在上述全部适用AC与相关回归通过、技术预审完成且精确head合入integration后关闭；不能以别的任务未完成拖延本任务的独立验收，也不能用本任务通过代替全产品人工验收。发布默认未授权。
-
