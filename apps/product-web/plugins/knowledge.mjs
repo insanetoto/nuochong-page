@@ -48,15 +48,15 @@ async function spaces(ctx,route){
   content.append(detail);}
  return {node:content};
 }
-let importDraft=null,importBatchId=null,importOwner='',importCreateKey=null,importOperation=null;
+let importDraft=null,importOwner='',importCreateKey=null,importOperation=null;
 const importOwnerFor=ctx=>[ctx.me?.principalId??ctx.me?.id??ctx.me?.name??'',ctx.session,ctx.spaceId].join(':');
-function resetImportState(ctx){const owner=importOwnerFor(ctx);if(importOwner&&owner!==importOwner){importDraft=null;importBatchId=null;importCreateKey=null;importOperation=null;}importOwner=owner;return owner;}
+function resetImportState(ctx){const owner=importOwnerFor(ctx);if(importOwner&&owner!==importOwner){importDraft=null;importCreateKey=null;importOperation=null;}importOwner=owner;return owner;}
 const emptyDraft=()=>({step:1,spaceId:'',files:[]});
 function importDraftFor(ctx){resetImportState(ctx);if(!importDraft||importDraft.spaceId!==ctx.spaceId) importDraft={...emptyDraft(),spaceId:ctx.spaceId};return importDraft;}
 function importFileMeta(file){return {file,title:file.name.replace(/\.[^.]+$/,''),policyCode:'',version:'1',validFrom:new Date().toISOString().slice(0,10)};}
-async function imports(ctx,route){
+async function imports(ctx){
  if(!ctx.spaceId)return {node:heading('知识导入','请先选择或创建知识空间。')};
- const after=route.params.get('after');const data=await ctx.api('knowledge.imports.list.v1',scoped(ctx,after?{after}:{}));
+ const data=await ctx.api('knowledge.imports.list.v1',scoped(ctx));
  const draft=importDraftFor(ctx);
  const content=h('div',{},heading('知识导入','三步完成：选择文件 → 填写元数据 → 检查并提交。支持多文件，失败可恢复；原始文件不可变。'));
  const steps=h('ol',{class:'steps','aria-label':'导入步骤'},['选择文件','填写元数据','检查并提交'].map((label,i)=>h('li',{class:i+1===draft.step?'active':i+1<draft.step?'done':''},(i+1)+'. '+label)));
@@ -82,10 +82,11 @@ async function imports(ctx,route){
   const unknown=importOperation?.status==='unknown';
   if(unknown)content.append(section('待核对的原提交',h('p',{},'上次提交的响应未知。请先核对原结果；在核对完成前不能修改输入或生成新操作。'),button('核对原提交结果',e=>ctx.operate(e.currentTarget,async()=>{
    const op=importOperation;if(!op||op.status!=='unknown')return null;const owner=importOwnerFor(ctx);if(op.owner!==owner)throw Object.assign(new Error('身份或空间已变化，不能核对旧操作'),{code:'STALE_OPERATION'});
-   try{const result=await ctx.api('knowledge.imports.create.v1',{spaceId:op.spaceId,idempotencyKey:op.key,files:op.uploaded});if(op!==importOperation||owner!==importOwnerFor(ctx))throw Object.assign(new Error('操作已变化'),{code:'STALE_OPERATION'});importOperation=null;importCreateKey=null;importDraft=null;importBatchId=result.batch.batchId;return result;}
+   try{const result=await ctx.api('knowledge.imports.create.v1',{spaceId:op.spaceId,idempotencyKey:op.key,files:op.uploaded});if(op!==importOperation||owner!==importOwnerFor(ctx))throw Object.assign(new Error('操作已变化'),{code:'STALE_OPERATION'});importOperation=null;importCreateKey=null;if(!draft.changed)importDraft=null;return result;}
    catch(error){if(op!==importOperation)throw error;if(error.status&&![500,502,503,504].includes(error.status)){importOperation=null;importCreateKey=null;}throw error;}
   }))));
-  if(unknown&&draft.changed)content.append(h('div',{class:'error',role:'alert'},'输入已修改，但必须先核对原提交结果。'));
+  if(unknown)content.append(h('p',{class:'muted'},'核对完成前已锁定编辑。核对成功后如需新导入，请重新开始一个导入操作。'));
+  if(!unknown&&draft.changed)content.append(h('p',{class:'muted'},'当前修改尚未提交；点击提交将创建新的导入操作。'));
   content.append(section('③ 检查并提交',h('p',{class:'muted'},'空间：'+(ctx.spaces.find(s=>s.id===draft.spaceId)?.title??draft.spaceId)),table(['文件','标题','制度编号','版本','生效日期'],draft.files.map(f=>[f.file.name,f.title,f.policyCode,f.version,f.validFrom])),!unknown?form(ctx,[],async()=>{
    const owner=importOwnerFor(ctx),spaceId=draft.spaceId,files=draft.files.map(f=>({...f}));const uploaded=[];
    const changed=()=>importOwnerFor(ctx)!==owner||ctx.spaceId!==spaceId;
@@ -102,21 +103,14 @@ async function imports(ctx,route){
    }
    if(changed())throw Object.assign(new Error('空间或会话已变化，未提交导入'),{code:'STALE_OPERATION'});
    op.uploaded=uploaded;
-   try{const result=await ctx.api('knowledge.imports.create.v1',{spaceId,idempotencyKey:op.key,files:uploaded});if(op!==importOperation||owner!==importOwnerFor(ctx))throw Object.assign(new Error('操作已变化'),{code:'STALE_OPERATION'});importOperation=null;importCreateKey=null;importDraft=null;importBatchId=result.batch.batchId;return result;}
+   try{const result=await ctx.api('knowledge.imports.create.v1',{spaceId,idempotencyKey:op.key,files:uploaded});if(op!==importOperation||owner!==importOwnerFor(ctx))throw Object.assign(new Error('操作已变化'),{code:'STALE_OPERATION'});importOperation=null;importCreateKey=null;importDraft=null;return result;}
    catch(error){if(op===importOperation){if(error.status&&![500,502,503,504].includes(error.status)){importOperation=null;importCreateKey=null;}else{op.status='unknown';setTimeout(()=>ctx.refresh(),0);}}throw error;}
-  },'提交导入'):h('p',{class:'muted'},'结果未知，提交按钮已暂停。')),h('div',{class:'actions'},back));
+  },'提交导入'):h('p',{class:'muted'},'结果未知，提交按钮已暂停。')),h('div',{class:'actions'},unknown?null:back));
  }
 
- const rows=[];
- for(const b of data.items){
-  const retry=b.files.some(f=>['failed','cancelled'].includes(f.status));const cancel=b.files.some(f=>['uploaded','parsing'].includes(f.status));
-  rows.push([b.batchId.slice(0,8),tag(b.status),b.files.map(f=>f.filename+'：'+f.status+(f.errorCode?'（'+f.errorCode+'）':'')).join('；'),h('div',{class:'actions'},button('详情',()=>{importBatchId=b.batchId;ctx.refresh();}),retry?button('重试失败文件',e=>ctx.operate(e.currentTarget,()=>ctx.mutate('knowledge.imports.retry.v1',scoped(ctx,{batchId:b.batchId,fileIds:b.files.filter(f=>['failed','cancelled'].includes(f.status)).map(f=>f.fileId),expectedRevision:b.revision})))):null,cancel?button('取消未开始文件',e=>ctx.operate(e.currentTarget,()=>ctx.mutate('knowledge.imports.cancel.v1',scoped(ctx,{batchId:b.batchId,fileIds:b.files.filter(f=>['uploaded','parsing'].includes(f.status)).map(f=>f.fileId)})))):null,['completed','partial'].includes(b.status)?button('去变更审校',()=>ctx.navigate('review')):null)]);
- }
- content.append(section('导入批次',data.items.length?table(['批次','状态','文件','操作'],rows):empty('还没有导入批次。')),pagination(ctx,data,'imports'));
- if(importBatchId&&data.items.some(b=>b.batchId===importBatchId)){
-  const detail=await ctx.api('knowledge.imports.get.v1',scoped(ctx,{batchId:importBatchId}));
-  content.append(section('批次详情',table(['文件','状态','对象','错误'],detail.batch.files.map(f=>[f.filename,tag(f.status),f.objectRef.slice(0,12)+'…',f.errorCode??'']))));
- }
+ const rows=data.items.map(b=>[b.batchId.slice(0,8),tag(b.status),b.files.map(f=>f.filename+'：'+f.status+(f.errorCode?'（'+f.errorCode+'）':'')).join('；')]);
+ content.append(section('导入回执',data.items.length?table(['批次','状态','文件'],rows):empty('还没有导入批次。')));
+
  const active=data.items.some(b=>['created','parsing'].includes(b.status));
  return {node:content,...(active?{poll:true}:{})};
 }
