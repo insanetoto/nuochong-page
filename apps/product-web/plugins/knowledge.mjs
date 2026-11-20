@@ -55,9 +55,14 @@ const emptyDraft=()=>({step:1,spaceId:'',files:[]});
 function importDraftFor(ctx){resetImportState(ctx);if(!importDraft||importDraft.spaceId!==ctx.spaceId) importDraft={...emptyDraft(),spaceId:ctx.spaceId};return importDraft;}
 function importFileMeta(file){return {file,title:file.name.replace(/\.[^.]+$/,''),policyCode:'',version:'1',validFrom:new Date().toISOString().slice(0,10)};}
 const importFingerprint=files=>JSON.stringify(files.map(f=>[f.file.name,f.file.size,f.file.lastModified??0,f.title,f.policyCode,f.version,f.validFrom]));
-async function imports(ctx){
+const importActions=new Map();
+const importActionKey=(ctx,command,batchId,fileIds)=>[importOwnerFor(ctx),command,batchId,[...fileIds].sort().join(',')].join('|');
+const importActionBusy=(ctx,command,batchId,fileIds)=>importActions.has(importActionKey(ctx,command,batchId,fileIds));
+async function retryImport(ctx,batch){const key=importActionKey(ctx,'retry',batch.batchId,batch.files.map(f=>f.fileId));const previous=importActions.get(key);if(previous)return previous;const promise=(async()=>{try{return await ctx.mutate('knowledge.imports.retry.v1',scoped(ctx,{batchId:batch.batchId,fileIds:batch.files.filter(f=>['failed','cancelled'].includes(f.status)).map(f=>f.fileId),expectedRevision:batch.revision}));}catch(error){if(!error.status||[500,502,503,504].includes(error.status)){const latest=(await ctx.api('knowledge.imports.get.v1',scoped(ctx,{batchId:batch.batchId}))).batch;if(latest.status!=='failed'&&latest.status!=='cancelled')return {batch:latest};}throw error;}finally{importActions.delete(key);}})().finally(()=>{importActions.delete(key);setTimeout(()=>ctx.refresh(),0);});importActions.set(key,promise);setTimeout(()=>ctx.refresh(),0);return promise;}
+async function cancelImport(ctx,batch){const key=importActionKey(ctx,'cancel',batch.batchId,batch.files.map(f=>f.fileId));const previous=importActions.get(key);if(previous)return previous;const promise=(async()=>{try{return await ctx.mutate('knowledge.imports.cancel.v1',scoped(ctx,{batchId:batch.batchId,fileIds:batch.files.filter(f=>['uploaded','parsing'].includes(f.status)).map(f=>f.fileId)}));}catch(error){if(!error.status||[500,502,503,504].includes(error.status)){const latest=(await ctx.api('knowledge.imports.get.v1',scoped(ctx,{batchId:batch.batchId}))).batch;if(latest.files.some(f=>['uploaded','parsing','cancelled'].includes(f.status))||['parsing','cancelled'].includes(latest.status))return {batch:latest};}throw error;}finally{importActions.delete(key);}})().finally(()=>{importActions.delete(key);setTimeout(()=>ctx.refresh(),0);});importActions.set(key,promise);setTimeout(()=>ctx.refresh(),0);return promise;}
+async function imports(ctx,route){
  if(!ctx.spaceId)return {node:heading('知识导入','请先选择或创建知识空间。')};
- const data=await ctx.api('knowledge.imports.list.v1',scoped(ctx));
+ const after=route.params.get('after');const data=await ctx.api('knowledge.imports.list.v1',scoped(ctx,after?{after}:{}));
  const draft=importDraftFor(ctx);
  const content=h('div',{},heading('知识导入','三步完成：选择文件 → 填写元数据 → 检查并提交。支持多文件，失败可恢复；原始文件不可变。'));
  const steps=h('ol',{class:'steps','aria-label':'导入步骤'},['选择文件','填写元数据','检查并提交'].map((label,i)=>h('li',{class:i+1===draft.step?'active':i+1<draft.step?'done':''},(i+1)+'. '+label)));
@@ -108,10 +113,20 @@ async function imports(ctx){
   },'提交导入'):h('p',{class:'muted'},'结果未知，提交按钮已暂停。')),h('div',{class:'actions'},unknown?null:back));
  }
 
- const rows=data.items.map(b=>[b.batchId.slice(0,8),tag(b.status),b.files.map(f=>f.filename+'：'+f.status+(f.errorCode?'（'+f.errorCode+'）':'')).join('；')]);
- content.append(section('导入回执',data.items.length?table(['批次','状态','文件'],rows):empty('还没有导入批次。')));
+ const detailId=route.id;
+ const actions=b=>{
+  const failed=b.files.filter(f=>['failed','cancelled'].includes(f.status));
+  const cancellable=b.files.filter(f=>['uploaded','parsing'].includes(f.status));
+  const retryBusy=failed.length&&importActionBusy(ctx,'retry',b.batchId,b.files.map(f=>f.fileId));
+  const cancelBusy=cancellable.length&&importActionBusy(ctx,'cancel',b.batchId,b.files.map(f=>f.fileId));
+  return h('div',{class:'actions'},button('详情',()=>ctx.navigate('imports/'+b.batchId+(after?'?after='+encodeURIComponent(after):''))),failed.length?button('重试失败文件',e=>ctx.operate(e.currentTarget,()=>retryImport(ctx,b)),{disabled:retryBusy}):null,cancellable.length?button('请求取消',e=>ctx.operate(e.currentTarget,()=>cancelImport(ctx,b)),{disabled:cancelBusy}):null,['completed','partial'].includes(b.status)?button('去变更审校',()=>ctx.navigate('review')):null);
+ };
+ const rows=data.items.map(b=>[link(ctx,b.batchId.slice(0,8),'imports/'+b.batchId+(after?'?after='+encodeURIComponent(after):'')),tag(b.status),b.files.map(f=>f.filename+'：'+f.status+(f.errorCode?'（'+f.errorCode+'）':'')).join('；'),actions(b)]);
+ content.append(section('导入批次',data.items.length?table(['批次','状态','文件','操作'],rows):empty('还没有导入批次。')),pagination(ctx,data,'imports'));
+ let detail=null;
+ if(detailId){detail=(await ctx.api('knowledge.imports.get.v1',scoped(ctx,{batchId:detailId}))).batch;content.append(section('批次详情',h('p',{},'批次 '+detail.batchId+' · 空间 '+detail.spaceId+' · 版本 '+detail.revision+' · ',tag(detail.status)),table(['文件','状态','错误'],detail.files.map(f=>[f.filename,tag(f.status),f.errorCode??''])),h('div',{class:'actions'},button('返回列表',()=>ctx.navigate('imports'+(after?'?after='+encodeURIComponent(after):''))),detail.files.some(f=>['failed','cancelled'].includes(f.status))?[button('重试失败文件',e=>ctx.operate(e.currentTarget,()=>retryImport(ctx,detail)),{disabled:importActionBusy(ctx,'retry',detail.batchId,detail.files.map(f=>f.fileId))})]:[],detail.files.some(f=>['uploaded','parsing'].includes(f.status))?[button('请求取消',e=>ctx.operate(e.currentTarget,()=>cancelImport(ctx,detail)),{disabled:importActionBusy(ctx,'cancel',detail.batchId,detail.files.map(f=>f.fileId))})]:[],['completed','partial'].includes(detail.status)?[button('去变更审校',()=>ctx.navigate('review'))]:[])));}
 
- const active=data.items.some(b=>['created','parsing'].includes(b.status));
+ const active=data.items.some(b=>['created','parsing'].includes(b.status))||(detail&&['created','parsing'].includes(detail.status));
  return {node:content,...(active?{poll:true}:{})};
 }
 
