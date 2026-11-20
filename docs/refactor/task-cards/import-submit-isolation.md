@@ -1,3 +1,5 @@
+> 2026-11-20最新：#143 SUB-01—04技术验收通过，PR #146 已合入 refactor/integration（`96ae5b62bd398f00d2a7100bceba522b1a31a603`）；固定审核head `de072e5e7b38d62a9301c088348c600a14bcceab`，[逐项复审](https://github.com/insanetoto/nuochong-page/pull/146#pullrequestreview-5989101222)、[精确head的PR CI](https://github.com/insanetoto/nuochong-page/actions/runs/44453542767)。本独立任务关闭；#144共享文件顺序已解锁。未代签人工产品验收，未部署，#107保留Tracking。
+
 > 2026-11-15最新：编码前测试计划已[预检通过](https://github.com/insanetoto/nuochong-page/issues/143#issuecomment-6893871035)，可直接实现，不再重复提交同一方案等待确认。此为设计/测试计划出口，不是实现验收；独立结果PR、实际测试及合并仍待完成。网络/本地hash屏障、旧请求基线与新owner隔离等执行细节见该评论。
 
 ## 当前交接补充：SUB-02/03操作语义与下一步（2026-11-15）

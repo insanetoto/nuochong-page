@@ -1121,7 +1121,7 @@
   "scopeDecisionStatus": "P1 implementation scope proposal requires PLAN-01 confirmation; prototype accepted",
   "estimation": "Re-estimate after PLAN-01/02; historic 47-75 person-days is not the updated scope estimate",
   "deliveryProtocol": {
-    "date": "2026-11-15",
+    "date": "2026-11-20",
     "design": "docs/refactor/delivery-contract.md",
     "migration": "docs/refactor/import-independent-tasks.md",
     "note": "本次仅迁移107的交付组织，其余tasks记录保留历史状态，不据此批量宣称当前Ready；领取前按协议核验。",
@@ -1145,7 +1145,7 @@
       {
         "issue": 143,
         "id": "import-submit-isolation",
-        "status": "Ready",
+        "status": "Closed",
         "dependsOnIssues": [
           142
         ],
@@ -1154,12 +1154,15 @@
           "SUB-02",
           "SUB-03",
           "SUB-04"
-        ]
+        ],
+        "mergedSha": "96ae5b62bd398f00d2a7100bceba522b1a31a603",
+        "reviewedHead": "de072e5e7b38d62a9301c088348c600a14bcceab",
+        "evidence": "https://github.com/insanetoto/nuochong-page/pull/146#pullrequestreview-5989101222"
       },
       {
         "issue": 144,
         "id": "import-batch-recovery",
-        "status": "Blocked (shared file order after 143)",
+        "status": "Ready",
         "dependsOnIssues": [
           142
         ],
@@ -1170,7 +1173,9 @@
           "BAT-03",
           "BAT-04"
         ],
-        "businessDependencySatisfied": true
+        "businessDependencySatisfied": true,
+        "acceptedBase": "96ae5b62bd398f00d2a7100bceba522b1a31a603",
+        "sharedFileIntegrationSatisfied": true
       }
     ]
   }
