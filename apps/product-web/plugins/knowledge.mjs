@@ -48,4 +48,71 @@ async function spaces(ctx,route){
   content.append(detail);}
  return {node:content};
 }
-export const knowledgeViews={home,search,sources,source,review,read,ask,jobs,job,quality,spaces};
+let importDraft=null,importOwner='',importCreateKey=null,importOperation=null;
+const importOwnerFor=ctx=>[ctx.me?.principalId??ctx.me?.id??ctx.me?.name??'',ctx.session,ctx.spaceId].join(':');
+function resetImportState(ctx){const owner=importOwnerFor(ctx);if(importOwner&&owner!==importOwner){importDraft=null;importCreateKey=null;importOperation=null;}importOwner=owner;return owner;}
+const emptyDraft=()=>({step:1,spaceId:'',files:[]});
+function importDraftFor(ctx){resetImportState(ctx);if(!importDraft||importDraft.spaceId!==ctx.spaceId) importDraft={...emptyDraft(),spaceId:ctx.spaceId};return importDraft;}
+function importFileMeta(file){return {file,title:file.name.replace(/\.[^.]+$/,''),policyCode:'',version:'1',validFrom:new Date().toISOString().slice(0,10)};}
+const importFingerprint=files=>JSON.stringify(files.map(f=>[f.file.name,f.file.size,f.file.lastModified??0,f.title,f.policyCode,f.version,f.validFrom]));
+async function imports(ctx){
+ if(!ctx.spaceId)return {node:heading('知识导入','请先选择或创建知识空间。')};
+ const data=await ctx.api('knowledge.imports.list.v1',scoped(ctx));
+ const draft=importDraftFor(ctx);
+ const content=h('div',{},heading('知识导入','三步完成：选择文件 → 填写元数据 → 检查并提交。支持多文件，失败可恢复；原始文件不可变。'));
+ const steps=h('ol',{class:'steps','aria-label':'导入步骤'},['选择文件','填写元数据','检查并提交'].map((label,i)=>h('li',{class:i+1===draft.step?'active':i+1<draft.step?'done':''},(i+1)+'. '+label)));
+ content.append(steps);
+ const next=button('下一步',()=>{if(draft.step===1&&!draft.files.length)return ctx.notify('请选择至少一个文件',true);draft.step+=1;ctx.refresh();});
+ const back=button('上一步',()=>{draft.step=Math.max(1,draft.step-1);ctx.refresh();});
+ if(draft.step===1){
+  const input=h('input',{type:'file',multiple:true,accept:'.md,.txt,.pdf,.docx','aria-label':'选择文件'});
+  input.addEventListener('change',()=>{for(const file of input.files){if(file.size>20*1024*1024){ctx.notify(file.name+' 超过 20MiB',true);continue;}draft.files.push(importFileMeta(file));}ctx.refresh();});
+  content.append(section('① 选择文件',input,draft.files.length?h('div',{},draft.files.map((f,i)=>h('div',{class:'citation'},h('strong',{},f.file.name),' · '+f.file.size+' bytes ',button('移除',()=>{draft.files.splice(i,1);ctx.refresh();})))):empty('还没有选择文件。')));
+  content.append(h('div',{class:'actions'},next));
+ }
+ if(draft.step===2){
+  const cards=draft.files.map((f,i)=>{
+   const title=field('来源标题 #'+(i+1),{required:true,maxlength:256,value:f.title}),policy=field('制度编号 #'+(i+1),{required:true,maxlength:128,value:f.policyCode}),version=field('来源版本 #'+(i+1),{required:true,maxlength:64,value:f.version}),from=field('生效日期 #'+(i+1),{type:'date',required:true,value:f.validFrom});
+   title.input.addEventListener('input',()=>{f.title=title.input.value;if(importOperation?.status!=='unknown')importCreateKey=null;});policy.input.addEventListener('input',()=>{f.policyCode=policy.input.value;if(importOperation?.status!=='unknown')importCreateKey=null;});version.input.addEventListener('input',()=>{f.version=version.input.value;if(importOperation?.status!=='unknown')importCreateKey=null;});from.input.addEventListener('input',()=>{f.validFrom=from.input.value;if(importOperation?.status!=='unknown')importCreateKey=null;});
+   return h('article',{class:'panel'},h('h2',{},f.file.name),h('div',{class:'form-grid'},title.node,policy.node,version.node,from.node));
+  });
+  content.append(section('② 填写元数据',...cards),h('div',{class:'actions'},back,button('下一步',()=>{for(const f of draft.files){if(!f.title.trim()||!f.policyCode.trim()||!f.version.trim()||!f.validFrom)return ctx.notify('请完整填写每个文件的标题、制度编号、版本和生效日期',true);}draft.step=3;draft.confirmedFingerprint=importFingerprint(draft.files);ctx.refresh();})));
+ }
+ if(draft.step===3){
+  const invalid=draft.files.find(f=>!f.title.trim()||!f.policyCode.trim()||!f.version.trim()||!f.validFrom);if(invalid)content.append(h('div',{class:'error',role:'alert'},'元数据不完整，请返回上一步。'));
+  const unknown=importOperation?.status==='unknown';
+  if(unknown)content.append(section('待核对的原提交',h('p',{},'上次提交的响应未知。请先核对原结果；在核对完成前不能修改输入或生成新操作。'),button('核对原提交结果',e=>ctx.operate(e.currentTarget,async()=>{
+   const op=importOperation;if(!op||op.status!=='unknown')return null;const owner=importOwnerFor(ctx);if(op.owner!==owner)throw Object.assign(new Error('身份或空间已变化，不能核对旧操作'),{code:'STALE_OPERATION'});
+   try{const result=await ctx.api('knowledge.imports.create.v1',{spaceId:op.spaceId,idempotencyKey:op.key,files:op.uploaded});if(op!==importOperation||owner!==importOwnerFor(ctx))throw Object.assign(new Error('操作已变化'),{code:'STALE_OPERATION'});importOperation=null;importCreateKey=null;if(importFingerprint(draft.files)===op.fingerprint)importDraft=null;return result;}
+   catch(error){if(op!==importOperation)throw error;if(error.status&&![500,502,503,504].includes(error.status)){importOperation=null;importCreateKey=null;}throw error;}
+  }))));
+  if(unknown)content.append(h('p',{class:'muted'},'核对完成前已锁定编辑。核对成功后如需新导入，请重新开始一个导入操作。'));
+  content.append(section('③ 检查并提交',h('p',{class:'muted'},'空间：'+(ctx.spaces.find(s=>s.id===draft.spaceId)?.title??draft.spaceId)),table(['文件','标题','制度编号','版本','生效日期'],draft.files.map(f=>[f.file.name,f.title,f.policyCode,f.version,f.validFrom])),!unknown?form(ctx,[],async()=>{
+   const owner=importOwnerFor(ctx),spaceId=draft.spaceId,files=draft.files.map(f=>({...f}));const uploaded=[];
+   const changed=()=>importOwnerFor(ctx)!==owner||ctx.spaceId!==spaceId;
+   if(importOperation?.status==='unknown')throw Object.assign(new Error('请先核对原提交结果'),{code:'RECONCILE_REQUIRED'});
+   const op={owner,spaceId,key:importCreateKey??(importCreateKey=ctx.key()),uploaded:null,status:'pending',fingerprint:importFingerprint(files)};importOperation=op;
+   for(const f of files){
+    if(f.file.size>20*1024*1024)throw Object.assign(new Error('文件超过 20MiB'),{code:'INVALID_INPUT'});
+    const bytes=new Uint8Array(await f.file.arrayBuffer());const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(b=>b.toString(16).padStart(2,'0')).join('');
+    if(changed())throw Object.assign(new Error('空间或会话已变化，未提交导入'),{code:'STALE_OPERATION'});
+    const media=/\.md$/i.test(f.file.name)?'text/markdown':/\.txt$/i.test(f.file.name)?'text/plain':/\.pdf$/i.test(f.file.name)?'application/pdf':'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    const result=await ctx.upload('knowledge.objects.upload.v1',{spaceId,idempotencyKey:ctx.key(),filename:f.file.name,mediaType:media,byteLength:f.file.size,sha256:hash},f.file);
+    if(changed())throw Object.assign(new Error('空间或会话已变化，未提交导入'),{code:'STALE_OPERATION'});
+    uploaded.push({objectRef:result.objectRef,title:f.title,policyCode:f.policyCode,version:f.version,validFrom:dateInput(f.validFrom)});
+   }
+   if(changed())throw Object.assign(new Error('空间或会话已变化，未提交导入'),{code:'STALE_OPERATION'});
+   op.uploaded=uploaded;
+   try{const result=await ctx.api('knowledge.imports.create.v1',{spaceId,idempotencyKey:op.key,files:uploaded});if(op!==importOperation||owner!==importOwnerFor(ctx))throw Object.assign(new Error('操作已变化'),{code:'STALE_OPERATION'});importOperation=null;importCreateKey=null;importDraft=null;return result;}
+   catch(error){if(op===importOperation){if(error.status&&![500,502,503,504].includes(error.status)){importOperation=null;importCreateKey=null;}else{op.status='unknown';setTimeout(()=>ctx.refresh(),0);}}throw error;}
+  },'提交导入'):h('p',{class:'muted'},'结果未知，提交按钮已暂停。')),h('div',{class:'actions'},unknown?null:back));
+ }
+
+ const rows=data.items.map(b=>[b.batchId.slice(0,8),tag(b.status),b.files.map(f=>f.filename+'：'+f.status+(f.errorCode?'（'+f.errorCode+'）':'')).join('；')]);
+ content.append(section('导入回执',data.items.length?table(['批次','状态','文件'],rows):empty('还没有导入批次。')));
+
+ const active=data.items.some(b=>['created','parsing'].includes(b.status));
+ return {node:content,...(active?{poll:true}:{})};
+}
+
+export const knowledgeViews={home,search,sources,source,review,read,ask,jobs,job,quality,spaces,imports};
