@@ -1,0 +1,72 @@
+name: Release knowledge imports to isolated test
+on:
+  push:
+    branches: [codex/deploy-knowledge-import-test-20261125]
+    paths:
+      - .github/workflows/knowledge-import-test-release.yml
+      - scripts/deploy/knowledge-import-test.sh
+permissions:
+  contents: read
+concurrency:
+  group: oa-test-server-deploy
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      BASE_SHA: a6d9a5e4026427b790a2ca3db0b46c1357321e2a
+      CODE_SHA: 9bdb689f16a8365e702b580549161c7239291b6f
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Package accepted runtime delta and functional checks
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib, os, pathlib, subprocess
+          base, code = (os.environ[k] for k in ('BASE_SHA', 'CODE_SHA'))
+          output = pathlib.Path(os.environ['RUNNER_TEMP'])
+          paths = ['apps/control-api/src', 'apps/product-web', 'plugins', 'tools/nuochong-cli/src']
+          subprocess.run(['git', 'merge-base', '--is-ancestor', code, 'origin/refactor/integration'], check=True)
+          subprocess.run(['git', 'diff', '--exit-code', base, code, '--', 'apps/control-api/package-lock.json'], check=True)
+          changes = subprocess.check_output(['git', 'diff', '--name-status', base, code, '--', *paths], text=True)
+          patch, runtime, previous, added = [], [], [], []
+          def checksum(commit, path):
+              data = subprocess.check_output(['git', 'show', f'{commit}:{path}'])
+              return f'{hashlib.sha256(data).hexdigest()}  {path}\n'
+          for change in changes.splitlines():
+              status, path = change.split('\t', 1)
+              assert status in ('A', 'M'), change
+              patch.append(path)
+              runtime.append(checksum(code, path))
+              if status == 'M':
+                  previous.append(checksum(base, path))
+              else:
+                  added.append(path + '\n')
+          (output / 'base.sha256').write_text(''.join(previous))
+          (output / 'runtime.sha256').write_text(''.join(runtime))
+          (output / 'added.txt').write_text(''.join(added))
+          patch.extend(['apps/control-api/test', 'tools/nuochong-cli/bin'])
+          subprocess.run(['git', 'archive', '--format=tar.gz', '-o', str(output / 'patch.tgz'), code, *patch], check=True)
+          PY
+      - name: Update existing isolated service and verify
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$DEPLOY_HOST" && test -n "$DEPLOY_SSH_KEY"
+          install -d -m 700 ~/.ssh
+          key="$RUNNER_TEMP/import-test-ssh"
+          trap 'rm -f "$key"' EXIT
+          (umask 077; printf '%s\n' "$DEPLOY_SSH_KEY" > "$key")
+          ssh-keyscan -T 10 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+          opts=(-i "$key" -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=15)
+          tag="$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          incoming=".local/share/nuochong-knowledge-test/incoming-import-$tag"
+          ssh "${opts[@]}" "deploy@$DEPLOY_HOST" "test -L .local/share/nuochong-knowledge-test/current && mkdir -m 700 $incoming"
+          scp "${opts[@]}" "$RUNNER_TEMP/"{patch.tgz,base.sha256,runtime.sha256,added.txt} "deploy@$DEPLOY_HOST:$incoming/"
+          ssh "${opts[@]}" "deploy@$DEPLOY_HOST" "bash -s -- $BASE_SHA $CODE_SHA $tag" < scripts/deploy/knowledge-import-test.sh
