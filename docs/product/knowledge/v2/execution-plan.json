@@ -477,8 +477,10 @@
       "ownerRole": "DeepSeek；ChatGPT预审；负责人验收",
       "priority": "P1",
       "lane": "P1实现",
-      "status": "Tracking",
+      "status": "Closed",
       "issue": 107,
+      "manualAcceptance": "https://github.com/insanetoto/nuochong-page/issues/107#issuecomment-7154857586",
+      "testRelease": "https://github.com/insanetoto/nuochong-page/actions/runs/45560106168",
       "dependsOn": [
         "KBV2-02",
         "PLAN-03"

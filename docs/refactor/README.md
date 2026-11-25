@@ -1,4 +1,4 @@
-> 2026-11-25最新：#144 BAT-01—04技术验收通过并关闭；PR147合入refactor/integration（9bdb689f16a8365e702b580549161c7239291b6f），[最终复审](https://github.com/insanetoto/nuochong-page/pull/147#pullrequestreview-6052468920)。#142/#143/#144均已完成，不再领取这些任务。#107保持Tracking，人工产品体验验收及发布尚未代签/执行。下方Ready/Blocked及领取指令仅为历史。
+> 2026-11-25最新：#144 BAT-01—04技术验收通过并关闭；PR147合入refactor/integration（9bdb689f16a8365e702b580549161c7239291b6f），[最终复审](https://github.com/insanetoto/nuochong-page/pull/147#pullrequestreview-6052468920)。#142/#143/#144均已完成，不再领取这些任务。#107 已在隔离测试站通过负责人验收并关闭。见[人工验收记录](https://github.com/insanetoto/nuochong-page/issues/107#issuecomment-7154857586)和[发布记录](https://github.com/insanetoto/nuochong-page/actions/runs/45560106168)。下方Ready/Blocked及领取指令仅为历史。
 
 > 2026-11-20最新：#143 SUB-01—04技术验收通过，PR #146 已合入 refactor/integration（`96ae5b62bd398f00d2a7100bceba522b1a31a603`）；固定审核head `de072e5e7b38d62a9301c088348c600a14bcceab`，[逐项复审](https://github.com/insanetoto/nuochong-page/pull/146#pullrequestreview-5989101222)、[精确head的PR CI](https://github.com/insanetoto/nuochong-page/actions/runs/44453542767)。本独立任务关闭；#144共享文件顺序已解锁。未代签人工产品验收，未部署，#107保留Tracking。
 
