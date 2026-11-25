@@ -1,3 +1,5 @@
+> 2026-11-25最新：#144 BAT-01—04技术验收通过并关闭；PR147合入refactor/integration（9bdb689f16a8365e702b580549161c7239291b6f），[最终复审](https://github.com/insanetoto/nuochong-page/pull/147#pullrequestreview-6052468920)。#142/#143/#144均已完成，不再领取这些任务。#107保持Tracking，人工产品体验验收及发布尚未代签/执行。下方Ready/Blocked及领取指令仅为历史。
+
 > 2026-11-20测试计划出口：DeepSeek方案及[ChatGPT明确的执行基线](https://github.com/insanetoto/nuochong-page/issues/144#issuecomment-7033669758)共同预检通过，可直接编码，无需重复提交同一方案等待批准。取消/retry契约、真实poll屏障、断响应核对、分页/迟到隔离、真实审校入口及证据要求按该评论执行。此为设计准入，不是实现验收。
 
 # 下一步领取独立任务144

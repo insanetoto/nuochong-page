@@ -1121,7 +1121,7 @@
   "scopeDecisionStatus": "P1 implementation scope proposal requires PLAN-01 confirmation; prototype accepted",
   "estimation": "Re-estimate after PLAN-01/02; historic 47-75 person-days is not the updated scope estimate",
   "deliveryProtocol": {
-    "date": "2026-11-20",
+    "date": "2026-11-25",
     "design": "docs/refactor/delivery-contract.md",
     "migration": "docs/refactor/import-independent-tasks.md",
     "note": "本次仅迁移107的交付组织，其余tasks记录保留历史状态，不据此批量宣称当前Ready；领取前按协议核验。",
@@ -1162,7 +1162,7 @@
       {
         "issue": 144,
         "id": "import-batch-recovery",
-        "status": "Ready",
+        "status": "Closed",
         "dependsOnIssues": [
           142
         ],
@@ -1177,7 +1177,10 @@
         "acceptedBase": "96ae5b62bd398f00d2a7100bceba522b1a31a603",
         "sharedFileIntegrationSatisfied": true,
         "testPlanStatus": "Approved with explicit execution baseline",
-        "testPlanEvidence": "https://github.com/insanetoto/nuochong-page/issues/144#issuecomment-7033669758"
+        "testPlanEvidence": "https://github.com/insanetoto/nuochong-page/issues/144#issuecomment-7033669758",
+        "mergedSha": "9bdb689f16a8365e702b580549161c7239291b6f",
+        "reviewedHead": "cce5759a815abd7ca28457bdc28dc3e39c28833c",
+        "evidence": "https://github.com/insanetoto/nuochong-page/pull/147#pullrequestreview-6052468920"
       }
     ]
   }
