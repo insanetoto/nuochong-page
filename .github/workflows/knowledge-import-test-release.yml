@@ -63,8 +63,13 @@ jobs:
           key="$RUNNER_TEMP/import-test-ssh"
           trap 'rm -f "$key"' EXIT
           (umask 077; printf '%s\n' "$DEPLOY_SSH_KEY" > "$key")
-          ssh-keyscan -T 10 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
-          opts=(-i "$key" -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=15)
+          ssh-keyscan -t ed25519 -T 10 -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+          opts=(-i "$key" -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=15 -o ControlMaster=auto -o ControlPersist=60 -o "ControlPath=$RUNNER_TEMP/kb-ssh")
+          for delay in 5 10 20; do
+            if ssh "${opts[@]}" -MNf "deploy@$DEPLOY_HOST"; then break; fi
+            sleep "$delay"
+          done
+          ssh "${opts[@]}" -O check "deploy@$DEPLOY_HOST"
           tag="$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
           incoming=".local/share/nuochong-knowledge-test/incoming-import-$tag"
           ssh "${opts[@]}" "deploy@$DEPLOY_HOST" "test -L .local/share/nuochong-knowledge-test/current && mkdir -m 700 $incoming"
