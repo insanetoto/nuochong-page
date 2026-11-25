@@ -111,7 +111,7 @@ export class ReviewService {
   for(const id of i.conceptRevisionIds??[])await db.query('INSERT INTO knowledge_revision_concepts(revision_id,concept_revision_id,space_id) VALUES($1,$2,$3)',[revisionId,id,i.spaceId]);
   for(const id of i.relationRevisionIds??[])await db.query('INSERT INTO knowledge_revision_relations(revision_id,relation_revision_id,space_id) VALUES($1,$2,$3)',[revisionId,id,i.spaceId]);
   await db.query("INSERT INTO knowledge_entry_review_meta(revision_id,status) VALUES($1,'draft')",[revisionId]);await db.query('UPDATE knowledge_acl_revision SET revision=revision+1 WHERE id=1');await this.kernel.event(db,'knowledge.entry.drafted.v1',revisionId);
-  const latest=await this.latestRevision(db,page.id);const out=await this.entryDTO(db,i.spaceId,updated,latest,{body:true});return {entry:out.dto,requestId:randomUUID()};
+  const latest=await this.latestRevision(db,page.id);const out=await this.entryDTO(db,i.spaceId,updated,latest,{body:true});console.log('DRAFT_OUT',JSON.stringify(out.dto));return {entry:out.dto,requestId:randomUUID()};
  }
  async entrySubmit(db,ctx,i){
   const page=await this.pageRow(db,i.spaceId,i.entryId,{lock:true});requireThat(page.managed_v2,409,'CONTRACT_VERSION_REQUIRED');requireThat(page.revision===i.expectedRevision,409,'VERSION_CONFLICT');const revision=await this.latestRevision(db,page.id);const meta=await this.meta(db,revision.id);requireThat(meta,409,'CONTRACT_VERSION_REQUIRED');const rf=await this.revisionFragments(db,revision.id);const graph=await this.revisionGraph(db,revision.id);const target=await this.target(db,i.spaceId,revision.id,revision.body_hash,rf.map(r=>r.fragment_id),graph.conceptRevisionIds,graph.relationRevisionIds);
