@@ -49,7 +49,7 @@ export class KnowledgeService {
  }
  async createDraft(db,ctx,i){
   const ids=await this.evidence(db,ctx,i.spaceId,i.citations);let page;
-  if(i.pageId){page=(await db.query('SELECT * FROM knowledge_pages WHERE id=$1 AND space_id=$2',[i.pageId,i.spaceId])).rows[0];requireThat(page,404,'NOT_FOUND');requireThat(page.revision===i.expectedRevision,409,'VERSION_CONFLICT');}
+  if(i.pageId){page=(await db.query('SELECT * FROM knowledge_pages WHERE id=$1 AND space_id=$2',[i.pageId,i.spaceId])).rows[0];requireThat(page,404,'NOT_FOUND');requireThat(!page.managed_v2,409,'CONTRACT_VERSION_REQUIRED');requireThat(page.revision===i.expectedRevision,409,'VERSION_CONFLICT');}
   else{requireThat(i.expectedRevision===0,409,'VERSION_CONFLICT');page=(await db.query('INSERT INTO knowledge_pages(id,space_id) VALUES($1,$2) RETURNING *',[randomUUID(),i.spaceId])).rows[0];}
   requireThat(i.body.includes('[1]')&&[...i.body.matchAll(/\[(\d+)\]/g)].every(m=>Number(m[1])>=1&&Number(m[1])<=i.citations.length),400,'CITATION_MARKER_REQUIRED');
   const hash=await this.objects.put(db,i.body),id=randomUUID();
@@ -140,7 +140,7 @@ export class KnowledgeService {
   if(id==='knowledge.changes.create.v1')return this.createDraft(db,ctx,i);
   if(id==='knowledge.changes.review.v1'){
    requireThat(ctx.actor.kind==='user'&&ctx.actor.scopes.includes('product:approve'));
-   const r=await this.revision(db,i.spaceId,i.revisionId);requireThat(r.current_revision===i.expectedRevision&&r.page_revision===i.expectedRevision,409,'VERSION_CONFLICT');
+   const r=await this.revision(db,i.spaceId,i.revisionId);requireThat(!(await db.query('SELECT 1 FROM knowledge_pages WHERE id=$1 AND managed_v2',[r.page_id])).rowCount,409,'CONTRACT_VERSION_REQUIRED');requireThat(r.current_revision===i.expectedRevision&&r.page_revision===i.expectedRevision,409,'VERSION_CONFLICT');
    requireThat(r.state!=='published',409,'ALREADY_PUBLISHED');
    await this.evidence(db,ctx,i.spaceId,r.citations);
    const hash=digest({bodyHash:r.body_hash,citations:r.citations,sourceIds:r.source_ids});

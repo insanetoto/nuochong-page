@@ -1,5 +1,6 @@
 import {KnowledgeJobs} from '../../../plugins/knowledge/jobs.mjs';
 import {ImportService} from '../../../plugins/knowledge/imports.mjs';
+import {ReviewService} from '../../../plugins/knowledge/review.mjs';
 import {KnowledgeService} from '../../../plugins/knowledge/service.mjs';
 import {resolve} from 'node:path';
 import {commands,valid} from '../../../tools/nuochong-cli/src/registry.mjs';
@@ -11,6 +12,7 @@ export function registerProduct(app,{pool,identity,publicOrigin,cookiePath,objec
  const knowledge=new KnowledgeService(kernel,objectRoot);
  const jobs=new KnowledgeJobs(kernel,knowledge);
  const imports=new ImportService(kernel,knowledge);
+ const review=new ReviewService(kernel,knowledge);
  const sessionPath=cookiePath??(publicOrigin?new URL(publicOrigin).pathname.replace(/\/$/,'')+'/':'/product/');
  if(!/^\/(?:[A-Za-z0-9_-]+\/)*product\/$/.test(sessionPath))throw new Error('Invalid product cookie path');
  const trustedOrigin=()=>publicOrigin?new URL(publicOrigin).origin:app.listeningOrigin;
@@ -48,10 +50,10 @@ export function registerProduct(app,{pool,identity,publicOrigin,cookiePath,objec
   }
   if(!bearer&&cookie&&command.sideEffect!=='none')requireThat(origin===trustedOrigin(),403,'INVALID_ORIGIN');
   const actor=await identity.authenticate(bearer??cookie);req.oaAudit={actorId:actor.id,action:command.id};
-  const data=await kernel.perform(actor,command,req.body,(db,ctx)=>['knowledge.compilations.create.v1','knowledge.answers.ask.v1'].includes(command.id)||command.id.startsWith('knowledge.jobs.')?jobs.dispatch(db,ctx,command.id,req.body):command.id.startsWith('knowledge.')?(command.id==='knowledge.objects.upload.v1'||command.id.startsWith('knowledge.imports.')?imports.dispatch(db,ctx,command.id,command.id==='knowledge.objects.upload.v1'?{...req.body,__bytes:req.uploadBytes}:req.body):knowledge.dispatch(db,ctx,command.id,req.body)):command.id.startsWith('organization.')?organization.dispatch(db,ctx,command.id,req.body):kernel.dispatch(db,ctx,command.id,req.body),(db,ctx)=>command.id.startsWith('knowledge.')?knowledge.authorize(db,ctx,command,req.body):undefined);
+  const data=await kernel.perform(actor,command,req.body,(db,ctx)=>['knowledge.compilations.create.v1','knowledge.answers.ask.v1'].includes(command.id)||command.id.startsWith('knowledge.jobs.')?jobs.dispatch(db,ctx,command.id,req.body):command.id.startsWith('knowledge.')?(command.id==='knowledge.objects.upload.v1'||command.id.startsWith('knowledge.imports.')?imports.dispatch(db,ctx,command.id,command.id==='knowledge.objects.upload.v1'?{...req.body,__bytes:req.uploadBytes}:req.body):(command.id.startsWith('knowledge.fragments.')||command.id.startsWith('knowledge.entries.')||command.id.startsWith('knowledge.concepts.')||command.id==='knowledge.relations.upsert.v1'?review.dispatch(db,ctx,command.id,req.body):knowledge.dispatch(db,ctx,command.id,req.body))):command.id.startsWith('organization.')?organization.dispatch(db,ctx,command.id,req.body):kernel.dispatch(db,ctx,command.id,req.body),(db,ctx)=>command.id.startsWith('knowledge.')?knowledge.authorize(db,ctx,command,req.body):undefined);
   requireThat(valid(command.outputSchema,data),500,'INVALID_RESPONSE');
   if(command.id==='identity.logout.v1')reply.header('set-cookie',`product_session=; Path=${sessionPath}; HttpOnly; SameSite=Strict; Max-Age=0${trustedOrigin().startsWith('https:')?'; Secure':''}`);
   return data;
  });
- return {kernel,organization,knowledge,jobs,imports};
+ return {kernel,organization,knowledge,jobs,imports,review};
 }
