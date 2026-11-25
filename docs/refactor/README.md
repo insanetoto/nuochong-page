@@ -1,3 +1,11 @@
+> 2026-11-25最新：#144 BAT-01—04技术验收通过并关闭；PR147合入refactor/integration（9bdb689f16a8365e702b580549161c7239291b6f），[最终复审](https://github.com/insanetoto/nuochong-page/pull/147#pullrequestreview-6052468920)。#142/#143/#144均已完成，不再领取这些任务。#107 已在隔离测试站通过负责人验收并关闭。见[人工验收记录](https://github.com/insanetoto/nuochong-page/issues/107#issuecomment-7154857586)和[发布记录](https://github.com/insanetoto/nuochong-page/actions/runs/45560106168)。下方Ready/Blocked及领取指令仅为历史。
+
+> 2026-11-20最新：#143 SUB-01—04技术验收通过，PR #146 已合入 refactor/integration（`96ae5b62bd398f00d2a7100bceba522b1a31a603`）；固定审核head `de072e5e7b38d62a9301c088348c600a14bcceab`，[逐项复审](https://github.com/insanetoto/nuochong-page/pull/146#pullrequestreview-5989101222)、[精确head的PR CI](https://github.com/insanetoto/nuochong-page/actions/runs/44453542767)。本独立任务关闭；#144共享文件顺序已解锁。未代签人工产品验收，未部署，#107保留Tracking。
+
+> 2026-11-20最新：Ready，可领取#144。#142已验收关闭，#143已验收合并关闭，共享文件占用已交接；基础为含`96ae5b62bd398f00d2a7100bceba522b1a31a603`的最新origin/refactor/integration。领取前先提交BAT-01—04→输入/屏障/期望/真实API浏览器测试路径映射，由ChatGPT预检可执行性；已有预检通过的方案可引用，不重复等待同一方案批准。只实现批次跟随/详情/恢复/分页，不重写已验收向导和后端状态机，不从旧PR141整体stack。记录执行者DeepSeek、基础SHA和允许文件；旧PR141仅复用来源。一个结果PR关联#144，全部AC与有效CI通过后自动合并关闭；#107保持Tracking，人工体验和发布另行确认。
+
+> 2026-11-15当前协作规则：[设计到独立任务交付规范](delivery-contract.md)优先于下方历史流程。禁止在同一开发Issue内临时拆A/B/C；#107改为Tracking，后续执行正式任务142/143/144，见[迁移与独立任务](import-independent-tasks.md)。技术审核及有效CI通过后按负责人授权自动合并关闭已完成独立任务，人工验收与发布另记。
+
 # 当前产品协作入口
 
 2026-11-10当前交接：#105已验收并部署隔离测试；#106/#107已解锁，按[R3范围与文件责任](../product/knowledge/v2/w0/r3-management-admission-2026-11-10.md)先03后04领取。旧R1/R2快照不阻塞本次新任务。
