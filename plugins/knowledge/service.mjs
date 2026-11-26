@@ -150,7 +150,7 @@ export class KnowledgeService {
    return this.pageDTO(db,await this.revision(db,i.spaceId,r.id),{manage:true});
   }
   if(id==='knowledge.publications.publish.v1'){
-   const r=await this.revision(db,i.spaceId,i.revisionId);requireThat(r.current_revision===i.expectedRevision&&r.page_revision===i.expectedRevision,409,'VERSION_CONFLICT');
+   const r=await this.revision(db,i.spaceId,i.revisionId);requireThat(!(await db.query('SELECT 1 FROM knowledge_pages WHERE id=$1 AND managed_v2',[r.page_id])).rowCount,409,'CONTRACT_VERSION_REQUIRED');requireThat(r.current_revision===i.expectedRevision&&r.page_revision===i.expectedRevision,409,'VERSION_CONFLICT');
    requireThat(r.state==='reviewed'&&r.review_hash===digest({bodyHash:r.body_hash,citations:r.citations,sourceIds:r.source_ids}),409,'REVIEW_REQUIRED');
    const reviewer=(await db.query('SELECT p.*,c.revoked FROM principals p JOIN credentials c ON c.principal_id=p.id WHERE p.id=$1 AND c.id=$2',[r.reviewed_by,r.reviewer_credential_id])).rows[0];
    requireThat(reviewer?.active&&!reviewer.revoked&&reviewer.epoch===r.reviewer_epoch,409,'REVIEW_REQUIRED');
@@ -162,7 +162,7 @@ export class KnowledgeService {
    await this.kernel.event(db,'knowledge.publication.published.v1',r.page_id);return this.pageDTO(db,await this.revision(db,i.spaceId,r.id));
   }
   if(id==='knowledge.publications.withdraw.v1'){
-   const p=await this.page(db,i.spaceId,i.pageId,'published');requireThat(p.current_revision===i.expectedRevision,409,'VERSION_CONFLICT');
+   const p=await this.page(db,i.spaceId,i.pageId,'published');requireThat(!(await db.query('SELECT 1 FROM knowledge_pages WHERE id=$1 AND managed_v2',[p.page_id])).rowCount,409,'CONTRACT_VERSION_REQUIRED');requireThat(p.current_revision===i.expectedRevision,409,'VERSION_CONFLICT');
    await db.query('UPDATE knowledge_pages SET published_revision_id=NULL,revision=revision+1 WHERE id=$1',[p.page_id]);
    await db.query("INSERT INTO knowledge_publications(id,page_id,revision_id,publisher_id,approval_id,state) VALUES($1,$2,$3,$4,$5,'withdrawn')",[randomUUID(),p.page_id,p.id,ctx.actor.id,i.approvalId]);await this.kernel.event(db,'knowledge.publication.withdrawn.v1',p.page_id);return {withdrawn:true};
   }
