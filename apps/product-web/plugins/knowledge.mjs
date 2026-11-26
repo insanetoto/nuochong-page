@@ -30,7 +30,7 @@ async function reviewEntry(ctx,e){
   const reject=button('拒绝',e=>ctx.operate(e.currentTarget,()=>ctx.mutate('knowledge.fragments.review.v1',scoped(ctx,{fragmentId:f.fragmentId,expectedRevision:f.revision,decision:'reject',reason:'审校拒绝合成片段',relatedFragmentIds:[],splitRanges:[]}))));
   return h('div',{class:'citation'},h('p',{},f.excerpt),h('div',{class:'actions'},accept,reject));
  });
- const concepts=await ctx.api('knowledge.concepts.list.v1',scoped(ctx,{view:'manage'}));const conceptChecks=concepts.items.map(c=>({c,input:h('input',{type:'checkbox'})}));const conceptLabel=field('新概念名称',{required:true,maxlength:128});
+ const concepts=await ctx.api('knowledge.concepts.list.v1',scoped(ctx,{limit:100}));const conceptChecks=concepts.items.map(c=>({c,input:h('input',{type:'checkbox'})}));const conceptLabel=field('新概念名称',{required:true,maxlength:128});
  const left=section('片段与依据',...fragmentCards,...(candidateCards.length?[h('details',{open:true},h('summary',{},'待处理片段（'+candidateCards.length+'）'),...candidateCards)]:[empty('没有待处理片段。')]));
  const title=field('条目标题',{required:true,maxlength:256,value:entry.title}),body=textField('条目正文（[n] 对应片段顺序）',{required:true,maxlength:20000,value:entry.body});
  const middle=section('正文与引用',form(ctx,[title,body],()=>ctx.mutate('knowledge.entries.draft.v1',scoped(ctx,{entryId:entry.entryId,expectedRevision:entry.revision,title:title.input.value,entryType:entry.entryType,body:body.input.value,fragmentIds:entry.fragmentIds,conceptRevisionIds:conceptChecks.filter(x=>x.input.checked).map(x=>x.c.revisionId),relationRevisionIds:relations.map(r=>r.relationRevisionId)})),'保存待审草稿'));
@@ -43,7 +43,10 @@ async function review(ctx,route){
   const [pages,entries]=await Promise.all([ctx.api('knowledge.pages.list.v1',scoped(ctx,{view:'manage',...(route.params.get('after')?{after:route.params.get('after')}:{})})),ctx.api('knowledge.entries.list.v1',scoped(ctx,{view:'manage'}))]);
   const entryRows=entries.items.map(e=>[link(ctx,e.title,'review/'+e.entryId),tag(e.status),e.revision]);
   const pageRows=pages.items.map(p=>[link(ctx,p.title,'review/'+p.pageId),p.revision,tag(p.pageState)]);
-  return {node:h('div',{},heading('变更审校','核验片段、引用与正文；V2 条目由修订级摘要保证旧审校不通用。'),section('待审条目',entries.items.length?table(['条目','状态','修订'],entryRows):empty('没有待审条目。')),section('v0 知识页',table(['知识页','当前版本','状态'],pageRows),pagination(ctx,pages,'review')))};
+  const accepted=(await ctx.api('knowledge.fragments.list.v1',scoped(ctx,{view:'manage',status:'accepted',limit:100}))).items;
+  const title=field('新条目标题',{required:true,maxlength:256});const checks=accepted.map(f=>({f,input:h('input',{type:'checkbox',checked:true})}));
+  const create=section('从已接受片段新建条目',accepted.length?h('div',{},title,...checks.map(x=>h('label',{class:'checkbox-line'},x.input,x.f.excerpt.slice(0,80))),button('创建待审条目',e=>ctx.operate(e.currentTarget,async()=>{const ids=checks.filter(x=>x.input.checked).map(x=>x.f.fragmentId);if(!ids.length)throw Object.assign(new Error('请选择片段'),{code:'INVALID_INPUT'});const body=ids.map((_,i)=>`[${i+1}]`).join(' ');const result=await ctx.mutate('knowledge.entries.draft.v1',scoped(ctx,{entryId:'',expectedRevision:0,title:title.input.value,entryType:'policy',body,fragmentIds:ids,conceptRevisionIds:[],relationRevisionIds:[]}));ctx.navigate('review/'+result.entry.entryId);}))):empty('没有已接受片段；请先在导入审校中接受片段。'));
+  return {node:h('div',{},heading('变更审校','核验片段、引用与正文；V2 条目由修订级摘要保证旧审校不通用。'),section('待审条目',entries.items.length?table(['条目','状态','修订'],entryRows):empty('没有待审条目。')),create,section('v0 知识页',table(['知识页','当前版本','状态'],pageRows),pagination(ctx,pages,'review')))};
  }
  try{return await reviewEntry(ctx,await ctx.api('knowledge.entries.get.v1',scoped(ctx,{entryId:route.id,view:'manage'})));}catch(error){if(!['CONTRACT_VERSION_REQUIRED','NOT_FOUND'].includes(error.code))throw error;}
  const p=await ctx.api('knowledge.pages.get.v1',scoped(ctx,{pageId:route.id,view:'manage'}));const content=h('div',{},heading(p.title,'知识页 ID '+p.pageId+' · 版本 '+p.revision),tag(p.pageState),h('pre',{class:'wiki-body'},p.body),citations(ctx,p.citations));
