@@ -82,3 +82,16 @@ CREATE TABLE knowledge_acl_revision(
  revision bigint NOT NULL CHECK(revision>0)
 );
 INSERT INTO knowledge_acl_revision(id,revision) VALUES(1,1);
+
+CREATE FUNCTION knowledge_bump_acl_revision() RETURNS trigger AS $$
+BEGIN
+ UPDATE knowledge_acl_revision SET revision=revision+1 WHERE id=1;
+ RETURN COALESCE(NEW,OLD);
+END $$ LANGUAGE plpgsql;
+CREATE TRIGGER product_bindings_acl AFTER INSERT OR UPDATE OR DELETE ON product_bindings FOR EACH ROW EXECUTE FUNCTION knowledge_bump_acl_revision();
+CREATE TRIGGER product_roles_acl AFTER INSERT OR UPDATE OR DELETE ON product_roles FOR EACH ROW EXECUTE FUNCTION knowledge_bump_acl_revision();
+CREATE TRIGGER product_members_acl AFTER INSERT OR UPDATE OR DELETE ON product_members FOR EACH ROW EXECUTE FUNCTION knowledge_bump_acl_revision();
+CREATE TRIGGER product_memberships_acl AFTER INSERT OR UPDATE OR DELETE ON product_memberships FOR EACH ROW EXECUTE FUNCTION knowledge_bump_acl_revision();
+CREATE TRIGGER product_departments_acl AFTER INSERT OR UPDATE OR DELETE ON product_departments FOR EACH ROW EXECUTE FUNCTION knowledge_bump_acl_revision();
+CREATE TRIGGER knowledge_spaces_acl AFTER UPDATE OF department_ids,status ON knowledge_spaces FOR EACH ROW EXECUTE FUNCTION knowledge_bump_acl_revision();
+CREATE TRIGGER knowledge_policy_acl AFTER INSERT OR UPDATE OR DELETE ON knowledge_space_policy_revisions FOR EACH ROW EXECUTE FUNCTION knowledge_bump_acl_revision();
