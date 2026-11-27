@@ -95,3 +95,4 @@ CREATE TRIGGER product_memberships_acl AFTER INSERT OR UPDATE OR DELETE ON produ
 CREATE TRIGGER product_departments_acl AFTER INSERT OR UPDATE OR DELETE ON product_departments FOR EACH ROW EXECUTE FUNCTION knowledge_bump_acl_revision();
 CREATE TRIGGER knowledge_spaces_acl AFTER UPDATE OF department_ids,status ON knowledge_spaces FOR EACH ROW EXECUTE FUNCTION knowledge_bump_acl_revision();
 CREATE TRIGGER knowledge_policy_acl AFTER INSERT OR UPDATE OR DELETE ON knowledge_space_policy_revisions FOR EACH ROW EXECUTE FUNCTION knowledge_bump_acl_revision();
+ALTER TABLE knowledge_sources ADD COLUMN page_texts jsonb;
