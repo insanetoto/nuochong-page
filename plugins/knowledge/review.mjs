@@ -34,8 +34,8 @@ export class ReviewService {
  async leafExcerpt(db,fragment){
   const source=(await db.query('SELECT object_hash FROM knowledge_sources WHERE id=$1',[fragment.source_id])).rows[0];requireThat(source,409,'EVIDENCE_CHANGED');const text=await this.knowledge.objects.read(db,source.object_hash),lines=text.split('\n'),paragraphs=text.split(/\n\s*\n/),l=fragment.locator;
   if(l.type==='line'){requireThat(Number.isInteger(l.lineStart)&&Number.isInteger(l.lineEnd)&&l.lineStart>=1&&l.lineEnd>=l.lineStart&&l.lineEnd<=lines.length,409,'EVIDENCE_CHANGED');return lines.slice(l.lineStart-1,l.lineEnd).join('\n');}
-  if(l.type==='page'){if(Number.isInteger(l.lineStart)&&Number.isInteger(l.lineEnd)){requireThat(l.lineStart>=1&&l.lineEnd>=l.lineStart&&l.lineEnd<=lines.length,409,'EVIDENCE_CHANGED');return lines.slice(l.lineStart-1,l.lineEnd).join('\n');}const number=l.paragraph??l.index;requireThat(Number.isInteger(number)&&number>=1&&number<=paragraphs.length,409,'EVIDENCE_CHANGED');return paragraphs[number-1];}
-  if(l.type==='paragraph'){const number=l.paragraph??l.index;requireThat(Number.isInteger(number)&&number>=1&&number<=paragraphs.length,409,'EVIDENCE_CHANGED');return paragraphs[number-1];}
+  if(l.type==='page'){if(Number.isInteger(l.lineStart)&&Number.isInteger(l.lineEnd)){requireThat(l.lineStart>=1&&l.lineEnd>=l.lineStart&&l.lineEnd<=lines.length,409,'EVIDENCE_CHANGED');return lines.slice(l.lineStart-1,l.lineEnd).join('\n');}const number=l.paragraph??l.index;requireThat(Number.isInteger(number)&&number>=1,409,'EVIDENCE_CHANGED');return l.index?lines[number-1]:paragraphs[number-1];}
+  if(l.type==='paragraph'){const number=l.paragraph??l.index;requireThat(Number.isInteger(number)&&number>=1,409,'EVIDENCE_CHANGED');return l.index?lines[number-1]:paragraphs[number-1];}
   requireThat(false,409,'EVIDENCE_CHANGED');
  }
  async reconstructedExcerpt(db,fragment,seen=new Set()){
