@@ -20,7 +20,7 @@ test('007 PDF data upgrades through 008 and submits same source fragment',{timeo
  assert.equal((await pool.query('SELECT max(version)::int AS v FROM schema_versions')).rows[0].v,7);assert.equal((await pool.query("SELECT count(*)::int AS n FROM information_schema.columns WHERE table_schema=$1 AND table_name='knowledge_sources' AND column_name='page_texts'",[schema])).rows[0].n,0);
  const objects=new PrivateObjects(root),pdf=pdfBuffer(['','Upgrade page two']),original=await objects.put(pool,pdf),parsed=parsePdf(pdf),extracted=await objects.put(pool,parsed.text);
  const spaceId='space-'+randomUUID(),documentId='doc-'+randomUUID(),sourceId='source-'+randomUUID(),batchId='batch-'+randomUUID(),fileId='file-'+randomUUID(),fragmentId='frag-'+randomUUID(),fragment=parsed.fragments.find(f=>f.locator.page===2);
- await pool.query("INSERT INTO knowledge_spaces(id,title,department_ids,code) VALUES($1,'Upgrade space','[]',$2)",[spaceId,'UP-'+randomUUID().slice(0,8)]);
+ await pool.query("INSERT INTO knowledge_spaces(id,title,department_ids,code) VALUES($1,'Upgrade space',ARRAY[]::text[],$2)",[spaceId,'UP-'+randomUUID().slice(0,8)]);
  await pool.query('INSERT INTO knowledge_documents(id,space_id,policy_code) VALUES($1,$2,$3)',[documentId,spaceId,'UPGRADE-PDF']);
  await pool.query("INSERT INTO knowledge_sources(id,document_id,space_id,title,ordinal,version,filename,object_hash,status,valid_from,media_type) VALUES($1,$2,$3,'Upgrade PDF',1,'1','upgrade.pdf',$4,'active','2020-01-01T00:00:00Z','application/pdf')",[sourceId,documentId,spaceId,extracted]);
  await pool.query("INSERT INTO knowledge_import_batches(id,space_id,status) VALUES($1,$2,'completed')",[batchId,spaceId]);
