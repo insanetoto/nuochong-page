@@ -49,7 +49,7 @@ export class KnowledgeService {
  }
  async createDraft(db,ctx,i){
   const ids=await this.evidence(db,ctx,i.spaceId,i.citations);let page;
-  if(i.pageId){page=(await db.query('SELECT * FROM knowledge_pages WHERE id=$1 AND space_id=$2',[i.pageId,i.spaceId])).rows[0];requireThat(page,404,'NOT_FOUND');requireThat(page.revision===i.expectedRevision,409,'VERSION_CONFLICT');}
+  if(i.pageId){page=(await db.query('SELECT * FROM knowledge_pages WHERE id=$1 AND space_id=$2',[i.pageId,i.spaceId])).rows[0];requireThat(page,404,'NOT_FOUND');requireThat(!page.managed_v2,409,'CONTRACT_VERSION_REQUIRED');requireThat(page.revision===i.expectedRevision,409,'VERSION_CONFLICT');}
   else{requireThat(i.expectedRevision===0,409,'VERSION_CONFLICT');page=(await db.query('INSERT INTO knowledge_pages(id,space_id) VALUES($1,$2) RETURNING *',[randomUUID(),i.spaceId])).rows[0];}
   requireThat(i.body.includes('[1]')&&[...i.body.matchAll(/\[(\d+)\]/g)].every(m=>Number(m[1])>=1&&Number(m[1])<=i.citations.length),400,'CITATION_MARKER_REQUIRED');
   const hash=await this.objects.put(db,i.body),id=randomUUID();
@@ -140,7 +140,7 @@ export class KnowledgeService {
   if(id==='knowledge.changes.create.v1')return this.createDraft(db,ctx,i);
   if(id==='knowledge.changes.review.v1'){
    requireThat(ctx.actor.kind==='user'&&ctx.actor.scopes.includes('product:approve'));
-   const r=await this.revision(db,i.spaceId,i.revisionId);requireThat(r.current_revision===i.expectedRevision&&r.page_revision===i.expectedRevision,409,'VERSION_CONFLICT');
+   const r=await this.revision(db,i.spaceId,i.revisionId);requireThat(!(await db.query('SELECT 1 FROM knowledge_pages WHERE id=$1 AND managed_v2',[r.page_id])).rowCount,409,'CONTRACT_VERSION_REQUIRED');requireThat(r.current_revision===i.expectedRevision&&r.page_revision===i.expectedRevision,409,'VERSION_CONFLICT');
    requireThat(r.state!=='published',409,'ALREADY_PUBLISHED');
    await this.evidence(db,ctx,i.spaceId,r.citations);
    const hash=digest({bodyHash:r.body_hash,citations:r.citations,sourceIds:r.source_ids});
@@ -150,7 +150,7 @@ export class KnowledgeService {
    return this.pageDTO(db,await this.revision(db,i.spaceId,r.id),{manage:true});
   }
   if(id==='knowledge.publications.publish.v1'){
-   const r=await this.revision(db,i.spaceId,i.revisionId);requireThat(r.current_revision===i.expectedRevision&&r.page_revision===i.expectedRevision,409,'VERSION_CONFLICT');
+   const r=await this.revision(db,i.spaceId,i.revisionId);requireThat(!(await db.query('SELECT 1 FROM knowledge_pages WHERE id=$1 AND managed_v2',[r.page_id])).rowCount,409,'CONTRACT_VERSION_REQUIRED');requireThat(r.current_revision===i.expectedRevision&&r.page_revision===i.expectedRevision,409,'VERSION_CONFLICT');
    requireThat(r.state==='reviewed'&&r.review_hash===digest({bodyHash:r.body_hash,citations:r.citations,sourceIds:r.source_ids}),409,'REVIEW_REQUIRED');
    const reviewer=(await db.query('SELECT p.*,c.revoked FROM principals p JOIN credentials c ON c.principal_id=p.id WHERE p.id=$1 AND c.id=$2',[r.reviewed_by,r.reviewer_credential_id])).rows[0];
    requireThat(reviewer?.active&&!reviewer.revoked&&reviewer.epoch===r.reviewer_epoch,409,'REVIEW_REQUIRED');
@@ -162,7 +162,7 @@ export class KnowledgeService {
    await this.kernel.event(db,'knowledge.publication.published.v1',r.page_id);return this.pageDTO(db,await this.revision(db,i.spaceId,r.id));
   }
   if(id==='knowledge.publications.withdraw.v1'){
-   const p=await this.page(db,i.spaceId,i.pageId,'published');requireThat(p.current_revision===i.expectedRevision,409,'VERSION_CONFLICT');
+   const p=await this.page(db,i.spaceId,i.pageId,'published');requireThat(!(await db.query('SELECT 1 FROM knowledge_pages WHERE id=$1 AND managed_v2',[p.page_id])).rowCount,409,'CONTRACT_VERSION_REQUIRED');requireThat(p.current_revision===i.expectedRevision,409,'VERSION_CONFLICT');
    await db.query('UPDATE knowledge_pages SET published_revision_id=NULL,revision=revision+1 WHERE id=$1',[p.page_id]);
    await db.query("INSERT INTO knowledge_publications(id,page_id,revision_id,publisher_id,approval_id,state) VALUES($1,$2,$3,$4,$5,'withdrawn')",[randomUUID(),p.page_id,p.id,ctx.actor.id,i.approvalId]);await this.kernel.event(db,'knowledge.publication.withdrawn.v1',p.page_id);return {withdrawn:true};
   }

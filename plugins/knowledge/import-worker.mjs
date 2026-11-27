@@ -83,8 +83,8 @@ export async function runImportWorkerOnce({pool,kernel,knowledge,leaseMs=LEASE_M
    if(!document)document=(await db.query('INSERT INTO knowledge_documents(id,space_id,policy_code) VALUES($1,$2,$3) RETURNING *',[randomUUID(),batch.space_id,file.policy_code])).rows[0];
    requireThat(!(await db.query('SELECT 1 FROM knowledge_sources WHERE document_id=$1 AND version=$2',[document.id,file.version])).rowCount,409,'SOURCE_VERSION_EXISTS');
    const ordinal=(await db.query('UPDATE knowledge_documents SET latest_counter=latest_counter+1 WHERE id=$1 RETURNING latest_counter',[document.id])).rows[0].latest_counter;
-   const source=(await db.query(`INSERT INTO knowledge_sources(id,document_id,space_id,title,ordinal,version,filename,object_hash,status,valid_from,valid_until,media_type)
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8,'active',$9,$10,$11) RETURNING *`,[randomUUID(),document.id,batch.space_id,file.title,ordinal,file.version,file.filename,textHash,file.valid_from,file.valid_until,file.media_type])).rows[0];
+   const source=(await db.query(`INSERT INTO knowledge_sources(id,document_id,space_id,title,ordinal,version,filename,object_hash,status,valid_from,valid_until,media_type,page_texts)
+    VALUES($1,$2,$3,$4,$5,$6,$7,$8,'active',$9,$10,$11,$12) RETURNING *`,[randomUUID(),document.id,batch.space_id,file.title,ordinal,file.version,file.filename,textHash,file.valid_from,file.valid_until,file.media_type,parsed.pages?JSON.stringify(parsed.pages):null])).rows[0];
    for(const fragment of parsed.fragments)await db.query(`INSERT INTO knowledge_fragments(id,space_id,source_id,source_revision,locator,locator_key,excerpt,text_hash,status,revision)
     VALUES($1,$2,$3,$4,$5,$6,$7,$8,'pending',1) ON CONFLICT(source_id,locator_key,text_hash) DO NOTHING`,[randomUUID(),batch.space_id,source.id,source.ordinal,JSON.stringify(fragment.locator),fragment.locatorKey,fragment.excerpt,fragment.textHash]);
    await db.query('UPDATE knowledge_documents SET current_source_id=$2 WHERE id=$1',[document.id,source.id]);
