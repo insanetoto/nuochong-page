@@ -12,7 +12,7 @@ const importFileResult=obj({fileId:str(128),objectRef:str(128),filename:str(256)
 const importBatch=obj({batchId:str(128),spaceId:str(128),status:{enum:['created','parsing','completed','partial','failed','cancelled']},files:arr(importFileResult,20),revision});
 const importResult=obj({batch:importBatch,requestId:str(128)});
 
-const locatorSchema=obj({type:str(32),lineStart:{type:'integer',minimum:1},lineEnd:{type:'integer',minimum:1},page:{type:'integer',minimum:1},paragraph:{type:'integer',minimum:0},heading:str(512,0)},['type']);
+const locatorSchema=obj({type:str(32),lineStart:{type:'integer',minimum:1},lineEnd:{type:'integer',minimum:1},page:{type:'integer',minimum:1},paragraph:{type:'integer',minimum:0},index:{type:'integer',minimum:0},heading:str(512,0)},['type']);
 const fragmentSchema=obj({fragmentId:str(128),spaceId:str(128),sourceRevisionId:str(128),locator:locatorSchema,excerpt:str(20000),textHash:str(64),revision,status:{enum:['pending','accepted','rejected','merged','superseded']}});
 const entrySchema=obj({entryId:str(128),spaceId:str(128),revisionId:str(128),revision,entryType:{enum:['policy','topic','faq','entity']},title:str(256),body:str(20000,0),status:{enum:['draft','pending_review','reviewed','published','withdrawn','superseded','stale']},fragmentIds:arr(str(128),500)});
 const conceptSchema=obj({conceptId:str(128),spaceId:str(128),label:str(128),parentId:str(128,0),revisionId:str(128),revision});
